@@ -1,10 +1,7 @@
 import axios from "axios";
-import dotenv from "dotenv";
-// import { BASE_URL } from "./constants.js";
 
 const axiosInstance = axios.create({
-    // baseURL : BASE_URL,
-    baseURL : REACT_APP_BASE_URL,
+    baseURL : "https://note-app-server-seven.vercel.app/",
     timeout : 10000,
     headers : {
         "Content-Type" : "application/json"
