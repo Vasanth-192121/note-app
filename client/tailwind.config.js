@@ -12,7 +12,7 @@ module.exports = {
       },
       // Custom breakpoints
       screens: {
-        'xs': '450px', // Custom breakpoint for 450px
+        'xs': '400px', // Custom breakpoint for 450px
       },
     },
   },
