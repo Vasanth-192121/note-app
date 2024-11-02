@@ -85,11 +85,13 @@ const Navbar = ({ userInfo, onSearchNote, handleClearSearch }) => {
             Notes
         </h2>
 
-      <SearchBar
-        value={searchQuery}
-        onChange={({ target }) => {
-          setSearchQuery(target.value);
-        }}
+      {userInfo && ( <SearchBar 
+          value={searchQuery} 
+          onChange={({ target }) => { setSearchQuery(target.value); }} 
+          handleSearch={handleSearch} 
+          onClearSearch={onClearSearch} 
+        />
+      )}
 
         handleSearch={handleSearch}
         onClearSearch={onClearSearch}
