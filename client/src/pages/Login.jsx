@@ -7,8 +7,8 @@ import { axiosInstance } from '../utils/axiosInstance';
 
 const Login = () => {
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const [email, setEmail] = useState("visitor-login@gmail.com");
+    const [password, setPassword] = useState("password@visitor-login");
     const [error, setError] = useState(null);
 
     const navigate = useNavigate();
