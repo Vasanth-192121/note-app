@@ -1,5 +1,3 @@
-// Loading.jsx
-
 const Loading = () => (
   <div>
     <p>Loading...</p>
