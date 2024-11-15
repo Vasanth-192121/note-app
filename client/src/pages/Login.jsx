@@ -100,20 +100,18 @@
 
 // export default Login
 
-
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import { Link, useNavigate } from 'react-router-dom';
 import PasswordInput from '../components/PasswordInput';
 import { validateEmail } from '../utils/Helper';
 import { axiosInstance } from '../utils/axiosInstance';
-import Loading from '../components/Loading'; // Import the Loading component
 
 const Login = () => {
     const [email, setEmail] = useState("visitor-login@gmail.com");
     const [password, setPassword] = useState("password@visitor-login");
     const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(false); // State for managing loading
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
@@ -130,7 +128,7 @@ const Login = () => {
         }
 
         setError("");
-        setLoading(true); // Start loading
+        setLoading(true);
 
         // Login API Call
         try {
@@ -153,7 +151,7 @@ const Login = () => {
                 setError("An unexpected error occurred. Please try again");
             }
         } finally {
-            setLoading(false); // End loading
+            setLoading(false);
         }
     }
 
@@ -191,7 +189,6 @@ const Login = () => {
                             </Link> 
                         </p>
                     </form>
-                    {loading && <Loading />} {/* Show loading component if loading */}
                 </div>
             </div>
         </div>
@@ -199,3 +196,4 @@ const Login = () => {
 }
 
 export default Login;
+
