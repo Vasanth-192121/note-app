@@ -164,7 +164,7 @@
 //       <Navbar userInfo={userInfo} onSearchNote={onSearchNote} handleClearSearch={handleClearSearch} />
 
 //       <div className='container mx-auto'>
-//         {allNotes.length > 0 ? ( <div className='grid grid-cols-3 gap-4 mt-8'>
+//         {allNotes.length > 0 ? ( <div className='grid grid-cols-2 xs:grid-cols-3 gap-4 mt-8'>
 
 //           {
 //           allNotes.map((item, index) => (
@@ -215,7 +215,7 @@
 //           },
 //         }}
 //         contentLabel=''
-//         className="w-[40%] max-h-3/4 bg-white rounded-md mx-auto mt-14 p-5 overflow-visible"
+//         className="w-5/12 min-w-64 max-h-3/4 bg-white rounded-md mx-auto mt-14 p-5 overflow-visible"
 //       >
 //         <AddEditNotes 
 //           type={openAddEditModel.type}
@@ -245,7 +245,9 @@
 // export default Home;
 
 
-import React, { useState, useEffect } from 'react';
+
+
+import { useState, useEffect } from 'react';
 import Navbar from "../components/Navbar";
 import NoteCard from '../components/NoteCard';
 import { MdAdd } from 'react-icons/md';
@@ -325,6 +327,8 @@ const Home = () => {
       }
     } catch (error) {
       console.log("An unexpected error occurred. Please try again.");
+      return error;
+
     }
   };
 
@@ -414,7 +418,7 @@ const Home = () => {
         {allNotes.length > 0 ? ( <div className='grid grid-cols-2 xs:grid-cols-3 gap-4 mt-8'>
 
           {
-          allNotes.map((item, index) => (
+          allNotes.map((item) => (
             <NoteCard 
               key={item._id}
               title={item.title}
@@ -490,3 +494,5 @@ const Home = () => {
 };
 
 export default Home;
+
+
