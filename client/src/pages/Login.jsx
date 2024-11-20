@@ -209,7 +209,7 @@ const Login = () => {
 
     useEffect(() => {
         if (passwordSent) {
-            const timer = setTimeout(() => setError(null), 5000); 
+            const timer = setTimeout(() => setError(null), 10000); 
             return () => clearTimeout(timer);
         }
     }, [passwordSent]);
@@ -270,14 +270,17 @@ const Login = () => {
                 setPasswordSent(true); 
                 setCounter(30); 
             } else {
-                setError("No account found with that email and name.");
+                setError(response.data.message || "No account found with that email and name.");
                 setPasswordSent(false); 
             }
 
         } catch (error) {
-            setError("An unexpected error occurred. Please try again.");
+            if (error.response && error.response.data && error.response.data.message) {
+                setError(error.response.data.message);
+            } else {
+                setError("An unexpected error occurred. Please try again.");
+            }
             setPasswordSent(false); 
-            return error;
         } finally {
             setLoading(false);
         }
