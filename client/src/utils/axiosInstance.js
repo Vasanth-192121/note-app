@@ -1,7 +1,8 @@
 import axios from "axios";
+import { REACT_APP_BASE_URL } from "./constants";
 
 const axiosInstance = axios.create({
-    baseURL : "https://note-app-server-seven.vercel.app/",
+    baseURL : REACT_APP_BASE_URL || "http://localhost:3000/",
     timeout : 10000,
     headers : {
         "Content-Type" : "application/json"
