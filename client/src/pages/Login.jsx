@@ -295,12 +295,13 @@ const Login = () => {
 
     return (
         <div>
+            <link rel="preload" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" as="font" crossOrigin="anonymous" />
             <Navbar />
             <div className='flex items-center justify-center mt-32'>
                 <div className='w-96 border bg-white px-7 py-10'>
                     {!showForgotPassword ? (
                         <form onSubmit={handleLogin}>
-                            <h4 className='text-2xl mb-7'>Login</h4>
+                            <h1 className='text-2xl mb-7'>Login</h1>
 
                             <input 
                                 id='01'

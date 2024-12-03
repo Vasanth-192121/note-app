@@ -5,12 +5,19 @@
 @tailwind utilities;
 
 @layer base {
+    
+    @font-face {
+        font-family: 'Poppins';
+        src: url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+        font-display: swap;
+      }      
+
     html {
         font-family: "Poppins", "sans-serif";
     }
 
     body {
-        background-color: #fdfeff;
+        background-color: #FFFFFF;
         overflow-x: hidden;
     }
 }
