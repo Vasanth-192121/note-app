@@ -154,7 +154,7 @@ const Navbar = ({ userInfo, onSearchNote, handleClearSearch }) => {
           />
         </>
       ) : (
-        <img src="https://i.postimg.cc/brwCfmsQ/keeper-notes-logo.jpg" alt="App Logo" className='h-8 w-auto' />
+        <img src="https://raw.githubusercontent.com/Vasanth-192121/note-app/8826e0d9aa3eea67cad4856fd404f52994134ac6/client/src/assets/keeper-notes-logo.jpeg" alt="App Logo" className='h-8 w-auto' />
       )}
     </div>
   );
