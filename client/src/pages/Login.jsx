@@ -724,16 +724,16 @@ const Login = () => {
         <div>
             <Navbar />
             <div className='flex items-center justify-center mt-32'>
-                <div className='w-96 border bg-white px-7 py-10'>
+                <div className='w-96 sm:border bg-white px-7 py-10 rounded-xl'>
                     {!showForgotPassword ? (
                         <form onSubmit={handleLogin}>
-                            <h1 className='text-2xl mb-7'>Login</h1>
+                            <h1 className='text-2xl font-medium mb-7'>Login</h1>
 
                             <input
                                 id='01'
                                 type="text"
                                 placeholder='Email'
-                                className='input-box'
+                                className='input-box rounded-lg'
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                             />
@@ -745,7 +745,7 @@ const Login = () => {
 
                             {error && <p className='text-red-500 text-xs pb-1'>{error}</p>}
 
-                            <button type='submit' className='btn-primary '>
+                            <button type='submit' className='btn-primary rounded-lg'>
                                 <span className={loading ? 'blinking-text' : ''}>
                                     {loading ? 'Logging in...' : 'Login'}
                                 </span>
@@ -771,12 +771,12 @@ const Login = () => {
                         </form>
                     ) : (
                         <form onSubmit={handleForgotPassword}>
-                            <h4 className='text-2xl mb-7'>Forgot Password</h4>
+                            <h4 className='text-2xl font-medium mb-7'>Forgot Password</h4>
 
                             <input
                                 type="text"
                                 placeholder='Email'
-                                className='input-box'
+                                className='input-box rounded-xl'
                                 value={forgotEmail}
                                 onChange={(e) => setForgotEmail(e.target.value)}
                             />
@@ -784,7 +784,7 @@ const Login = () => {
                             <input
                                 type="text"
                                 placeholder='Name'
-                                className='input-box'
+                                className='input-box rounded-xl'
                                 value={forgotName}
                                 onChange={(e) => setForgotName(e.target.value)}
                             />
@@ -793,7 +793,7 @@ const Login = () => {
 
                             <button
                                 type='submit'
-                                className={`btn-primary ${counter > 0 ? 'cursor-not-allowed' : ''}`}
+                                className={`btn-primary rounded-xl${counter > 0 ? 'cursor-not-allowed' : ''}`}
                                 disabled={counter > 0}
                             >
                                 <span className={loading ? 'blinking-text' : ''}>

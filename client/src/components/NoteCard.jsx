@@ -161,7 +161,7 @@ const NoteCard = ({ title, date, content, tags, isPinned, onEdit, onDelete, onPi
 
   return (
     <div 
-      className='border rounded p-4 bg-white hover:shadow-xl transition-all ease-in-out cursor-pointer' 
+      className='border rounded-xl p-4 bg-white hover:shadow-xl transition-all ease-in-out cursor-pointer' 
       onClick={handleToggleOpen}
     >
       <div className='flex items-center justify-between'>
