@@ -670,6 +670,7 @@ const Login = () => {
 
             // Handle error
         } catch (error) {
+            console.error('Login Error:', error); // Log error details to console
             if (error.response && error.response.data && error.response.data.message) {
                 setError(error.response.data.message);
             } else {
