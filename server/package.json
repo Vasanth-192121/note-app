@@ -1,14 +1,4 @@
 {
-  "name": "note-app",
-  "version": "1.0.0",
-  "main": "index.js",
-  "type": "module",
-  "scripts": {
-    "start": "react-scripts start", 
-    "build": "react-scripts build",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "vercel-build": "react-scripts build"
-  },
   "dependencies": {
     "@google-cloud/local-auth": "^3.0.1",
     "cors": "^2.8.5",
@@ -19,10 +9,14 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.8.3",
     "nodemailer": "^6.9.16",
-    "nodemon": "^3.1.7",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "react-scripts": "4.0.3"
+    "nodemon": "^3.1.7"
+  },
+  "name": "note-app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
