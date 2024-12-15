@@ -484,19 +484,22 @@ const oauth2Client = new google.auth.OAuth2(
     process.env.REDIRECT_URI
 );
 
-oauth2Client.setCredentials({
-    refresh_token: process.env.REFRESH_TOKEN
-});
+// Set default credentials if refresh token is available
+if (process.env.REFRESH_TOKEN) {
+    oauth2Client.setCredentials({
+        refresh_token: process.env.REFRESH_TOKEN
+    });
+}
 
 // For full access
-const SCOPES = ['https://mail.google.com/']; 
-
+const SCOPES = ['https://mail.google.com/'];
 
 // Generate OAuth2 authorization URL
 app.get('/auth', (req, res) => {
     const authUrl = oauth2Client.generateAuthUrl({
-        access_type: 'offline',
+        access_type: 'offline', // Ensures a refresh token is received
         scope: SCOPES,
+        prompt: 'consent' // Forces the consent screen to reappear and provide a new refresh token
     });
     res.redirect(authUrl);
 });
@@ -511,14 +514,15 @@ app.get('/oauth2callback', async (req, res) => {
         oauth2Client.setCredentials(tokens);
         console.log('Tokens acquired:', tokens);
 
-        // Log the access token and refresh token securely
         const accessToken = tokens.access_token;
         const refreshToken = tokens.refresh_token;
         console.log('Access Token:', accessToken);
-        console.log('Refresh Token:', refreshToken);
 
-        // TODO: Implement secure storage for refresh tokens
-        console.log('Securely storing Refresh Token:', refreshToken);
+        if (refreshToken) {
+            console.log('Securely storing Refresh Token:', refreshToken);
+        } else {
+            console.warn('No refresh token received. This may happen if the user has previously authorized the application.');
+        }
 
         res.send('Authentication successful! You can close this tab.');
 
@@ -528,19 +532,80 @@ app.get('/oauth2callback', async (req, res) => {
     }
 });
 
-// Function to refresh the access token
-async function refreshAccessToken() {
+// Function to refresh access token
+async function refreshToken(oauth2Client) {
     try {
-        const { token } = await oauth2Client.getAccessToken();
-        if (!token) {
-            throw new Error('No access token available');
-        }
-        return token;
+        const { tokens } = await oauth2Client.refreshAccessToken();
+        oauth2Client.setCredentials(tokens);
+        console.log('New Access Token:', tokens.access_token);
+        console.log('New Refresh Token:', tokens.refresh_token);
+        return tokens;
     } catch (error) {
         console.error('Error refreshing access token:', error);
-        throw new Error('Error refreshing access token');
+        throw error;
     }
 }
+
+// Function to send an email
+async function sendEmail(to, subject, text) {
+    try {
+        const accessToken = await refreshAccessTokenIfNeeded();
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                type: 'OAuth2',
+                user: process.env.EMAIL_USER,
+                clientId: process.env.CLIENT_ID,
+                clientSecret: process.env.CLIENT_SECRET,
+                refreshToken: process.env.REFRESH_TOKEN,
+                accessToken: accessToken,
+            },
+        });
+
+        const mailOptions = {
+            from: process.env.EMAIL_USER,
+            to: to,
+            subject: subject,
+            text: text,
+        };
+
+        await transporter.sendMail(mailOptions);
+        console.log('Email sent to:', to);
+    } catch (error) {
+        console.error('Error sending email:', error);
+        throw error;
+    }
+}
+
+async function refreshAccessTokenIfNeeded() {
+    try {
+        const tokenInfo = await oauth2Client.getAccessToken();
+
+        // Log the token information to understand its structure
+        console.log('Token Info:', tokenInfo);
+
+        if (tokenInfo.res && tokenInfo.res.data && tokenInfo.res.data.expires_in < 60) {
+            console.log('Token is about to expire, refreshing...');
+            const tokens = await refreshToken(oauth2Client);
+            return tokens.access_token;
+        }
+
+        return tokenInfo.token;
+    } catch (error) {
+        console.error('Error checking access token:', error);
+        throw error;
+    }
+}
+
+// Refresh token endpoint
+app.get('/refresh-token', async (req, res) => {
+    try {
+        const newTokens = await refreshToken(oauth2Client);
+        res.send('Token refreshed successfully.');
+    } catch (error) {
+        res.status(500).send('Error refreshing token. Please reauthenticate.');
+    }
+});
 
 // Create Account
 app.post("/create-account", async (req, res) => {
@@ -568,27 +633,9 @@ app.post("/create-account", async (req, res) => {
 
         await user.save();
 
-        const accessToken = await oauth2Client.getAccessToken();
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                type: 'OAuth2',
-                user: process.env.EMAIL_USER,
-                clientId: process.env.CLIENT_ID,
-                clientSecret: process.env.CLIENT_SECRET,
-                refreshToken: process.env.REFRESH_TOKEN,
-                accessToken: accessToken.token,
-            },
-        });
+        const emailText = `Hello ${fullName},\n\nWe received a request to create an account with this email address.\n\nYour OTP is: ${otp}\n\nIf you did not make this request, please ignore this email.\n\nBest regards,\nThe Keeper Notes Team`;
 
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: email,
-            subject: 'OTP Verification',
-            text: `Your OTP is: ${otp}`,
-        };
-
-        await transporter.sendMail(mailOptions);
+        await sendEmail(email, 'OTP Verification - Your Keeper Notes Account', emailText);
 
         res.status(200).json({ 
             success: true, 
@@ -706,7 +753,7 @@ app.post("/forgot-password", async (req, res) => {
     }
 
     try {
-        const accessToken = await refreshAccessToken();
+        const accessToken = await refreshAccessTokenIfNeeded();
         console.log('Access Token:', accessToken);
 
         if (!accessToken) {
@@ -715,43 +762,26 @@ app.post("/forgot-password", async (req, res) => {
             });
         }
 
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                type: 'OAuth2',
-                user: process.env.EMAIL_USER,
-                clientId: process.env.CLIENT_ID,
-                clientSecret: process.env.CLIENT_SECRET,
-                refreshToken: process.env.REFRESH_TOKEN,
-                accessToken: accessToken,
-            },
-            tls: {
-                rejectUnauthorized: false,
-            },
-            logger: true,
-            debug: true,
+        const emailText = `Hello ${name},
+
+We received a request to retrieve your password for your Keeper Notes account associated with this email address.
+
+Your password is: ${user.password}
+
+If you did not make this request, please ignore this email. For security purposes, we recommend that you change your password after logging in.
+
+If you have any questions or need further assistance, feel free to contact our support team.
+
+Best regards,
+The Keeper Notes Team`;
+
+        await sendEmail(email, 'Password Recovery - Your Keeper Notes Account', emailText);
+
+        res.status(200).json({ 
+            success: true, 
+            message: 'Password has been sent to your email address.' 
         });
 
-        const mailOptions = {
-            from: process.env.EMAIL_USER,
-            to: email,
-            subject: 'Password Recovery',
-            text: `Your password is: ${user.password}`,
-        };
-
-        transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-                console.error('Error sending email:', error);
-                return res.status(500).json({ 
-                    message: 'Error sending email. Please try again later.' 
-                });
-            }
-            console.log('Email sent:', info.response);
-            res.status(200).json({ 
-                success: true, 
-                message: 'Password has been sent to your email address.' 
-            });
-        });
     } catch (error) {
         console.error('Error retrieving access token:', error);
         res.status(500).json({ 
@@ -759,6 +789,7 @@ app.post("/forgot-password", async (req, res) => {
         });
     }
 });
+
 
 // Get User
 
