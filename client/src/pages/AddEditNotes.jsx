@@ -651,7 +651,7 @@ const AddEditNotes = ({ noteData, type, getAllNotes, onClose, showToastMessage }
             >
                 <MdClose className="text-xl text-red-600" />
             </button>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4 md:mb-6">{type === "edit" ? "Edit Note" : "Add New Note"}</h2>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4 md:mb-6">{type === "edit" ? "Edit Note" : "Add Note"}</h2>
             <div className="flex flex-col gap-2 md:gap-4">
                 <label className="text-sm md:text-lg font-medium text-gray-600">Title</label>
                 <input 

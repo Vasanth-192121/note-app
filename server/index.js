@@ -547,7 +547,7 @@ async function refreshToken(oauth2Client) {
 }
 
 // Function to send an email
-async function sendEmail(to, subject, text) {
+async function sendEmail(to, subject, htmlContent) {
     try {
         const accessToken = await refreshAccessTokenIfNeeded();
         const transporter = nodemailer.createTransport({
@@ -563,10 +563,10 @@ async function sendEmail(to, subject, text) {
         });
 
         const mailOptions = {
-            from: process.env.EMAIL_USER,
+            from: `Keeper Notes <${process.env.EMAIL_USER}>`, // Display name and email
             to: to,
             subject: subject,
-            text: text,
+            html: htmlContent, // Use HTML content instead of text
         };
 
         await transporter.sendMail(mailOptions);
@@ -576,6 +576,7 @@ async function sendEmail(to, subject, text) {
         throw error;
     }
 }
+
 
 async function refreshAccessTokenIfNeeded() {
     try {
@@ -601,6 +602,11 @@ async function refreshAccessTokenIfNeeded() {
 app.get('/refresh-token', async (req, res) => {
     try {
         const newTokens = await refreshToken(oauth2Client);
+        
+        if (newTokens.refresh_token) {
+            oauth2Client.setCredentials({ refresh_token: newTokens.refresh_token });
+            console.log('New Refresh Token stored securely:', newTokens.refresh_token);
+        }
         res.send('Token refreshed successfully.');
     } catch (error) {
         res.status(500).send('Error refreshing token. Please reauthenticate.');
@@ -633,9 +639,22 @@ app.post("/create-account", async (req, res) => {
 
         await user.save();
 
-        const emailText = `Hello ${fullName},\n\nWe received a request to create an account with this email address.\n\nYour OTP is: ${otp}\n\nIf you did not make this request, please ignore this email.\n\nBest regards,\nThe Keeper Notes Team`;
+        const emailHTMLContent = `
+            <div style="background-color: #f0f0f0; padding: 20px; font-family: Arial, sans-serif; color: #333;">
+                <div style="background-color: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+                    <h2 style="color: #007BFF;">Hello ${fullName},</h2>
+                    <p>We received a request to create an account with this email address.</p>
+                    <p>Your OTP is: <strong style="color: #008080;">${otp}</strong></p>
+                    <p>If you did not make this request, please ignore this email.</p>
+                    <p>For assistance, contact our <a href="mailto:support@keepernotes.com" style="color: #007BFF;">support team</a>.</p>
+                    <br>
+                    <img src="https://raw.githubusercontent.com/Vasanth-192121/note-app/main/client/src/assets/keeper-notes-logo.jpeg" alt="Keeper Notes Logo" style="width:100px; display:block; margin:auto;">
+                    <p style="text-align: center;">Best regards,<br><strong>The Keeper Notes Team</strong></p>
+                </div>
+            </div>
+        `;
 
-        await sendEmail(email, 'OTP Verification - Your Keeper Notes Account', emailText);
+        await sendEmail(email, 'OTP Verification - Keeper Notes Account', emailHTMLContent);
 
         res.status(200).json({ 
             success: true, 
@@ -649,6 +668,7 @@ app.post("/create-account", async (req, res) => {
         });
     }
 });
+
 
 // Verify OTP for Account Creation
 app.post("/verify-otp", async (req, res) => {
@@ -762,20 +782,22 @@ app.post("/forgot-password", async (req, res) => {
             });
         }
 
-        const emailText = `Hello ${name},
+        const emailHTMLContent = `
+            <div style="background-color: #f0f0f0; padding: 20px; font-family: Arial, sans-serif; color: #333;">
+                <div style="background-color: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+                    <h2 style="color: #007BFF;">Hello ${name},</h2>
+                    <p>We received a request to retrieve your password for your <strong>Keeper Notes</strong> account.</p>
+                    <p>Your password is: <strong style="color: #008080;">${user.password}</strong></p>
+                    <p>If you did not make this request, please ignore this email. For security purposes, we recommend that you change your password after logging in.</p>
+                    <p>For assistance, contact our <a href="mailto:support@keepernotes.com" style="color: #007BFF;">support team</a>.</p>
+                    <br>
+                    <img src="https://raw.githubusercontent.com/Vasanth-192121/note-app/main/client/src/assets/keeper-notes-logo.jpeg" alt="Keeper Notes Logo" style="width:100px; display:block; margin:auto;">
+                    <p style="text-align: center;">Best regards,<br><strong>The Keeper Notes Team</strong></p>
+                </div>
+            </div>
+        `;
 
-We received a request to retrieve your password for your Keeper Notes account associated with this email address.
-
-Your password is: ${user.password}
-
-If you did not make this request, please ignore this email. For security purposes, we recommend that you change your password after logging in.
-
-If you have any questions or need further assistance, feel free to contact our support team.
-
-Best regards,
-The Keeper Notes Team`;
-
-        await sendEmail(email, 'Password Recovery - Your Keeper Notes Account', emailText);
+        await sendEmail(email, 'Password Recovery - Keeper Notes Account', emailHTMLContent);
 
         res.status(200).json({ 
             success: true, 

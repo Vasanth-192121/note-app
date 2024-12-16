@@ -187,22 +187,68 @@
 
 
 
-import React, { useState, useRef } from 'react';
+// import React, { useState, useRef } from 'react';
+// import { FaMagnifyingGlass } from "react-icons/fa6";
+// import { IoMdClose } from "react-icons/io";
+
+// const SearchBar = ({ value, onChange, handleSearch, onClearSearch }) => {
+//   const inputRef = useRef(null);
+
+//   const handleKeyDown = (event) => {
+//     if (event.key === 'Enter') {
+//       handleSearch();
+//     }
+//   };
+
+//   const handleChange = (event) => {
+//     onChange(event);
+//     if (event.target.value === '') {
+//       onClearSearch();
+//     }
+//   };
+
+//   return (
+//     <div className='w-full sm:w-80 flex items-center px-4 py-1 bg-slate-100 rounded-2xl'>
+//       <input
+//         ref={inputRef}
+//         type="text"
+//         placeholder="Search Notes"
+//         className='w-full text-xs bg-transparent py-2 outline-none'
+//         value={value}
+//         onChange={handleChange}
+//         onKeyDown={handleKeyDown}
+//       />
+
+//       {value && (
+//         <IoMdClose
+//           className='text-xl text-slate-500 cursor-pointer hover:text-black mr-3'
+//           onClick={onClearSearch}
+//         />
+//       )}
+
+//       <FaMagnifyingGlass
+//         className='text-slate-400 cursor-pointer hover:text-black'
+//         onClick={handleSearch}
+//       />
+//     </div>
+//   );
+// };
+
+// export default SearchBar;
+
+
+import React, { useRef } from 'react';
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { IoMdClose } from "react-icons/io";
 
-const SearchBar = ({ value, onChange, handleSearch, onClearSearch }) => {
+const SearchBar = ({ value, onChange, onSearchNote, onClearSearch }) => {
   const inputRef = useRef(null);
-
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      handleSearch();
-    }
-  };
 
   const handleChange = (event) => {
     onChange(event);
-    if (event.target.value === '') {
+    if (event.target.value) {
+      onSearchNote(event.target.value);
+    } else {
       onClearSearch();
     }
   };
@@ -216,7 +262,6 @@ const SearchBar = ({ value, onChange, handleSearch, onClearSearch }) => {
         className='w-full text-xs bg-transparent py-2 outline-none'
         value={value}
         onChange={handleChange}
-        onKeyDown={handleKeyDown}
       />
 
       {value && (
@@ -228,7 +273,6 @@ const SearchBar = ({ value, onChange, handleSearch, onClearSearch }) => {
 
       <FaMagnifyingGlass
         className='text-slate-400 cursor-pointer hover:text-black'
-        onClick={handleSearch}
       />
     </div>
   );
