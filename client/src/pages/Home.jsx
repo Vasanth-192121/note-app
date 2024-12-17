@@ -2030,7 +2030,7 @@ const Home = () => {
   const getUserInfo = async () => {
     try {
       const response = await axiosInstance.get("/get-user");
-      console.log('User Info Response:', response);
+      // console.log('User Info Response:', response);
 
       if (response.data && response.data.user) {
         setUserInfo(response.data.user);
