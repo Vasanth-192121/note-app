@@ -161,7 +161,7 @@ const NoteCard = ({ title, date, content, tags, isPinned, onEdit, onDelete, onPi
 
   return (
     <div 
-      className='border rounded-xl p-4 bg-white hover:shadow-xl transition-all ease-in-out cursor-pointer' 
+      className='border rounded-xl p-4 bg-slate-100 hover:shadow-xl transition-all ease-in-out cursor-pointer' 
       onClick={handleToggleOpen}
     >
       <div className='flex items-center justify-between'>
@@ -171,7 +171,7 @@ const NoteCard = ({ title, date, content, tags, isPinned, onEdit, onDelete, onPi
         </div>
 
         <MdOutlinePushPin 
-          className={`icon-btn ${isPinned ? "text-primary" : "text-slate-300"}`} 
+          className={`icon-btn ${isPinned ? "text-primary" : "text-slate-400"}`} 
           onClick={(e) => {
             e.stopPropagation(); // Prevent click event from bubbling up
             onPinNote();
@@ -188,14 +188,14 @@ const NoteCard = ({ title, date, content, tags, isPinned, onEdit, onDelete, onPi
 
         <div className='flex items-center gap-2'>
           <MdCreate 
-            className='icon-btn hover:text-green-600'
+            className='icon-btn hover:text-green-600 text-slate-400'
             onClick={(e) => {
               e.stopPropagation(); // Prevent click event from bubbling up
               onEdit();
             }}
           />
           <MdDelete 
-            className='icon-btn hover:text-red-500'
+            className='icon-btn hover:text-red-500 text-slate-400'
             onClick={(e) => {
               e.stopPropagation(); // Prevent click event from bubbling up
               onDelete();

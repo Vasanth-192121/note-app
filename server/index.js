@@ -447,6 +447,7 @@ import { google } from "googleapis";
 import { authenticateToken } from "./utilites.js";
 import User from "./models/user.model.js";
 import Note from "./models/note.model.js";
+import { OAuth2Client } from 'google-auth-library';
 
 dotenv.config();
 
@@ -477,6 +478,8 @@ const generateOtp = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
 // OAuth2 client setup
 const oauth2Client = new google.auth.OAuth2(
     process.env.CLIENT_ID,
@@ -492,7 +495,7 @@ if (process.env.REFRESH_TOKEN) {
 }
 
 // For full access
-const SCOPES = ['https://mail.google.com/'];
+const SCOPES = ['https://mail.google.com/', 'profile', 'email'];
 
 // Generate OAuth2 authorization URL
 app.get('/auth', (req, res) => {
@@ -610,6 +613,44 @@ app.get('/refresh-token', async (req, res) => {
         res.send('Token refreshed successfully.');
     } catch (error) {
         res.status(500).send('Error refreshing token. Please reauthenticate.');
+    }
+});
+
+app.post("/google-login", async (req, res) => {
+    const { token } = req.body;
+
+    try {
+        const ticket = await googleClient.verifyIdToken({
+            idToken: token,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+
+        const payload = ticket.getPayload();
+        const { sub, email, name } = payload;
+
+        let user = await User.findOne({ email });
+
+        if (!user) {
+            // Create a new user if not exists
+            user = new User({
+                googleId: sub,
+                email,
+                fullName: name,
+                verified: true,
+                // No password required for Google login
+            });
+            await user.save();
+        }
+
+        const accessToken = jwt.sign({ user }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
+
+        res.status(200).json({
+            success: true,
+            accessToken,
+        });
+    } catch (error) {
+        console.error("Google Login Error:", error);
+        res.status(500).json({ message: "Google login failed. Please try again." });
     }
 });
 

@@ -30,6 +30,22 @@
         background-color: #FFFFFF;
         overflow-x: hidden;
       }
+      /* Old -ms-high-contrast styles */ 
+      @media (-ms-high-contrast: active) { 
+        .input-box, .btn-primary { 
+          color: windowText; 
+          background-color: window; 
+        } 
+      } 
+      /* New forced-colors styles */ 
+      @media (forced-colors: active) { 
+        .input-box, 
+        .btn-primary { 
+          color: ButtonText; 
+          background-color: 
+          ButtonFace; 
+        } 
+      }
     </style>
     
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" media="print" onload="this.media='all'">

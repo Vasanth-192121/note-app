@@ -626,10 +626,10 @@ const SignUp = () => {
   };
 
   return (
-    <>
+    <div className='bg-hero-pattern bg-no-repeat bg-center bg-cover h-screen w-screen'>
       <Navbar />
-      <div className='flex items-center justify-center mt-32'>
-        <div className='w-96 sm:border bg-white px-7 py-10 rounded-xl'>
+      <div className='flex items-center justify-end mt-32 sm:pr-36'>
+        <div className='w-96 border bg-slate-300 px-7 py-10 rounded-xl'>
           {!otpSent ? (
             <form onSubmit={handleSignUp}>
               <h4 className='text-2xl font-medium mb-7'>SignUp</h4>
@@ -637,14 +637,14 @@ const SignUp = () => {
               <input
                 type="text"
                 placeholder='Name'
-                className='input-box rounded-xl'
+                className='input-box'
                 value={name}
                 onChange={(e) => setName(e.target.value)}
               />
               <input
                 type="text"
                 placeholder='Email'
-                className='input-box rounded-xl'
+                className='input-box'
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
@@ -696,7 +696,7 @@ const SignUp = () => {
           )}
         </div>
       </div>
-    </>
+    </div>
   )
 }
 
