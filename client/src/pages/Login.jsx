@@ -2042,9 +2042,9 @@ const Login = () => {
   };
 
   return (
-    <div ref={containerRef} className='bg-hero-pattern bg-no-repeat bg-center bg-cover h-screen w-screen'>
+    <div ref={containerRef} className='bg-hero-pattern bg-no-repeat bg-center bg-cover h-svh w-screen'>
       <Navbar />
-      <div className='flex items-center justify-end mt-28 sm:pr-36'>
+      <div className='flex items-center justify-end mt-16 sm:mt-32 sm:pr-36'>
         <div className='w-96 border bg-slate-300 px-7 py-10 rounded-xl'>
           {!showForgotPassword ? (
             <form onSubmit={handleLogin}>
@@ -2072,7 +2072,7 @@ const Login = () => {
               <div className='flex justify-between flex-row-reverse mt-7'>
               </div>
               <p className='text-center text-sm font-semibold'>or sign up with</p>
-              <div className='mt-4'>
+              <div className='mt-4 w-full'>
                 <GoogleOAuthProvider clientId={googleClientId}>
                   <GoogleLogin
                     onSuccess={handleGoogleLoginSuccess}

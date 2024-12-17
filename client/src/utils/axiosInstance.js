@@ -3,8 +3,8 @@ import axios from "axios";
 
 const axiosInstance = axios.create({
     // baseURL: REACT_APP_BASE_URL,
-    // baseURL : "https://note-app-server-seven.vercel.app/",
-    baseURL : "http://localhost:3000",
+    baseURL : "https://note-app-server-seven.vercel.app/",
+    // baseURL : "http://localhost:3000",
     // baseURL : "https://keeper-notes-app-server.vercel.app/",
     timeout : 10000,
     headers : {

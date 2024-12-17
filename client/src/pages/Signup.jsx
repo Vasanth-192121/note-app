@@ -626,9 +626,9 @@ const SignUp = () => {
   };
 
   return (
-    <div className='bg-hero-pattern bg-no-repeat bg-center bg-cover h-screen w-screen'>
+    <div className='bg-hero-pattern bg-no-repeat bg-center bg-cover h-svh w-screen'>
       <Navbar />
-      <div className='flex items-center justify-end mt-32 sm:pr-36'>
+      <div className='flex items-center justify-end mt-16 sm:mt-32 sm:pr-36'>
         <div className='w-96 border bg-slate-300 px-7 py-10 rounded-xl'>
           {!otpSent ? (
             <form onSubmit={handleSignUp}>
