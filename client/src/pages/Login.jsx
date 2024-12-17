@@ -2071,15 +2071,13 @@ const Login = () => {
               </p>
               <div className='flex justify-between flex-row-reverse mt-7'>
               </div>
-              <p className='text-center text-sm font-semibold'>or sign up with</p>
-              <div className='mt-4 w-full'>
-                <GoogleOAuthProvider clientId={googleClientId}>
+              <p className='text-center text-sm mb-4 font-semibold'>or sign up with</p>
+              <GoogleOAuthProvider clientId={googleClientId}>
                   <GoogleLogin
                     onSuccess={handleGoogleLoginSuccess}
                     onError={handleGoogleLoginError}
                   />
-                </GoogleOAuthProvider>
-              </div>
+              </GoogleOAuthProvider>
               <p className='text-md font-medium text-center mt-3'>
                 <Link to="/signUp" className='font-medium text-primary'>
                   Not registered yet?

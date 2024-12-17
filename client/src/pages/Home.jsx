@@ -2122,7 +2122,7 @@ const Home = () => {
   }
 
   return (
-    <div className={`flex flex-col min-h-svh ${allNotes.length > 0 ? 'bg-hero-pattern bg-no-repeat bg-center bg-cover' : 'bg-slate-300'} h-screen w-screen`}>
+    <div className={`flex flex-col min-h-svh ${allNotes.length > 0 ? 'bg-hero-pattern bg-no-repeat bg-center bg-cover' : 'bg-slate-300'} h-svh w-screen`}>
       <Navbar userInfo={userInfo} onSearchNote={onSearchNote} handleClearSearch={handleClearSearch} />
       <div className='flex-grow container mx-auto'>
         {allNotes.length > 0 ? (
