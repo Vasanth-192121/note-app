@@ -620,7 +620,7 @@ const Navbar = ({ userInfo, onSearchNote, handleClearSearch }) => {
   }, []);
 
   return (
-    <div className='bg-white sm:bg-slate-400 bg-opacity-60 sm:bg-opacity-20 flex items-center justify-between px-4 py-4 sm:shadow-custom-bottom-left md:px-6 md:py-4 sm:rounded-xl'>
+    <div className='bg-slate-300 sm:bg-slate-400 bg-opacity-60 sm:bg-opacity-20 flex items-center justify-between px-4 py-4 shadow-custom-bottom-left md:px-6 md:py-4 sm:rounded-xl'>
       <h2 className='text-2xl font-medium text-black py-2'>
         Keeper Notes
       </h2>

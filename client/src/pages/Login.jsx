@@ -2092,6 +2092,7 @@ const Login = () => {
             </form>
           ) : (
             <form onSubmit={handleForgotPassword}>
+              <div className='py-14'>
               <h4 className='text-2xl font-medium mb-7'>Forgot Password</h4>
               <input
                 type="text"
@@ -2122,6 +2123,7 @@ const Login = () => {
                   Go back to login
                 </button>
               </p>
+              </div>
             </form>
           )}
         </div>

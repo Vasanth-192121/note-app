@@ -2401,7 +2401,7 @@ const Home = () => {
   return (
     <div
     ref={containerRef}
-      className={`flex flex-col min-h-svh ${allNotes.length > 0 ? 'bg-no-repeat bg-center bg-cover' : 'bg-slate-300'} h-svh w-screen`}
+      className={`flex flex-col min-h-svh ${allNotes.length > 0 ? 'bg-no-repeat bg-center bg-cover' : 'bg-slate-100'} h-svh w-screen`}
         style={allNotes.length > 0 ? { backgroundImage: `url(${backgroundImage})` } : {}}
       >
       <Navbar userInfo={userInfo} onSearchNote={onSearchNote} handleClearSearch={handleClearSearch} />
