@@ -2044,8 +2044,8 @@ const Login = () => {
   return (
     <div ref={containerRef} className='bg-hero-pattern bg-no-repeat bg-center bg-cover h-svh w-screen'>
       <Navbar />
-      <div className='flex items-center justify-end mt-16 sm:mt-32 sm:pr-36'>
-        <div className='w-96 border bg-slate-300 px-7 py-10 rounded-xl'>
+      <div className='flex items-center justify-end xs:mt-32 sm:pr-36'>
+        <div className='w-96 sm:border bg-opacity-60 bg-slate-100 px-8 xs:py-10 py-36 xs:rounded-3xl'>
           {!showForgotPassword ? (
             <form onSubmit={handleLogin}>
               <h1 className='text-2xl font-medium mb-7'>Login</h1>
@@ -2059,7 +2059,7 @@ const Login = () => {
               />
               <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} />
               {error && <p className='text-red-500 text-xs pb-1'>{error}</p>}
-              <button type='submit' className='btn-primary rounded-lg'>
+              <button type='submit' className='btn-primary rounded-3xl'>
                 <span className={loading ? 'blinking-text' : ''}>
                   {loading ? 'Logging in...' : 'Login'}
                 </span>
@@ -2071,13 +2071,19 @@ const Login = () => {
               </p>
               <div className='flex justify-between flex-row-reverse mt-7'>
               </div>
+              <div className='flex flex-col justify-center items-center'>
               <p className='text-center text-sm mb-4 font-semibold'>or sign up with</p>
               <GoogleOAuthProvider clientId={googleClientId}>
                   <GoogleLogin
                     onSuccess={handleGoogleLoginSuccess}
                     onError={handleGoogleLoginError}
+                    theme='filled_blue'
+                    text='continue_with'
+                    shape='circle'
+                    width={"250"}
                   />
               </GoogleOAuthProvider>
+              </div>
               <p className='text-md font-medium text-center mt-3'>
                 <Link to="/signUp" className='font-medium text-primary'>
                   Not registered yet?
@@ -2090,21 +2096,21 @@ const Login = () => {
               <input
                 type="text"
                 placeholder='Email'
-                className='input-box rounded-xl'
+                className='input-box rounded-3xl'
                 value={forgotEmail}
                 onChange={(e) => setForgotEmail(e.target.value)}
               />
               <input
                 type="text"
                 placeholder='Name'
-                className='input-box rounded-xl'
+                className='input-box rounded-3xl'
                 value={forgotName}
                 onChange={(e) => setForgotName(e.target.value)}
               />
               {error && <p className='text-red-500 text-xs pb-1'>{error}</p>}
               <button
                 type='submit'
-                className={`btn-primary rounded-xl${counter > 0 ? 'cursor-not-allowed' : ''}`}
+                className={`btn-primary rounded-3xl${counter > 0 ? 'cursor-not-allowed' : ''}`}
                 disabled={counter > 0}
               >
                 <span className={loading ? 'blinking-text' : ''}>

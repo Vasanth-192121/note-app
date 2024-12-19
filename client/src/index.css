@@ -185,7 +185,7 @@
 
 @layer components {
     .input-box {
-        @apply w-full text-sm bg-slate-100 drop-shadow-md border-2 px-5 py-3 rounded-xl mb-4 outline-none;
+        @apply w-full text-sm bg-white drop-shadow-md border-blue-300 border-2 px-5 py-3 rounded-3xl mb-4 outline-none;
     }
 
     .btn-primary {
