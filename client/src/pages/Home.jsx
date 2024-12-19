@@ -2366,6 +2366,7 @@ const Home = () => {
         const img = new Image();
         img.src = '/bg-image.webp'; // Path relative to the public folder
         img.onload = () => {
+          // console.log('Image loaded:', img.src);
           if (containerRef.current) { // Null check
             containerRef.current.style.backgroundImage = `url(${img.src})`;
           }
@@ -2376,11 +2377,11 @@ const Home = () => {
         observer.disconnect();
       }
     }, { threshold: 0.1 });
-
+  
     if (containerRef.current) {
       observer.observe(containerRef.current);
     }
-
+  
     return () => {
       if (containerRef.current) {
         observer.unobserve(containerRef.current);

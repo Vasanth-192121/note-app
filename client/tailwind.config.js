@@ -12,7 +12,7 @@ export default {
       },
       backgroundImage: {
         'hero-pattern': "url('./src/assets/bg-image.webp')",
-        'home-image': "url('./src/assets/home-bg-image.webp)",
+        // 'home-image': "url('./src/assets/home-bg-image.webp)",
       },
       // Custom breakpoints
       screens: {
