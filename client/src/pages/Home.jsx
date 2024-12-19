@@ -2234,6 +2234,7 @@ import AddNotesImg from '../../src/assets/add-notes.svg';
 import NoDataImg from "../../src/assets/no-data.svg";
 import Loader from '../animations/userInfoLoader'; 
 import { FaLinkedin, FaGithub, FaEnvelope } from 'react-icons/fa';
+import backgroundImage from '../../src/assets/bg-image.webp'; // Assuming public folder is at '../../src/assets'
 
 const Home = () => {
   const [openAddEditModel, setOpenAddEditModel] = useState({
@@ -2398,7 +2399,11 @@ const Home = () => {
   }
 
   return (
-    <div ref={containerRef} className={`flex flex-col min-h-svh ${allNotes.length > 0 ? 'bg-hero-pattern bg-no-repeat bg-center bg-cover' : 'bg-slate-300'} h-svh w-screen`}>
+    <div
+    ref={containerRef}
+      className={`flex flex-col min-h-svh ${allNotes.length > 0 ? 'bg-no-repeat bg-center bg-cover' : 'bg-slate-300'} h-svh w-screen`}
+    style={{ backgroundImage: `url(${backgroundImage})` }} // Using imported variable (optional)
+  >
       <Navbar userInfo={userInfo} onSearchNote={onSearchNote} handleClearSearch={handleClearSearch} />
       <div className='flex-grow container mx-auto'>
         {allNotes.length > 0 ? (
