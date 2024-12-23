@@ -437,6 +437,424 @@
 
 
 
+// import express from "express";
+// import cors from "cors";
+// import dotenv from "dotenv";
+// import mongoose from "mongoose";
+// import jwt from "jsonwebtoken";
+// import nodemailer from "nodemailer";
+// import { google } from "googleapis";
+// import { authenticateToken } from "./utilites.js";
+// import User from "./models/user.model.js";
+// import Note from "./models/note.model.js";
+// import { OAuth2Client } from 'google-auth-library';
+
+// dotenv.config();
+
+// // Connect to MongoDB
+// async function connectDB() {
+//     try {
+//         await mongoose.connect(process.env.MONGODB_URI);
+//         console.log('MongoDB connected...');
+//     } catch (error) {
+//         console.error('Error connecting to MongoDB:', error);
+//     }
+// }
+
+// connectDB();
+
+// const app = express();
+// const port = 3000;
+
+// app.use(express.json());
+// app.use(cors({ origin: "*" }));
+
+// app.get("/", (req, res) => {
+//     res.json({ data: "Hello" });
+// });
+
+// // Generate OTP
+// const generateOtp = () => {
+//     return Math.floor(100000 + Math.random() * 900000).toString();
+// };
+
+// const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+// // OAuth2 client setup
+// const oauth2Client = new google.auth.OAuth2(
+//     process.env.CLIENT_ID,
+//     process.env.CLIENT_SECRET,
+//     process.env.REDIRECT_URI
+// );
+
+// // Set default credentials if refresh token is available
+// if (process.env.REFRESH_TOKEN) {
+//     oauth2Client.setCredentials({
+//         refresh_token: process.env.REFRESH_TOKEN
+//     });
+// }
+
+// // For full access
+// const SCOPES = ['https://mail.google.com/', 'profile', 'email'];
+
+// // Function to refresh access token
+// async function refreshToken(oauth2Client) {
+//     try {
+//         const { tokens } = await oauth2Client.refreshAccessToken();
+//         oauth2Client.setCredentials(tokens);
+//         console.log('New Access Token:', tokens.access_token);
+//         console.log('New Refresh Token:', tokens.refresh_token);
+//         return tokens;
+//     } catch (error) {
+//         console.error('Error refreshing access token:', error);
+//         throw error;
+//     }
+// }
+
+// // Function to send an email
+// async function sendEmail(to, subject, htmlContent) {
+//     try {
+//         const accessToken = await refreshAccessTokenIfNeeded();
+//         const transporter = nodemailer.createTransport({
+//             service: 'gmail',
+//             auth: {
+//                 type: 'OAuth2',
+//                 user: process.env.EMAIL_USER,
+//                 clientId: process.env.CLIENT_ID,
+//                 clientSecret: process.env.CLIENT_SECRET,
+//                 refreshToken: process.env.REFRESH_TOKEN,
+//                 accessToken: accessToken,
+//             },
+//         });
+
+//         const mailOptions = {
+//             from: `Keeper Notes <${process.env.EMAIL_USER}>`, // Display name and email
+//             to: to,
+//             subject: subject,
+//             html: htmlContent, // Use HTML content instead of text
+//         };
+
+//         await transporter.sendMail(mailOptions);
+//         console.log('Email sent to:', to);
+//     } catch (error) {
+//         console.error('Error sending email:', error);
+//         throw error;
+//     }
+// }
+
+
+// async function refreshAccessTokenIfNeeded() {
+//     try {
+//         const tokenInfo = await oauth2Client.getAccessToken();
+
+//         // Log the token information to understand its structure
+//         console.log('Token Info:', tokenInfo);
+
+//         if (tokenInfo.res && tokenInfo.res.data && tokenInfo.res.data.expires_in < 60) {
+//             console.log('Token is about to expire, refreshing...');
+//             const tokens = await refreshToken(oauth2Client);
+//             return tokens.access_token;
+//         }
+
+//         return tokenInfo.token;
+//     } catch (error) {
+//         console.error('Error checking access token:', error);
+//         throw error;
+//     }
+// }
+
+// // Generate OAuth2 authorization URL
+// app.get('/auth', (req, res) => {
+//     const authUrl = oauth2Client.generateAuthUrl({
+//         access_type: 'offline', // Ensures a refresh token is received
+//         scope: SCOPES,
+//         prompt: 'consent' // Forces the consent screen to reappear and provide a new refresh token
+//     });
+//     res.redirect(authUrl);
+// });
+
+// // Handle OAuth2 callback
+// app.get('/oauth2callback', async (req, res) => {
+//     const { code } = req.query;
+//     console.log('Authorization code received:', code);
+
+//     try {
+//         const { tokens } = await oauth2Client.getToken(code);
+//         oauth2Client.setCredentials(tokens);
+//         console.log('Tokens acquired:', tokens);
+
+//         const accessToken = tokens.access_token;
+//         const refreshToken = tokens.refresh_token;
+//         console.log('Access Token:', accessToken);
+
+//         if (refreshToken) {
+//             console.log('Securely storing Refresh Token:', refreshToken);
+//         } else {
+//             console.warn('No refresh token received. This may happen if the user has previously authorized the application.');
+//         }
+
+//         res.send('Authentication successful! You can close this tab.');
+
+//     } catch (error) {
+//         console.error('Error retrieving tokens:', error);
+//         res.status(500).send('Error authenticating');
+//     }
+// });
+
+
+// // Refresh token endpoint
+// app.get('/refresh-token', async (req, res) => {
+//     try {
+//         const newTokens = await refreshToken(oauth2Client);
+        
+//         if (newTokens.refresh_token) {
+//             oauth2Client.setCredentials({ refresh_token: newTokens.refresh_token });
+//             console.log('New Refresh Token stored securely:', newTokens.refresh_token);
+//         }
+//         res.send('Token refreshed successfully.');
+//     } catch (error) {
+//         res.status(500).send('Error refreshing token. Please reauthenticate.');
+//     }
+// });
+
+// app.post("/google-login", async (req, res) => {
+//     const { token } = req.body;
+
+//     try {
+//         const ticket = await googleClient.verifyIdToken({
+//             idToken: token,
+//             audience: process.env.GOOGLE_CLIENT_ID,
+//         });
+
+//         const payload = ticket.getPayload();
+//         const { sub, email, name } = payload;
+
+//         let user = await User.findOne({ email });
+
+//         if (!user) {
+//             // Create a new user if not exists
+//             user = new User({
+//                 googleId: sub,
+//                 email,
+//                 fullName: name,
+//                 verified: true,
+//                 // No password required for Google login
+//             });
+//             await user.save();
+//         }
+
+//         const accessToken = jwt.sign({ user }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
+
+//         res.status(200).json({
+//             success: true,
+//             accessToken,
+//         });
+//     } catch (error) {
+//         console.error("Google Login Error:", error);
+//         res.status(500).json({ message: "Google login failed. Please try again." });
+//     }
+// });
+
+// // Create Account
+// app.post("/create-account", async (req, res) => {
+//     const { fullName, email, password } = req.body;
+
+//     try {
+//         const existingUser = await User.findOne({ email });
+//         if (existingUser) {
+//             return res.status(400).json({ 
+//                 error: true, 
+//                 message: "User already exists" 
+//             });
+//         }
+
+//         const otp = generateOtp();
+
+//         // Save user with OTP and verified flag to the database
+//         const user = new User({ 
+//             fullName, 
+//             email, 
+//             password, 
+//             otp, 
+//             verified: false 
+//         });
+
+//         await user.save();
+
+//         const emailHTMLContent = `
+//             <div style="background-color: #f0f0f0; padding: 20px; font-family: Arial, sans-serif; color: #333;">
+//                 <div style="background-color: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+//                     <h2 style="color: #007BFF;">Hello ${fullName},</h2>
+//                     <p>We received a request to create an account with this email address.</p>
+//                     <p>Your OTP is: <strong style="color: #008080;">${otp}</strong></p>
+//                     <p>If you did not make this request, please ignore this email.</p>
+//                     <p>For assistance, contact our <a href="mailto:support@keepernotes.com" style="color: #007BFF;">support team</a>.</p>
+//                     <br>
+//                     <img src="https://raw.githubusercontent.com/Vasanth-192121/note-app/main/client/src/assets/keeper-notes-logo.jpeg" alt="Keeper Notes Logo" style="width:100px; display:block; margin:auto;">
+//                     <p style="text-align: center;">Best regards,<br><strong>The Keeper Notes Team</strong></p>
+//                 </div>
+//             </div>
+//         `;
+
+//         await sendEmail(email, 'OTP Verification - Keeper Notes Account', emailHTMLContent);
+
+//         res.status(200).json({ 
+//             success: true, 
+//             message: "OTP sent to your email" 
+//         });
+//     } catch (error) {
+//         console.error("Error sending OTP:", error);
+//         res.status(500).json({ 
+//             error: true, 
+//             message: "Error sending OTP" 
+//         });
+//     }
+// });
+
+
+// // Verify OTP for Account Creation
+// app.post("/verify-otp", async (req, res) => {
+//     const { email, otp } = req.body;
+
+
+//     try {
+//         const user = await User.findOne({ email });
+//         if (!user) {
+//             return res.status(400).json({ 
+//                 error: true, 
+//                 message: "User not found" 
+//             });
+//         }
+
+//         if (user.otp !== otp) {
+//             return res.status(400).json({ 
+//                 error: true, 
+//                 message: "Invalid OTP" 
+//             });
+//         }
+
+//         // Clear OTP and set verified flag to true after verification
+//         user.otp = null;
+//         user.verified = true;
+
+//         await user.save();
+
+//         // Generate JWT token
+//         const token = jwt.sign(
+//             { user }, 
+//             process.env.ACCESS_TOKEN_SECRET, 
+//             { expiresIn: "1h" }
+//         );
+
+//         res.status(200).json({ 
+//             success: true, 
+//             accessToken: token 
+//         });
+
+//     } catch (error) {
+//         console.error("Error verifying OTP:", error);
+//         res.status(500).json({ 
+//             error: true, 
+//             message: `Error verifying OTP: ${error.message}` 
+//         });
+//     }
+// });
+
+// // Login Account
+// app.post("/login", async (req, res) => {
+//     const { email, password } = req.body;
+
+//     if (!email || !password) {
+//         return res.status(400).json({ 
+//             message: "Email and Password are required" 
+//         });
+//     }
+
+//     const userInfo = await User.findOne({ email, verified: true });
+
+//     if (!userInfo) {
+//         return res.status(400).json({ 
+//             message: "User not found or not verified" 
+//         });
+//     }
+
+//     if (userInfo.email === email && userInfo.password === password) {
+
+//         const user = { user: userInfo };
+
+//         const accessToken = jwt.sign(
+//             user, 
+//             process.env.ACCESS_TOKEN_SECRET, 
+//             { expiresIn: "36000m" }
+//         );
+
+//         return res.json({
+//             error: false,
+//             message: "Login Successful",
+//             email,
+//             accessToken,
+//         });
+//     } else {
+//         return res.status(400).json({
+//             error: true,
+//             message: "Invalid Credentials",
+//         });
+//     }
+// });
+
+// // Forgot Password
+// app.post("/forgot-password", async (req, res) => {
+//     const { email, name } = req.body;
+
+//     const user = await User.findOne({ email, fullName: name });
+
+//     if (!user) {
+//         return res.status(404).json({ 
+//             message: 'No account found with that email and name.' 
+//         });
+//     }
+
+//     try {
+//         const accessToken = await refreshAccessTokenIfNeeded();
+//         console.log('Access Token:', accessToken);
+
+//         if (!accessToken) {
+//             return res.status(500).json({ 
+//                 message: 'Access token is not available. Please reauthenticate.' 
+//             });
+//         }
+
+//         const emailHTMLContent = `
+//             <div style="background-color: #f0f0f0; padding: 20px; font-family: Arial, sans-serif; color: #333;">
+//                 <div style="background-color: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+//                     <h2 style="color: #007BFF;">Hello ${name},</h2>
+//                     <p>We received a request to retrieve your password for your <strong>Keeper Notes</strong> account.</p>
+//                     <p>Your password is: <strong style="color: #008080;">${user.password}</strong></p>
+//                     <p>If you did not make this request, please ignore this email. For security purposes, we recommend that you change your password after logging in.</p>
+//                     <p>For assistance, contact our <a href="mailto:support@keepernotes.com" style="color: #007BFF;">support team</a>.</p>
+//                     <br>
+//                     <img src="https://raw.githubusercontent.com/Vasanth-192121/note-app/main/client/src/assets/keeper-notes-logo.jpeg" alt="Keeper Notes Logo" style="width:100px; display:block; margin:auto;">
+//                     <p style="text-align: center;">Best regards,<br><strong>The Keeper Notes Team</strong></p>
+//                 </div>
+//             </div>
+//         `;
+
+//         await sendEmail(email, 'Password Recovery - Keeper Notes Account', emailHTMLContent);
+
+//         res.status(200).json({ 
+//             success: true, 
+//             message: 'Password has been sent to your email address.' 
+//         });
+
+//     } catch (error) {
+//         console.error('Error retrieving access token:', error);
+//         res.status(500).json({ 
+//             message: 'Error retrieving access token. Please reauthenticate.' 
+//         });
+//     }
+// });
+
+
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -497,51 +915,15 @@ if (process.env.REFRESH_TOKEN) {
 // For full access
 const SCOPES = ['https://mail.google.com/', 'profile', 'email'];
 
-// Generate OAuth2 authorization URL
-app.get('/auth', (req, res) => {
-    const authUrl = oauth2Client.generateAuthUrl({
-        access_type: 'offline', // Ensures a refresh token is received
-        scope: SCOPES,
-        prompt: 'consent' // Forces the consent screen to reappear and provide a new refresh token
-    });
-    res.redirect(authUrl);
-});
-
-// Handle OAuth2 callback
-app.get('/oauth2callback', async (req, res) => {
-    const { code } = req.query;
-    console.log('Authorization code received:', code);
-
-    try {
-        const { tokens } = await oauth2Client.getToken(code);
-        oauth2Client.setCredentials(tokens);
-        console.log('Tokens acquired:', tokens);
-
-        const accessToken = tokens.access_token;
-        const refreshToken = tokens.refresh_token;
-        console.log('Access Token:', accessToken);
-
-        if (refreshToken) {
-            console.log('Securely storing Refresh Token:', refreshToken);
-        } else {
-            console.warn('No refresh token received. This may happen if the user has previously authorized the application.');
-        }
-
-        res.send('Authentication successful! You can close this tab.');
-
-    } catch (error) {
-        console.error('Error retrieving tokens:', error);
-        res.status(500).send('Error authenticating');
-    }
-});
-
 // Function to refresh access token
 async function refreshToken(oauth2Client) {
     try {
         const { tokens } = await oauth2Client.refreshAccessToken();
         oauth2Client.setCredentials(tokens);
         console.log('New Access Token:', tokens.access_token);
-        console.log('New Refresh Token:', tokens.refresh_token);
+        if (tokens.refresh_token) {
+            console.log('New Refresh Token:', tokens.refresh_token);
+        }
         return tokens;
     } catch (error) {
         console.error('Error refreshing access token:', error);
@@ -600,6 +982,50 @@ async function refreshAccessTokenIfNeeded() {
         throw error;
     }
 }
+
+// Generate OAuth2 authorization URL
+app.get('/auth', (req, res) => {
+    const authUrl = oauth2Client.generateAuthUrl({
+        access_type: 'offline', // Ensures a refresh token is received
+        scope: SCOPES,
+        prompt: 'consent' // Forces the consent screen to reappear and provide a new refresh token
+    });
+    res.redirect(authUrl);
+});
+
+// Handle OAuth2 callback
+app.get('/oauth2callback', async (req, res) => {
+    const { code } = req.query;
+    console.log('Authorization code received:', code);
+
+    try {
+        const { tokens } = await oauth2Client.getToken(code);
+        oauth2Client.setCredentials(tokens);
+        console.log('Tokens acquired:', tokens);
+
+        const accessToken = tokens.access_token;
+        const refreshToken = tokens.refresh_token;
+        console.log('Access Token:', accessToken);
+
+        if (refreshToken) {
+            console.log('Securely storing Refresh Token:', refreshToken);
+        } else {
+            console.warn('No refresh token received. This may happen if the user has previously authorized the application.');
+        }
+
+        // Redirect to main application with a success message
+        res.redirect('/auth-success');
+
+    } catch (error) {
+        console.error('Error retrieving tokens:', error);
+        res.status(500).send('Error authenticating');
+    }
+});
+
+// Success route
+app.get('/auth-success', (req, res) => {
+    res.send('Authentication successful! You can now use the application.');
+});
 
 // Refresh token endpoint
 app.get('/refresh-token', async (req, res) => {
@@ -710,11 +1136,9 @@ app.post("/create-account", async (req, res) => {
     }
 });
 
-
 // Verify OTP for Account Creation
 app.post("/verify-otp", async (req, res) => {
     const { email, otp } = req.body;
-
 
     try {
         const user = await User.findOne({ email });
@@ -777,14 +1201,13 @@ app.post("/login", async (req, res) => {
         });
     }
 
-    if (userInfo.email === email && userInfo.password === password) {
-
+    if (userInfo.password === password) {
         const user = { user: userInfo };
 
         const accessToken = jwt.sign(
             user, 
             process.env.ACCESS_TOKEN_SECRET, 
-            { expiresIn: "36000m" }
+            { expiresIn: "36000m" } // This seems quite long; consider a more secure duration
         );
 
         return res.json({
