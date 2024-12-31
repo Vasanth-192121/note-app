@@ -905,7 +905,7 @@ const SignUp = () => {
 
               {error && <p className='text-red-500 text-xs pb-1'>{error}</p>}
 
-              <button type='submit' className='btn-primary rounded-xl'>
+              <button type='submit' className='btn-primary rounded-3xl'>
                 <span className={loadingMessage === "Verifying OTP..." ? 'blinking-text' : ''}>
                   {loadingMessage === "Verifying OTP..." ? 'Verifying OTP...' : 'Verify OTP'}
                 </span>
