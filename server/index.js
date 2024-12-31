@@ -866,6 +866,9 @@ import { authenticateToken } from "./utilites.js";
 import User from "./models/user.model.js";
 import Note from "./models/note.model.js";
 import { OAuth2Client } from 'google-auth-library';
+import cron from 'node-cron';
+import rateLimiter from 'express-rate-limit';
+import helmet from 'helmet'
 
 dotenv.config();
 
@@ -886,6 +889,15 @@ const port = 3000;
 
 app.use(express.json());
 app.use(cors({ origin: "*" }));
+
+// Apply rate limiting 
+const limiter = rateLimiter({ 
+    windowMs: 15 * 60 * 1000, // 15 minutes 
+    max: 100 // Limit each IP to 100 requests per windowMs 
+}); 
+
+app.use(limiter);
+app.use(helmet());
 
 app.get("/", (req, res) => {
     res.json({ data: "Hello" });
@@ -963,13 +975,38 @@ async function sendEmail(to, subject, htmlContent) {
 }
 
 
+// async function refreshAccessTokenIfNeeded() {
+//     try {
+//         const tokenInfo = await oauth2Client.getAccessToken();
+
+//         if (!tokenInfo || !tokenInfo.token) {
+//             throw new Error('No access token available');
+//         }
+
+//         // If the token is about to expire in less than 60 seconds, refresh it
+//         if (tokenInfo.res && tokenInfo.res.data && tokenInfo.res.data.expires_in < 60) {
+//             console.log('Token is about to expire, refreshing...');
+//             const tokens = await refreshToken(oauth2Client);
+//             return tokens.access_token;
+//         }
+
+//         return tokenInfo.token;
+//     } catch (error) {
+//         console.error('Error checking access token:', error);
+//         throw error;
+//     }
+// }
+
+// Step 2: Define the refreshAccessTokenIfNeeded function
 async function refreshAccessTokenIfNeeded() {
     try {
         const tokenInfo = await oauth2Client.getAccessToken();
 
-        // Log the token information to understand its structure
-        console.log('Token Info:', tokenInfo);
+        if (!tokenInfo || !tokenInfo.token) {
+            throw new Error('No access token available');
+        }
 
+        // If the token is about to expire in less than 60 seconds, refresh it
         if (tokenInfo.res && tokenInfo.res.data && tokenInfo.res.data.expires_in < 60) {
             console.log('Token is about to expire, refreshing...');
             const tokens = await refreshToken(oauth2Client);
@@ -979,9 +1016,26 @@ async function refreshAccessTokenIfNeeded() {
         return tokenInfo.token;
     } catch (error) {
         console.error('Error checking access token:', error);
+
+        // Handle token invalidation case
+        if (error.response && error.response.data && error.response.data.error === 'invalid_grant') {
+            console.log('Token invalid or expired. Prompting re-authentication.');
+            // Implement logic to prompt user re-authentication
+        }
+
         throw error;
     }
 }
+
+// Step 3: Schedule the cron job to refresh tokens every hour
+cron.schedule('0 * * * *', async () => {
+    try {
+        const tokens = await refreshToken(oauth2Client);
+        console.log('Tokens refreshed successfully:', tokens);
+    } catch (error) {
+        console.error('Error refreshing tokens:', error);
+    }
+});
 
 // Generate OAuth2 authorization URL
 app.get('/auth', (req, res) => {

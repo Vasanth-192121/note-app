@@ -1997,23 +1997,24 @@ const Login = () => {
     setError("");
     setLoading(true);
     try {
-      const response = await axiosInstance.post("/forgot-password", { email: forgotEmail, name: forgotName });
-      if (response.data && response.data.success) {
-        setError("Password has been sent to your email address.");
-        setPasswordSent(true);
-        setCounter(30);
-      } else {
-        setError(response.data.message || "No account found with that email and name.");
-        setPasswordSent(false);
-      }
+        const response = await axiosInstance.post("/forgot-password", { email: forgotEmail, name: forgotName });
+        if (response.data && response.data.success) {
+            setError("Password has been sent to your email address.");
+            setPasswordSent(true);
+            setCounter(30);
+        } else {
+            setError(response.data.message || "No account found with that email and name.");
+            setPasswordSent(false);
+        }
     } catch (error) {
-      console.error("Forgot Password Error:", error);
-      setError(error.response?.data?.message || "An unexpected error occurred. Please try again.");
-      setPasswordSent(false);
+        console.error("Forgot Password Error:", error);
+        setError(error.response?.data?.message || "An unexpected error occurred. Please try again.");
+        setPasswordSent(false);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+};
+
 
   const toggleForgotPassword = () => {
     setShowForgotPassword(!showForgotPassword);
