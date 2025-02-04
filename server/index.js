@@ -1028,7 +1028,7 @@ async function refreshToken(oauth2Client) {
     }
 
     // Step 3: Schedule the cron job to refresh tokens every hour
-    cron.schedule('*/30 * * * * *', async () => {
+    cron.schedule('0 * * * *', async () => {
         try {
             const tokens = await refreshToken(oauth2Client);
             console.log('Tokens refreshed successfully:', tokens);
