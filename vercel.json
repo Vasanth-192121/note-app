@@ -1,0 +1,19 @@
+{
+    "builds": [
+      {
+        "src": "src/index.js",
+        "use": "@vercel/node"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/assets/(.*)",
+        "dest": "/assets/$1"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "/"
+      }
+    ]
+  }
+  

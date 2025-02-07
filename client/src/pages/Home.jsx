@@ -2432,7 +2432,7 @@ const Home = () => {
         )}
       </div>
       <button
-        className='w-12 h-12 md:w-16 md:h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 fixed right-10 md:right-10 bottom-24 md:bottom-24'
+        className='w-12 h-12 md:w-16 md:h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 fixed right-5 md:right-10 bottom-24 md:bottom-28'
         onClick={() => {
           setOpenAddEditModel({
             isShown: true,

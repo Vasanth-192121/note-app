@@ -855,6 +855,395 @@
 // });
 
 
+// import express from "express";
+// import cors from "cors";
+// import dotenv from "dotenv";
+// import mongoose from "mongoose";
+// import jwt from "jsonwebtoken";
+// import nodemailer from "nodemailer";
+// import { google } from "googleapis";
+// import { authenticateToken } from "./utilites.js";
+// import User from "./models/user.model.js";
+// import Note from "./models/note.model.js";
+// import { OAuth2Client } from 'google-auth-library';
+// import cron from 'node-cron';
+// import rateLimiter from 'express-rate-limit';
+// import helmet from 'helmet'
+
+// dotenv.config();
+
+// // Connect to MongoDB
+// async function connectDB() {
+//     try {
+//         await mongoose.connect(process.env.MONGODB_URI);
+//         console.log('MongoDB connected...');
+//     } catch (error) {
+//         console.error('Error connecting to MongoDB:', error);
+//     }
+// }
+
+// connectDB();
+
+// const app = express();
+// const port = 3000;
+
+// app.use(express.json());
+// app.use(cors({ origin: "*" }));
+
+// // Apply rate limiting 
+// const limiter = rateLimiter({ 
+//     windowMs: 15 * 60 * 1000, // 15 minutes 
+//     max: 100 // Limit each IP to 100 requests per windowMs 
+// }); 
+
+// app.use(limiter);
+// app.use(helmet());
+
+// app.get("/", (req, res) => {
+//     res.json({ data: "Hello" });
+// });
+
+// // Generate OTP
+// const generateOtp = () => {
+//     return Math.floor(100000 + Math.random() * 900000).toString();
+// };
+
+// const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+// // OAuth2 client setup
+// const oauth2Client = new google.auth.OAuth2(
+//     process.env.CLIENT_ID,
+//     process.env.CLIENT_SECRET,
+//     process.env.REDIRECT_URI
+// );
+
+// // Set default credentials if refresh token is available
+// if (process.env.REFRESH_TOKEN) {
+//     oauth2Client.setCredentials({
+//         refresh_token: process.env.REFRESH_TOKEN
+//     });
+// }
+
+// // For full access
+// const SCOPES = ['https://mail.google.com/', 'profile', 'email'];
+
+// // Function to refresh access token
+// async function refreshToken(oauth2Client) {
+//     try {
+//         const  tokens  = await oauth2Client.refreshAccessToken();
+//         oauth2Client.setCredentials(tokens);
+//         // console.log("Generated Token : ",tokens);
+//         console.log('New Access Token:', tokens.credentials.access_token);
+//         if (tokens.credentials.refresh_token) {
+//             console.log('New Refresh Token:', tokens.credentials.refresh_token);
+//         }
+//         return tokens;
+//     } catch (error) {
+//         console.error('Error refreshing access token:', error);
+//         throw error;
+//     }
+// }
+
+//     // Step 3: Schedule the cron job to refresh tokens every hour
+//     cron.schedule('*/30 * * * * *', async () => {
+//         try {
+//             const tokens = await refreshToken(oauth2Client);
+//             // console.log('Tokens refreshed successfully:', tokens);
+//         } catch (error) {
+//             console.error('Error refreshing tokens:', error);
+//         }
+//     });
+
+//     // Step 2: Define the refreshAccessTokenIfNeeded function
+//     async function refreshAccessTokenIfNeeded() {
+//         try {
+//             const tokenInfo = await oauth2Client.getAccessToken();
+
+//             if (!tokenInfo || !tokenInfo.token) {
+//                 throw new Error('No access token available');
+//             }
+
+//             // If the token is about to expire in less than 60 seconds, refresh it
+//             if (tokenInfo.res && tokenInfo.res.data && tokenInfo.res.data.expires_in < 60) {
+//                 console.log('Token is about to expire, refreshing...');
+//                 const tokens = await refreshToken(oauth2Client);
+//                 return tokens.access_token;
+//             }
+
+//             return tokenInfo.token;
+//         } catch (error) {
+//             console.error('Error checking access token:', error);
+
+//             // Handle token invalidation case
+//             if (error.response && error.response.data && error.response.data.error === 'invalid_grant') {
+//                 console.log('Token invalid or expired. Prompting re-authentication.');
+//                 // Implement logic to prompt user re-authentication
+//             }
+
+//             throw error;
+//         }
+//     }
+
+//     // Generate OAuth2 authorization URL
+//     app.get('/auth', (req, res) => {
+//         const authUrl = oauth2Client.generateAuthUrl({
+//             access_type: 'offline', // Ensures a refresh token is received
+//             scope: SCOPES,
+//             prompt: 'consent' // Forces the consent screen to reappear and provide a new refresh token
+//         });
+//         res.redirect(authUrl);
+//     });
+
+//     // Handle OAuth2 callback
+//     app.get('/oauth2callback', async (req, res) => {
+//         const { code } = req.query;
+//         console.log('Authorization code received:', code);
+
+//         try {
+//             const { tokens } = await oauth2Client.getToken(code);
+//             oauth2Client.setCredentials(tokens);
+//             console.log('Tokens acquired:', tokens);
+
+//             const accessToken = tokens.access_token;
+//             const refreshToken = tokens.refresh_token;
+//             console.log('Access Token:', accessToken);
+
+//             if (refreshToken) {
+//                 console.log('Securely storing Refresh Token:', refreshToken);
+//             } else {
+//                 console.warn('No refresh token received. This may happen if the user has previously authorized the application.');
+//             }
+
+//             // // Send success message directly
+//             // res.send('Authentication successful! You can now use the application.');
+
+//             // Redirect to main application with a success message
+//             res.redirect('/auth-success');
+
+//         } catch (error) {
+//             console.error('Error retrieving tokens:', error);
+//             res.status(500).send('Error authenticating');
+//         }
+//     });
+
+//     // Success route
+//     app.get('/auth-success', (req, res) => {
+//         res.send('Authentication successful! You can now use the application.');
+//     });
+
+//     // Refresh token endpoint
+//     app.get('/refresh-token', async (req, res) => {
+//         try {
+//             const newTokens = await refreshToken(oauth2Client);
+//             console.log(newTokens);
+//             console.log(newTokens.credentials.refresh_token);
+            
+//             if (newTokens.credentials.refresh_token) {
+//                 oauth2Client.setCredentials({ refresh_token: newTokens.credentials.refresh_token });
+//                 console.log('New Refresh Token stored securely:', newTokens.credentials.refresh_token);
+//             }
+//             res.send('Token refreshed successfully.');
+//         } catch (error) {
+//             res.status(500).send('Error refreshing token. Please reauthenticate.');
+//         }
+//     });
+
+
+
+// import express from "express";
+// import cors from "cors";
+// import dotenv from "dotenv";
+// import mongoose from "mongoose";
+// import jwt from "jsonwebtoken";
+// import nodemailer from "nodemailer";
+// import { google } from "googleapis";
+// import { authenticateToken } from "./utilites.js";
+// import User from "./models/user.model.js";
+// import Note from "./models/note.model.js";
+// import { OAuth2Client } from 'google-auth-library';
+// import cron from 'node-cron';
+// import rateLimiter from 'express-rate-limit';
+// import helmet from 'helmet'
+
+// dotenv.config();
+
+// // Connect to MongoDB
+// async function connectDB() {
+//     try {
+//         await mongoose.connect(process.env.MONGODB_URI);
+//         console.log('MongoDB connected...');
+//     } catch (error) {
+//         console.error('Error connecting to MongoDB:', error);
+//     }
+// }
+
+// connectDB();
+
+// const app = express();
+// const port = 3000;
+
+// app.use(express.json());
+// app.use(cors({ origin: "*" }));
+
+// // Apply rate limiting 
+// const limiter = rateLimiter({ 
+//     windowMs: 15 * 60 * 1000, // 15 minutes 
+//     max: 100 // Limit each IP to 100 requests per windowMs 
+// }); 
+
+// app.use(limiter);
+// app.use(helmet());
+
+// app.get("/", (req, res) => {
+//     res.json({ data: "Hello" });
+// });
+
+// // Generate OTP
+// const generateOtp = () => {
+//     return Math.floor(100000 + Math.random() * 900000).toString();
+// };
+
+// const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+// // OAuth2 client setup
+// const oauth2Client = new google.auth.OAuth2(
+//     process.env.CLIENT_ID,
+//     process.env.CLIENT_SECRET,
+//     process.env.REDIRECT_URI
+// );
+
+// // Variable to store refresh token
+// let storedRefreshToken = process.env.REFRESH_TOKEN;
+
+// // Set default credentials if refresh token is available
+// if (storedRefreshToken) {
+//     oauth2Client.setCredentials({
+//         refresh_token: storedRefreshToken
+//     });
+// }
+
+// // For full access
+// const SCOPES = ['https://mail.google.com/', 'profile', 'email'];
+
+// // Function to refresh access token
+// async function refreshToken(oauth2Client) {
+//     try {
+//         const { credentials } = await oauth2Client.refreshAccessToken();
+//         oauth2Client.setCredentials(credentials);
+
+//         console.log('New Access Token:', credentials.access_token);
+//         if (credentials.refresh_token) {
+//             // Update the stored refresh token
+//             storedRefreshToken = credentials.refresh_token;
+//             console.log('New Refresh Token stored securely:', storedRefreshToken);
+//         }
+//         return credentials;
+//     } catch (error) {
+//         console.error('Error refreshing access token:', error);
+//         throw error;
+//     }
+// }
+
+// // Function to refresh access token if needed
+// async function refreshAccessTokenIfNeeded() {
+//     try {
+//         const tokenInfo = await oauth2Client.getAccessToken();
+
+//         if (!tokenInfo || !tokenInfo.token) {
+//             throw new Error('No access token available');
+//         }
+
+//         const tokenExpiryTime = 60; // Token expiry time in seconds
+
+//         // If the token is about to expire in less than the specified time, refresh it
+//         if (tokenInfo.res && tokenInfo.res.data && tokenInfo.res.data.expires_in < tokenExpiryTime) {
+//             console.log('Token is about to expire, refreshing...');
+//             const tokens = await refreshToken(oauth2Client);
+//             return tokens.access_token;
+//         }
+
+//         return tokenInfo.token;
+//     } catch (error) {
+//         console.error('Error checking access token:', error);
+
+//         // Handle token invalidation case
+//         if (error.response && error.response.data && error.response.data.error === 'invalid_grant') {
+//             console.log('Token invalid or expired. Prompting re-authentication.');
+//             // Implement logic to prompt user re-authentication
+//         }
+
+//         throw error;
+//     }
+// }
+
+// // Schedule the cron job to refresh tokens every 30 minutes
+// cron.schedule('*/30 * * * *', async () => {
+//     try {
+//         await refreshToken(oauth2Client);
+//     } catch (error) {
+//         console.error('Error refreshing tokens:', error);
+//     }
+// });
+
+// // Generate OAuth2 authorization URL
+// app.get('/auth', (req, res) => {
+//     const authUrl = oauth2Client.generateAuthUrl({
+//         access_type: 'offline', // Ensures a refresh token is received
+//         scope: SCOPES,
+//         prompt: 'consent' // Forces the consent screen to reappear and provide a new refresh token
+//     });
+//     res.redirect(authUrl);
+// });
+
+// // Handle OAuth2 callback
+// app.get('/oauth2callback', async (req, res) => {
+//     const { code } = req.query;
+//     console.log('Authorization code received:', code);
+
+//     try {
+//         const { tokens } = await oauth2Client.getToken(code);
+//         oauth2Client.setCredentials(tokens);
+//         console.log('Tokens acquired:', tokens);
+
+//         const accessToken = tokens.access_token;
+//         const refreshToken = tokens.refresh_token;
+//         console.log('Access Token:', accessToken);
+
+//         if (refreshToken) {
+//             storedRefreshToken = refreshToken; // Update the stored refresh token
+//             console.log('Securely storing Refresh Token:', storedRefreshToken);
+//         } else {
+//             console.warn('No refresh token received. This may happen if the user has previously authorized the application.');
+//         }
+
+//         // Redirect to main application with a success message
+//         res.redirect('/auth-success');
+
+//     } catch (error) {
+//         console.error('Error retrieving tokens:', error);
+//         res.status(500).send('Error authenticating');
+//     }
+// });
+
+// // Success route
+// app.get('/auth-success', (req, res) => {
+//     res.send('Authentication successful! You can now use the application.');
+// });
+
+// // Refresh token endpoint
+// app.get('/refresh-token', async (req, res) => {
+//     try {
+//         const newTokens = await refreshToken(oauth2Client);
+//         if (newTokens.refresh_token) {
+//             storedRefreshToken = newTokens.refresh_token; // Update the stored refresh token
+//             console.log('New Refresh Token stored securely:', storedRefreshToken);
+//         }
+//         res.send('Token refreshed successfully.');
+//     } catch (error) {
+//         res.status(500).send('Error refreshing token. Please reauthenticate.');
+//     }
+// });
+
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -865,6 +1254,7 @@ import { google } from "googleapis";
 import { authenticateToken } from "./utilites.js";
 import User from "./models/user.model.js";
 import Note from "./models/note.model.js";
+import Token from "./models/token.model.js"; // Import Token model
 import { OAuth2Client } from 'google-auth-library';
 import cron from 'node-cron';
 import rateLimiter from 'express-rate-limit';
@@ -908,6 +1298,9 @@ const generateOtp = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
+// For full access
+const SCOPES = ['https://mail.google.com/', 'profile', 'email'];
+
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // OAuth2 client setup
@@ -917,31 +1310,144 @@ const oauth2Client = new google.auth.OAuth2(
     process.env.REDIRECT_URI
 );
 
-// Set default credentials if refresh token is available
-if (process.env.REFRESH_TOKEN) {
-    oauth2Client.setCredentials({
-        refresh_token: process.env.REFRESH_TOKEN
-    });
+// Retrieve the refresh token from the database
+async function getStoredRefreshToken() {
+    const tokenDoc = await Token.findOne();
+    return tokenDoc ? tokenDoc.refreshToken : null;
 }
 
-// For full access
-const SCOPES = ['https://mail.google.com/', 'profile', 'email'];
+// Initialize OAuth2 client with refresh token from database
+async function initializeOAuthClient() {
+    const storedRefreshToken = await getStoredRefreshToken();
+    if (storedRefreshToken) {
+        oauth2Client.setCredentials({
+            refresh_token: storedRefreshToken
+        });
+    } else {
+        console.log('No stored refresh token found. User needs to re-authenticate.');
+    }
+}
+
+initializeOAuthClient();
 
 // Function to refresh access token
 async function refreshToken(oauth2Client) {
     try {
-        const { tokens } = await oauth2Client.refreshAccessToken();
-        oauth2Client.setCredentials(tokens);
-        console.log('New Access Token:', tokens.access_token);
-        if (tokens.refresh_token) {
-            console.log('New Refresh Token:', tokens.refresh_token);
+        const { credentials } = await oauth2Client.refreshAccessToken();
+        oauth2Client.setCredentials(credentials);
+
+        console.log('New Access Token:', credentials.access_token);
+        if (credentials.refresh_token) {
+            // Update the refresh token in the database
+            await Token.updateOne({}, { refreshToken: credentials.refresh_token }, { upsert: true });
+            console.log('New Refresh Token stored securely:', credentials.refresh_token);
         }
-        return tokens;
+        return credentials;
     } catch (error) {
         console.error('Error refreshing access token:', error);
         throw error;
     }
+}
+
+// Function to refresh access token if needed
+async function refreshAccessTokenIfNeeded() {
+    try {
+        const tokenInfo = await oauth2Client.getAccessToken();
+
+        if (!tokenInfo || !tokenInfo.token) {
+            throw new Error('No access token available');
+        }
+
+        const tokenExpiryTime = 60; // Token expiry time in seconds
+
+        // If the token is about to expire in less than the specified time, refresh it
+        if (tokenInfo.res && tokenInfo.res.data && tokenInfo.res.data.expires_in < tokenExpiryTime) {
+            console.log('Token is about to expire, refreshing...');
+            const tokens = await refreshToken(oauth2Client);
+            return tokens.access_token;
+        }
+
+        return tokenInfo.token;
+    } catch (error) {
+        console.error('Error checking access token:', error);
+
+        // Handle token invalidation case
+        if (error.response && error.response.data && error.response.data.error === 'invalid_grant') {
+            console.log('Token invalid or expired. Prompting re-authentication.');
+            // Implement logic to prompt user re-authentication
+        }
+
+        throw error;
     }
+}
+
+// Schedule the cron job to refresh tokens every 30 minutes
+cron.schedule('*/30 * * * *', async () => {
+    try {
+        await refreshToken(oauth2Client);
+    } catch (error) {
+        console.error('Error refreshing tokens:', error);
+    }
+});
+
+// Generate OAuth2 authorization URL
+app.get('/auth', (req, res) => {
+    const authUrl = oauth2Client.generateAuthUrl({
+        access_type: 'offline', // Ensures a refresh token is received
+        scope: SCOPES,
+        prompt: 'consent' // Forces the consent screen to reappear and provide a new refresh token
+    });
+    res.redirect(authUrl);
+});
+
+// Handle OAuth2 callback
+app.get('/oauth2callback', async (req, res) => {
+    const { code } = req.query;
+    console.log('Authorization code received:', code);
+
+    try {
+        const { tokens } = await oauth2Client.getToken(code);
+        oauth2Client.setCredentials(tokens);
+        console.log('Tokens acquired:', tokens);
+
+        const accessToken = tokens.access_token;
+        const refreshToken = tokens.refresh_token;
+        console.log('Access Token:', accessToken);
+
+        if (refreshToken) {
+            await Token.updateOne({}, { refreshToken }, { upsert: true }); // Update the stored refresh token
+            console.log('Securely storing Refresh Token:', refreshToken);
+        } else {
+            console.warn('No refresh token received. This may happen if the user has previously authorized the application.');
+        }
+
+        // Redirect to main application with a success message
+        res.redirect('/auth-success');
+
+    } catch (error) {
+        console.error('Error retrieving tokens:', error);
+        res.status(500).send('Error authenticating');
+    }
+});
+
+// Success route
+app.get('/auth-success', (req, res) => {
+    res.send('Authentication successful! You can now use the application.');
+});
+
+// Refresh token endpoint
+app.get('/refresh-token', async (req, res) => {
+    try {
+        const newTokens = await refreshToken(oauth2Client);
+        if (newTokens.refresh_token) {
+            await Token.updateOne({}, { refreshToken: newTokens.refresh_token }, { upsert: true }); // Update the stored refresh token
+            console.log('New Refresh Token stored securely:', newTokens.refresh_token);
+        }
+        res.send('Token refreshed successfully.');
+    } catch (error) {
+        res.status(500).send('Error refreshing token. Please reauthenticate.');
+    }
+});
 
     // Function to send an email
     async function sendEmail(to, subject, htmlContent) {
@@ -973,128 +1479,6 @@ async function refreshToken(oauth2Client) {
             throw error;
         }
     }
-
-
-    // async function refreshAccessTokenIfNeeded() {
-    //     try {
-    //         const tokenInfo = await oauth2Client.getAccessToken();
-
-    //         if (!tokenInfo || !tokenInfo.token) {
-    //             throw new Error('No access token available');
-    //         }
-
-    //         // If the token is about to expire in less than 60 seconds, refresh it
-    //         if (tokenInfo.res && tokenInfo.res.data && tokenInfo.res.data.expires_in < 60) {
-    //             console.log('Token is about to expire, refreshing...');
-    //             const tokens = await refreshToken(oauth2Client);
-    //             return tokens.access_token;
-    //         }
-
-    //         return tokenInfo.token;
-    //     } catch (error) {
-    //         console.error('Error checking access token:', error);
-    //         throw error;
-    //     }
-    // }
-
-    // Step 2: Define the refreshAccessTokenIfNeeded function
-    async function refreshAccessTokenIfNeeded() {
-        try {
-            const tokenInfo = await oauth2Client.getAccessToken();
-
-            if (!tokenInfo || !tokenInfo.token) {
-                throw new Error('No access token available');
-            }
-
-            // If the token is about to expire in less than 60 seconds, refresh it
-            if (tokenInfo.res && tokenInfo.res.data && tokenInfo.res.data.expires_in < 60) {
-                console.log('Token is about to expire, refreshing...');
-                const tokens = await refreshToken(oauth2Client);
-                return tokens.access_token;
-            }
-
-            return tokenInfo.token;
-        } catch (error) {
-            console.error('Error checking access token:', error);
-
-            // Handle token invalidation case
-            if (error.response && error.response.data && error.response.data.error === 'invalid_grant') {
-                console.log('Token invalid or expired. Prompting re-authentication.');
-                // Implement logic to prompt user re-authentication
-            }
-
-            throw error;
-        }
-    }
-
-    // Step 3: Schedule the cron job to refresh tokens every hour
-    cron.schedule('0 * * * *', async () => {
-        try {
-            const tokens = await refreshToken(oauth2Client);
-            console.log('Tokens refreshed successfully:', tokens);
-        } catch (error) {
-            console.error('Error refreshing tokens:', error);
-        }
-    });
-
-    // Generate OAuth2 authorization URL
-    app.get('/auth', (req, res) => {
-        const authUrl = oauth2Client.generateAuthUrl({
-            access_type: 'offline', // Ensures a refresh token is received
-            scope: SCOPES,
-            prompt: 'consent' // Forces the consent screen to reappear and provide a new refresh token
-        });
-        res.redirect(authUrl);
-    });
-
-    // Handle OAuth2 callback
-    app.get('/oauth2callback', async (req, res) => {
-        const { code } = req.query;
-        console.log('Authorization code received:', code);
-
-        try {
-            const { tokens } = await oauth2Client.getToken(code);
-            oauth2Client.setCredentials(tokens);
-            console.log('Tokens acquired:', tokens);
-
-            const accessToken = tokens.access_token;
-            const refreshToken = tokens.refresh_token;
-            console.log('Access Token:', accessToken);
-
-            if (refreshToken) {
-                console.log('Securely storing Refresh Token:', refreshToken);
-            } else {
-                console.warn('No refresh token received. This may happen if the user has previously authorized the application.');
-            }
-
-            // Redirect to main application with a success message
-            res.redirect('/auth-success');
-
-        } catch (error) {
-            console.error('Error retrieving tokens:', error);
-            res.status(500).send('Error authenticating');
-        }
-    });
-
-    // Success route
-    app.get('/auth-success', (req, res) => {
-        res.send('Authentication successful! You can now use the application.');
-    });
-
-    // Refresh token endpoint
-    app.get('/refresh-token', async (req, res) => {
-        try {
-            const newTokens = await refreshToken(oauth2Client);
-            
-            if (newTokens.refresh_token) {
-                oauth2Client.setCredentials({ refresh_token: newTokens.refresh_token });
-                console.log('New Refresh Token stored securely:', newTokens.refresh_token);
-            }
-            res.send('Token refreshed successfully.');
-        } catch (error) {
-            res.status(500).send('Error refreshing token. Please reauthenticate.');
-        }
-    });
 
     app.post("/google-login", async (req, res) => {
         const { token } = req.body;

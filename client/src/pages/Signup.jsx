@@ -844,7 +844,7 @@ const SignUp = () => {
   };
 
   return (
-    <div ref={containerRef} className='bg-hero-pattern bg-no-repeat bg-center bg-cover h-svh w-screen'>
+    <div ref={containerRef} className='bg-no-repeat bg-center bg-cover h-svh w-screen'>
       <Navbar />
       <div className='flex items-center justify-end xs:mt-32 sm:pr-36'>
         <div className='w-96 sm:border bg-opacity-60 bg-slate-100 px-8 xs:py-10 py-36 xs:rounded-3xl'>
