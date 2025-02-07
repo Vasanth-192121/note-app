@@ -2235,6 +2235,7 @@ import NoDataImg from "../../src/assets/no-data.svg";
 import Loader from '../animations/userInfoLoader'; 
 import { FaLinkedin, FaGithub, FaEnvelope } from 'react-icons/fa';
 import backgroundImage from '../../src/assets/bg-image.webp'; // Assuming public folder is at '../../src/assets'
+import bgImage from '../../src/assets/bg-image.webp';
 
 const Home = () => {
   const [openAddEditModel, setOpenAddEditModel] = useState({
@@ -2365,7 +2366,8 @@ const Home = () => {
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
         const img = new Image();
-        img.src = '/bg-image.webp'; // Path relative to the public folder
+        img.src = bgImage; // Using the imported path
+        // img.src = '/bg-image.webp'; // Path relative to the public folder
         img.onload = () => {
           // console.log('Image loaded:', img.src);
           if (containerRef.current) { // Null check

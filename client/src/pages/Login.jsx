@@ -2144,6 +2144,7 @@ import { validateEmail } from '../utils/Helper';
 import { axiosInstance } from '../utils/axiosInstance';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google'; 
 import '../../src/index.css'; 
+import bgImage from '../../src/assets/bg-image.webp';
 
 const Login = () => {
   const [email, setEmail] = useState("visitor-login@gmail.com");
@@ -2177,7 +2178,8 @@ const Login = () => {
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
         const img = new Image();
-        img.src = '/bg-image.webp'; // Path relative to the public folder
+        img.src = bgImage; // Using the imported path
+        // img.src = '/bg-image.webp'; // Path relative to the public folder
         img.onload = () => {
           // console.log('Image loaded:', img.src);
           containerRef.current.style.backgroundImage = `url(${img.src})`;
