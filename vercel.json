@@ -5,18 +5,15 @@
         "use": "@vercel/node"
       }
     ],
-    "routes": [
+    "rewrites": [
       {
-        "src": "/assets/(.*)",
-        "dest": "/assets/$1"
+        "source": "/assets/(.*)",
+        "destination": "/assets/$1"
       },
       {
-        "src": "/(.*)",
-        "dest": "/"
+        "source": "/(.*)",
+        "destination": "/index.html"
       }
-    ],
-    "rewrites": [
-      { "source": "/(.*)", "destination": "/index.html" }
     ]
   }
   
