@@ -1277,8 +1277,12 @@ connectDB();
 const app = express();
 const port = 3000;
 
+// Apply middleware
 app.use(express.json());
 app.use(cors({ origin: "*" }));
+
+// Enable trust proxy
+app.set('trust proxy', true);
 
 // Apply rate limiting 
 const limiter = rateLimiter({ 
