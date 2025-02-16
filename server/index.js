@@ -1265,7 +1265,11 @@ dotenv.config();
 // Connect to MongoDB
 async function connectDB() {
     try {
-        await mongoose.connect(process.env.MONGODB_URI);
+        await mongoose.connect(process.env.MONGODB_URI, {
+            serverSelectionTimeoutMS: 30000, // 30 seconds
+            socketTimeoutMS: 45000, // 45 seconds
+            connectTimeoutMS: 30000, // 30 seconds
+        });
         console.log('MongoDB connected...');
     } catch (error) {
         console.error('Error connecting to MongoDB:', error);
@@ -1385,14 +1389,33 @@ async function refreshAccessTokenIfNeeded() {
     }
 }
 
-// Schedule the cron job to refresh tokens every 30 minutes
-cron.schedule('*/30 * * * *', async () => {
+// // Schedule the cron job to refresh tokens every 30 minutes
+// cron.schedule('*/30 * * * *', async () => {
+//     try {
+//         await refreshToken(oauth2Client);
+//     } catch (error) {
+//         console.error('Error refreshing tokens:', error);
+//     }
+// });
+
+// Schedule the cron job to refresh tokens every 10 seconds
+// cron.schedule('*/10 * * * * *', async () => {
+//     try {
+//         await refreshToken(oauth2Client);
+//     } catch (error) {
+//         console.error('Error refreshing tokens:', error);
+//     }
+// });
+
+// Schedule the cron job to refresh tokens every 1 hour
+cron.schedule('0 * * * *', async () => {
     try {
         await refreshToken(oauth2Client);
     } catch (error) {
         console.error('Error refreshing tokens:', error);
     }
 });
+
 
 // Generate OAuth2 authorization URL
 app.get('/auth', (req, res) => {
