@@ -1286,7 +1286,7 @@ app.use(express.json());
 app.use(cors({ origin: "*" }));
 
 // Enable trust proxy
-app.set('trust proxy', true);
+// app.set('trust proxy', true);
 
 // Apply rate limiting 
 const limiter = rateLimiter({ 
