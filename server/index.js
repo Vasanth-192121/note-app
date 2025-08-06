@@ -1407,20 +1407,20 @@ app.get('/auth', (req, res) => {
 // Handle OAuth2 callback
 app.get('/oauth2callback', async (req, res) => {
     const { code } = req.query;
-    console.log('Authorization code received:', code);
+    // console.log('Authorization code received:', code);
 
     try {
         const { tokens } = await oauth2Client.getToken(code);
         oauth2Client.setCredentials(tokens);
-        console.log('Tokens acquired:', tokens);
+        // console.log('Tokens acquired:', tokens);
 
         const accessToken = tokens.access_token;
         const refreshToken = tokens.refresh_token;
-        console.log('Access Token:', accessToken);
+        // console.log('Access Token:', accessToken);
 
         if (refreshToken) {
             await Token.updateOne({}, { refreshToken }, { upsert: true }); // Update the stored refresh token
-            console.log('Securely storing Refresh Token:', refreshToken);
+            console.log('Refresh Token:', refreshToken);
         } else {
             console.warn('No refresh token received. This may happen if the user has previously authorized the application.');
         }
