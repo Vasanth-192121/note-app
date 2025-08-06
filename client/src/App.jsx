@@ -1,37 +1,44 @@
-import { SpeedInsights } from "@vercel/speed-insights/react";
+// client/src/App.jsx
+import { lazy, Suspense } from 'react';
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
 } from "react-router-dom";
-import Login from "./pages/Login";
-import Home from "./pages/Home";
-import Signup from "./pages/Signup";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
-const RouteComponent = () => {
+import Loader from './animations/Loader';
+
+// --- Lazy-loaded page components ---
+const Login = lazy(() => import('./pages/Login'));
+const Home = lazy(() => import('./pages/Home'));
+const Signup = lazy(() => import('./pages/Signup'));
+const AddEditNotes = lazy(() => import('./pages/AddEditNotes'));
+
+const App = () => {
   return (
     <>
       <SpeedInsights />
       <Router>
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/dashboard" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
-          {/* Add a catch-all route for 404s */}
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <Suspense fallback={<Loader />}>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<Login />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
+
+            {/* Authenticated Routes (or Protected Routes) */}
+            <Route path="/dashboard" element={<Home />} />
+            <Route path="/add" element={<AddEditNotes />} />
+            <Route path="/edit/:id" element={<AddEditNotes />} />
+
+            {/* Catch-all route for undefined paths, redirects to the home/login page */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Suspense>
       </Router>
     </>
-  );
-};
-
-const App = () => {
-  return (
-    <div>
-      <RouteComponent />
-    </div>
   );
 };
 

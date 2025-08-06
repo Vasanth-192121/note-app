@@ -2136,17 +2136,257 @@
 // export default Login;
 
 
-import { useState, useEffect, useRef } from 'react';
-import Navbar from '../components/Navbar';
+// import { useState, useEffect, useRef } from 'react';
+// import Navbar from '../components/Navbar';
+// import { Link, useNavigate } from 'react-router-dom';
+// import PasswordInput from '../components/PasswordInput';
+// import { validateEmail } from '../utils/Helper';
+// import { axiosInstance } from '../utils/axiosInstance';
+// import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google'; 
+// import '../../src/index.css'; 
+// import bgImage from '../../src/assets/bg-image.webp';
+
+// const Login = () => {
+//   const [email, setEmail] = useState("visitor-login@gmail.com");
+//   const [password, setPassword] = useState("password@visitor-login");
+//   const [error, setError] = useState(null);
+//   const [loading, setLoading] = useState(false);
+//   const [showForgotPassword, setShowForgotPassword] = useState(false);
+//   const [forgotEmail, setForgotEmail] = useState('visitor-login@gmail.com');
+//   const [forgotName, setForgotName] = useState('Visitor Login');
+//   const [passwordSent, setPasswordSent] = useState(false);
+//   const [counter, setCounter] = useState(0);
+//   const navigate = useNavigate();
+//   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+//   const containerRef = useRef(null);
+
+//   useEffect(() => {
+//     if (counter > 0) {
+//       const timer = setTimeout(() => setCounter(counter - 1), 1000);
+//       return () => clearTimeout(timer);
+//     }
+//   }, [counter]);
+
+//   useEffect(() => {
+//     if (passwordSent) {
+//       const timer = setTimeout(() => setError(null), 10000);
+//       return () => clearTimeout(timer);
+//     }
+//   }, [passwordSent]);
+
+//   useEffect(() => {
+//     const observer = new IntersectionObserver(([entry]) => {
+//       if (entry.isIntersecting) {
+//         const img = new Image();
+//         img.src = bgImage; // Using the imported path
+//         // img.src = '/bg-image.webp'; // Path relative to the public folder
+//         img.onload = () => {
+//           // console.log('Image loaded:', img.src);
+//           containerRef.current.style.backgroundImage = `url(${img.src})`;
+//         };
+//         img.onerror = (error) => {
+//           console.error('Error loading image:', error);
+//         };
+//         observer.disconnect();
+//       }
+//     }, { threshold: 0.1 });
+
+//     if (containerRef.current) {
+//       observer.observe(containerRef.current);
+//     }
+
+//     return () => {
+//       if (containerRef.current) {
+//         observer.unobserve(containerRef.current);
+//       }
+//     };
+//   }, []);
+
+//   const handleLogin = async (e) => {
+//     e.preventDefault();
+//     if (!validateEmail(email)) {
+//       setError("Please enter a valid email address.");
+//       return;
+//     }
+//     if (!password) {
+//       setError("Please enter the password");
+//       return;
+//     }
+//     setError("");
+//     setLoading(true);
+//     try {
+//       const response = await axiosInstance.post("/login", { email, password });
+//       if (response.data && response.data.accessToken) {
+//         localStorage.setItem("token", response.data.accessToken);
+//         navigate("/dashboard");
+//       }
+//     } catch (error) {
+//       console.error('Login Error:', error);
+//       setError(error.response?.data?.message || "An unexpected error occurred. Please try again");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const handleForgotPassword = async (e) => {
+//     e.preventDefault();
+//     setError("");
+//     setLoading(true);
+//     try {
+//         const response = await axiosInstance.post("/forgot-password", { email: forgotEmail, name: forgotName });
+//         if (response.data && response.data.success) {
+//             setError("Password has been sent to your email address.");
+//             setPasswordSent(true);
+//             setCounter(30);
+//         } else {
+//             setError(response.data.message || "No account found with that email and name.");
+//             setPasswordSent(false);
+//         }
+//     } catch (error) {
+//         console.error("Forgot Password Error:", error);
+//         setError(error.response?.data?.message || "An unexpected error occurred. Please try again.");
+//         setPasswordSent(false);
+//     } finally {
+//         setLoading(false);
+//     }
+// };
+
+//   const toggleForgotPassword = () => {
+//     setShowForgotPassword(!showForgotPassword);
+//     setError(null);
+//     setPasswordSent(false);
+//     setCounter(0);
+//   };
+
+//   const handleGoogleLoginSuccess = async (response) => {
+//     try {
+//       const googleToken = response.credential;
+//       const res = await axiosInstance.post("/google-login", { token: googleToken });
+//       if (res.data.accessToken) {
+//         localStorage.setItem("token", res.data.accessToken);
+//         navigate("/dashboard");
+//       }
+//     } catch (error) {
+//       console.error('Google Login Error:', error);
+//       setError('Google login failed. Please try again.');
+//     }
+//   };
+
+//   const handleGoogleLoginError = (error) => {
+//     console.error('Google Login Error:', error);
+//     setError('Google login failed. Please try again.');
+//   };
+
+//   return (
+//     <div ref={containerRef} className='bg-no-repeat bg-center bg-cover h-svh w-screen'>
+//       <Navbar />
+//       <div className='flex items-center justify-end xs:mt-32 sm:pr-36'>
+//         <div className='w-96 sm:border bg-opacity-60 bg-slate-100 px-8 xs:py-10 py-28 xs:rounded-3xl'>
+//           {!showForgotPassword ? (
+//             <form onSubmit={handleLogin}>
+//               <h1 className='text-2xl font-medium mb-7'>Login</h1>
+//               <input
+//                 id='01'
+//                 type="text"
+//                 placeholder='Email'
+//                 className='input-box'
+//                 value={email}
+//                 onChange={(e) => setEmail(e.target.value)}
+//               />
+//               <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} />
+//               {error && <p className='text-red-500 text-xs pb-1'>{error}</p>}
+//               <button type='submit' className='btn-primary rounded-3xl'>
+//                 <span className={loading ? 'blinking-text' : ''}>
+//                   {loading ? 'Logging in...' : 'Login'}
+//                 </span>
+//               </button>
+//               <p className='text-sm text-right mt-2'>
+//                 <button type='button' className='font-medium text-primary' onClick={toggleForgotPassword}>
+//                   Forgot password?
+//                 </button>
+//               </p>
+//               <div className='flex justify-between flex-row-reverse mt-7'>
+//               </div>
+//               <div className='flex flex-col justify-center items-center'>
+//               <p className='text-center text-sm mb-4 font-semibold'>or sign up with</p>
+//               <GoogleOAuthProvider clientId={googleClientId}>
+//                   <GoogleLogin
+//                     onSuccess={handleGoogleLoginSuccess}
+//                     onError={handleGoogleLoginError}
+//                     theme='filled_blue'
+//                     text='continue_with'
+//                     shape='circle'
+//                     width={"250"}
+//                   />
+//               </GoogleOAuthProvider>
+//               </div>
+//               <p className='text-md font-medium text-center mt-3'>
+//                 <Link to="/signUp" className='font-medium text-primary'>
+//                   Not registered yet?
+//                 </Link>
+//               </p>
+//             </form>
+//           ) : (
+//             <form onSubmit={handleForgotPassword}>
+//               <div className='py-14'>
+//               <h4 className='text-2xl font-medium mb-7'>Forgot Password</h4>
+//               <input
+//                 type="text"
+//                 placeholder='Email'
+//                 className='input-box rounded-3xl'
+//                 value={forgotEmail}
+//                 onChange={(e) => setForgotEmail(e.target.value)}
+//               />
+//               <input
+//                 type="text"
+//                 placeholder='Name'
+//                 className='input-box rounded-3xl'
+//                 value={forgotName}
+//                 onChange={(e) => setForgotName(e.target.value)}
+//               />
+//               {error && <p className='text-red-500 text-xs pb-1'>{error}</p>}
+//               <button
+//                 type='submit'
+//                 className={`btn-primary rounded-3xl${counter > 0 ? ' cursor-not-allowed' : ''}`}
+//                 disabled={counter > 0}
+//               >
+//                 <span className={loading ? 'blinking-text' : ''}>
+//                   {loading ? 'Sending...' : passwordSent ? (counter > 0 ? `Resend Password (${counter})` : 'Resend Password') : 'Send Password'}
+//                 </span>
+//               </button>
+//               <p className='text-sm text-center mt-4'>
+//                 <button type='button' className='font-medium text-primary' onClick={toggleForgotPassword}>
+//                   Go back to login
+//                 </button>
+//               </p>
+//               </div>
+//             </form>
+//           )}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Login;
+
+
+
+// client/src/pages/Login.jsx
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import Navbar from '../components/Navbar';
 import PasswordInput from '../components/PasswordInput';
 import { validateEmail } from '../utils/Helper';
 import { axiosInstance } from '../utils/axiosInstance';
-import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google'; 
-import '../../src/index.css'; 
 import bgImage from '../../src/assets/bg-image.webp';
+import '../../src/index.css';
+
+// Lazy-load the GoogleLoginComponent for code-splitting
+const GoogleLoginComponent = lazy(() => import('../components/GoogleLoginComponent.jsx'));
 
 const Login = () => {
+  // State for forms and UI
   const [email, setEmail] = useState("visitor-login@gmail.com");
   const [password, setPassword] = useState("password@visitor-login");
   const [error, setError] = useState(null);
@@ -2156,10 +2396,14 @@ const Login = () => {
   const [forgotName, setForgotName] = useState('Visitor Login');
   const [passwordSent, setPasswordSent] = useState(false);
   const [counter, setCounter] = useState(0);
+
   const navigate = useNavigate();
   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
   const containerRef = useRef(null);
 
+  // --- Effects for Timers and Lazy Loading ---
+  
+  // Effect for resend password timer
   useEffect(() => {
     if (counter > 0) {
       const timer = setTimeout(() => setCounter(counter - 1), 1000);
@@ -2167,6 +2411,7 @@ const Login = () => {
     }
   }, [counter]);
 
+  // Effect to clear error message after a delay
   useEffect(() => {
     if (passwordSent) {
       const timer = setTimeout(() => setError(null), 10000);
@@ -2174,19 +2419,12 @@ const Login = () => {
     }
   }, [passwordSent]);
 
+  // Effect to lazy-load the background image using Intersection Observer
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
-        const img = new Image();
-        img.src = bgImage; // Using the imported path
-        // img.src = '/bg-image.webp'; // Path relative to the public folder
-        img.onload = () => {
-          // console.log('Image loaded:', img.src);
-          containerRef.current.style.backgroundImage = `url(${img.src})`;
-        };
-        img.onerror = (error) => {
-          console.error('Error loading image:', error);
-        };
+        // Use the CSS background-image property instead of creating an Image object
+        containerRef.current.style.backgroundImage = `url(${bgImage})`;
         observer.disconnect();
       }
     }, { threshold: 0.1 });
@@ -2202,27 +2440,30 @@ const Login = () => {
     };
   }, []);
 
+  // --- Event Handlers ---
+
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError(null);
     if (!validateEmail(email)) {
       setError("Please enter a valid email address.");
       return;
     }
     if (!password) {
-      setError("Please enter the password");
+      setError("Please enter the password.");
       return;
     }
-    setError("");
+
     setLoading(true);
     try {
       const response = await axiosInstance.post("/login", { email, password });
-      if (response.data && response.data.accessToken) {
+      if (response.data?.accessToken) {
         localStorage.setItem("token", response.data.accessToken);
         navigate("/dashboard");
       }
     } catch (error) {
       console.error('Login Error:', error);
-      setError(error.response?.data?.message || "An unexpected error occurred. Please try again");
+      setError(error.response?.data?.message || "An unexpected error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -2230,39 +2471,40 @@ const Login = () => {
 
   const handleForgotPassword = async (e) => {
     e.preventDefault();
-    setError("");
+    setError(null);
     setLoading(true);
     try {
-        const response = await axiosInstance.post("/forgot-password", { email: forgotEmail, name: forgotName });
-        if (response.data && response.data.success) {
-            setError("Password has been sent to your email address.");
-            setPasswordSent(true);
-            setCounter(30);
-        } else {
-            setError(response.data.message || "No account found with that email and name.");
-            setPasswordSent(false);
-        }
-    } catch (error) {
-        console.error("Forgot Password Error:", error);
-        setError(error.response?.data?.message || "An unexpected error occurred. Please try again.");
+      const response = await axiosInstance.post("/forgot-password", { email: forgotEmail, name: forgotName });
+      if (response.data?.success) {
+        setError("Password has been sent to your email address.");
+        setPasswordSent(true);
+        setCounter(30);
+      } else {
+        setError(response.data?.message || "No account found with that email and name.");
         setPasswordSent(false);
+      }
+    } catch (error) {
+      console.error("Forgot Password Error:", error);
+      setError(error.response?.data?.message || "An unexpected error occurred. Please try again.");
+      setPasswordSent(false);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-};
+  };
 
   const toggleForgotPassword = () => {
-    setShowForgotPassword(!showForgotPassword);
+    setShowForgotPassword(prev => !prev);
     setError(null);
     setPasswordSent(false);
     setCounter(0);
   };
-
+  
+  // Google Login callbacks
   const handleGoogleLoginSuccess = async (response) => {
     try {
       const googleToken = response.credential;
       const res = await axiosInstance.post("/google-login", { token: googleToken });
-      if (res.data.accessToken) {
+      if (res.data?.accessToken) {
         localStorage.setItem("token", res.data.accessToken);
         navigate("/dashboard");
       }
@@ -2277,16 +2519,17 @@ const Login = () => {
     setError('Google login failed. Please try again.');
   };
 
+  // --- JSX Rendering ---
   return (
-    <div ref={containerRef} className='bg-no-repeat bg-center bg-cover h-svh w-screen'>
+    <div className='bg-no-repeat bg-center bg-cover min-h-screen' ref={containerRef}>
       <Navbar />
-      <div className='flex items-center justify-end xs:mt-32 sm:pr-36'>
-        <div className='w-96 sm:border bg-opacity-60 bg-slate-100 px-8 xs:py-10 py-28 xs:rounded-3xl'>
+      <div className='flex items-center justify-center sm:justify-end py-[100px] px-4 sm:pr-20 lg:pr-36'>
+        <div className='w-full max-w-sm sm:border bg-opacity-60 bg-slate-100 px-8 py-10 rounded-3xl'>
           {!showForgotPassword ? (
             <form onSubmit={handleLogin}>
               <h1 className='text-2xl font-medium mb-7'>Login</h1>
               <input
-                id='01'
+                id='email-input'
                 type="text"
                 placeholder='Email'
                 className='input-box'
@@ -2295,7 +2538,7 @@ const Login = () => {
               />
               <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} />
               {error && <p className='text-red-500 text-xs pb-1'>{error}</p>}
-              <button type='submit' className='btn-primary rounded-3xl'>
+              <button type='submit' className='btn-primary rounded-3xl' disabled={loading}>
                 <span className={loading ? 'blinking-text' : ''}>
                   {loading ? 'Logging in...' : 'Login'}
                 </span>
@@ -2305,20 +2548,15 @@ const Login = () => {
                   Forgot password?
                 </button>
               </p>
-              <div className='flex justify-between flex-row-reverse mt-7'>
-              </div>
-              <div className='flex flex-col justify-center items-center'>
-              <p className='text-center text-sm mb-4 font-semibold'>or sign up with</p>
-              <GoogleOAuthProvider clientId={googleClientId}>
-                  <GoogleLogin
+              <div className='flex flex-col justify-center items-center mt-7'>
+                <p className='text-center text-sm mb-4 font-semibold'>or sign up with</p>
+                <Suspense fallback={<div>Loading Google Sign-in...</div>}>
+                  <GoogleLoginComponent
+                    googleClientId={googleClientId}
                     onSuccess={handleGoogleLoginSuccess}
                     onError={handleGoogleLoginError}
-                    theme='filled_blue'
-                    text='continue_with'
-                    shape='circle'
-                    width={"250"}
                   />
-              </GoogleOAuthProvider>
+                </Suspense>
               </div>
               <p className='text-md font-medium text-center mt-3'>
                 <Link to="/signUp" className='font-medium text-primary'>
@@ -2328,9 +2566,9 @@ const Login = () => {
             </form>
           ) : (
             <form onSubmit={handleForgotPassword}>
-              <div className='py-14'>
               <h4 className='text-2xl font-medium mb-7'>Forgot Password</h4>
               <input
+                id='forgot-email-input'
                 type="text"
                 placeholder='Email'
                 className='input-box rounded-3xl'
@@ -2338,6 +2576,7 @@ const Login = () => {
                 onChange={(e) => setForgotEmail(e.target.value)}
               />
               <input
+                id='forgot-name-input'
                 type="text"
                 placeholder='Name'
                 className='input-box rounded-3xl'
@@ -2347,11 +2586,11 @@ const Login = () => {
               {error && <p className='text-red-500 text-xs pb-1'>{error}</p>}
               <button
                 type='submit'
-                className={`btn-primary rounded-3xl${counter > 0 ? ' cursor-not-allowed' : ''}`}
-                disabled={counter > 0}
+                className={`btn-primary rounded-3xl ${counter > 0 ? 'cursor-not-allowed' : ''}`}
+                disabled={counter > 0 || loading}
               >
                 <span className={loading ? 'blinking-text' : ''}>
-                  {loading ? 'Sending...' : passwordSent ? (counter > 0 ? `Resend Password (${counter})` : 'Resend Password') : 'Send Password'}
+                  {loading ? 'Sending...' : passwordSent ? (counter > 0 ? `Resend (${counter})` : 'Resend Password') : 'Send Password'}
                 </span>
               </button>
               <p className='text-sm text-center mt-4'>
@@ -2359,7 +2598,6 @@ const Login = () => {
                   Go back to login
                 </button>
               </p>
-              </div>
             </form>
           )}
         </div>

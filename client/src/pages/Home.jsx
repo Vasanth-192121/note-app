@@ -51,7 +51,7 @@
 //   };
 
 //   // Get User Info
-  
+
 //   const getUserInfo = async () => {
 //     try {
 //       const response = await axiosInstance.get("/get-user");
@@ -97,12 +97,12 @@
 
 //   } catch (error) {
 //       if (
-//           error.response && 
-//           error.response.data && 
+//           error.response &&
+//           error.response.data &&
 //           error.response.data.message
 //       ) {
 //         console.log("An unexpected error occurred. Please try again.");
-//       } 
+//       }
 //   }
 //   };
 
@@ -122,7 +122,7 @@
 //     } catch (error) {
 //       console.log(error);
 //     }
-    
+
 //   };
 
 //   // Update isPinned
@@ -168,7 +168,7 @@
 
 //           {
 //           allNotes.map((item, index) => (
-//             <NoteCard 
+//             <NoteCard
 //               key={item._id}
 //               title={item.title}
 //               date={item.createdOn}
@@ -180,21 +180,21 @@
 //               onPinNote={() => {updateIsPinned(item)}}
 //             />
 //           ))}
-//         </div> 
+//         </div>
 //         ) : (
-//           <EmptyCard 
-//             imgScr={ isSearch ? NoDataImg : AddNotesImg} 
-//             message={ isSearch 
-//                 ? `Oops! No notes matching your search` 
-//                 : `Start creating your first note! Click the 'Add' button to 
+//           <EmptyCard
+//             imgScr={ isSearch ? NoDataImg : AddNotesImg}
+//             message={ isSearch
+//                 ? `Oops! No notes matching your search`
+//                 : `Start creating your first note! Click the 'Add' button to
 //                   jot down your thoughts, ideas and reminders. Let's get started!`
 //               }
 //           />
 //         )}
 //       </div>
 
-//       <button 
-//         className='w-16 h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 absolute right-10 bottom-10' 
+//       <button
+//         className='w-16 h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 absolute right-10 bottom-10'
 //         onClick={() => {
 //           setOpenAddEditModel({
 //             isShown: true,
@@ -206,7 +206,7 @@
 //         <MdAdd className='text-[32px] text-white' />
 //       </button>
 
-//       <Modal 
+//       <Modal
 //         isOpen={openAddEditModel.isShown}
 //         onRequestClose={() => {}}
 //         style={{
@@ -217,22 +217,22 @@
 //         contentLabel=''
 //         className="w-5/12 min-w-64 max-h-3/4 bg-white rounded-md mx-auto mt-14 p-5 overflow-visible"
 //       >
-//         <AddEditNotes 
+//         <AddEditNotes
 //           type={openAddEditModel.type}
 //           noteData={openAddEditModel.data}
 //           onClose={() => {
-//             setOpenAddEditModel({ 
-//               isShown: false, 
-//               type: "add", 
-//               data: null 
+//             setOpenAddEditModel({
+//               isShown: false,
+//               type: "add",
+//               data: null
 //             });
 //           }}
 //           getAllNotes={getAllNotes}
 //           showToastMessage={showToastMessage}
 //         />
 //       </Modal>
-      
-//       <Toast 
+
+//       <Toast
 //         isShown={showToastMsg.isShown}
 //         message={showToastMsg.message}
 //         type={showToastMsg.type}
@@ -243,9 +243,6 @@
 // };
 
 // export default Home;
-
-
-
 
 // import { useState, useEffect } from 'react';
 // import Navbar from "../components/Navbar";
@@ -300,7 +297,7 @@
 //   };
 
 //   // Get User Info
-  
+
 //   const getUserInfo = async () => {
 //     try {
 //       const response = await axiosInstance.get("/get-user");
@@ -348,12 +345,12 @@
 
 //   } catch (error) {
 //       if (
-//           error.response && 
-//           error.response.data && 
+//           error.response &&
+//           error.response.data &&
 //           error.response.data.message
 //       ) {
 //         console.log("An unexpected error occurred. Please try again.");
-//       } 
+//       }
 //   }
 //   };
 
@@ -373,7 +370,7 @@
 //     } catch (error) {
 //       console.log(error);
 //     }
-    
+
 //   };
 
 //   // Update isPinned
@@ -419,7 +416,7 @@
 
 //           {
 //           allNotes.map((item) => (
-//             <NoteCard 
+//             <NoteCard
 //               key={item._id}
 //               title={item.title}
 //               date={item.createdOn}
@@ -431,21 +428,21 @@
 //               onPinNote={() => {updateIsPinned(item)}}
 //             />
 //           ))}
-//         </div> 
+//         </div>
 //         ) : (
-//           <EmptyCard 
-//             imgScr={ isSearch ? NoDataImg : AddNotesImg} 
-//             message={ isSearch 
-//                 ? `Oops! No notes matching your search` 
-//                 : `Start creating your first note! Click the 'Add' button to 
+//           <EmptyCard
+//             imgScr={ isSearch ? NoDataImg : AddNotesImg}
+//             message={ isSearch
+//                 ? `Oops! No notes matching your search`
+//                 : `Start creating your first note! Click the 'Add' button to
 //                   jot down your thoughts, ideas and reminders. Let's get started!`
 //               }
 //           />
 //         )}
 //       </div>
 
-//       <button 
-//         className='w-16 h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 absolute right-10 bottom-10' 
+//       <button
+//         className='w-16 h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 absolute right-10 bottom-10'
 //         onClick={() => {
 //           setOpenAddEditModel({
 //             isShown: true,
@@ -457,7 +454,7 @@
 //         <MdAdd className='text-[32px] text-white' />
 //       </button>
 
-//       <Modal 
+//       <Modal
 //         isOpen={openAddEditModel.isShown}
 //         onRequestClose={() => {}}
 //         style={{
@@ -468,22 +465,22 @@
 //         contentLabel=''
 //         className="w-5/12 min-w-64 max-h-3/4 bg-white rounded-md mx-auto mt-14 p-5 overflow-visible"
 //       >
-//         <AddEditNotes 
+//         <AddEditNotes
 //           type={openAddEditModel.type}
 //           noteData={openAddEditModel.data}
 //           onClose={() => {
-//             setOpenAddEditModel({ 
-//               isShown: false, 
-//               type: "add", 
-//               data: null 
+//             setOpenAddEditModel({
+//               isShown: false,
+//               type: "add",
+//               data: null
 //             });
 //           }}
 //           getAllNotes={getAllNotes}
 //           showToastMessage={showToastMessage}
 //         />
 //       </Modal>
-      
-//       <Toast 
+
+//       <Toast
 //         isShown={showToastMsg.isShown}
 //         message={showToastMsg.message}
 //         type={showToastMsg.type}
@@ -494,8 +491,6 @@
 // };
 
 // export default Home;
-
-
 
 // import { useState, useEffect } from 'react';
 // import Navbar from "../components/Navbar";
@@ -661,19 +656,19 @@
 //               onPinNote={() => {updateIsPinned(item)}}
 //             />
 //           ))}
-//         </div> 
+//         </div>
 //         ) : (
-//           <EmptyCard 
-//             imgScr={ isSearch ? NoDataImg : AddNotesImg} 
-//             message={ isSearch 
-//                 ? `Oops! No notes matching your search` 
+//           <EmptyCard
+//             imgScr={ isSearch ? NoDataImg : AddNotesImg}
+//             message={ isSearch
+//                 ? `Oops! No notes matching your search`
 //                 : `Start creating your first note! Click the 'Add' button to jot down your thoughts, ideas and reminders. Let's get started!`
 //               }
 //           />
 //         )}
 //       </div>
-//       <button 
-//         className='w-16 h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 absolute right-10 bottom-10' 
+//       <button
+//         className='w-16 h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 absolute right-10 bottom-10'
 //         onClick={() => {
 //           setOpenAddEditModel({
 //             isShown: true,
@@ -685,7 +680,7 @@
 //         <MdAdd className='text-[32px] text-white' />
 //       </button>
 
-//       <Modal 
+//       <Modal
 //         isOpen={openAddEditModel.isShown}
 //         onRequestClose={() => {}}
 //         style={{
@@ -696,22 +691,22 @@
 //         contentLabel=''
 //         className="w-5/12 min-w-64 max-h-3/4 bg-white rounded-md mx-auto mt-14 p-5 overflow-visible"
 //       >
-//         <AddEditNotes 
+//         <AddEditNotes
 //           type={openAddEditModel.type}
 //           noteData={openAddEditModel.data}
 //           onClose={() => {
-//             setOpenAddEditModel({ 
-//               isShown: false, 
-//               type: "add", 
-//               data: null 
+//             setOpenAddEditModel({
+//               isShown: false,
+//               type: "add",
+//               data: null
 //             });
 //           }}
 //           getAllNotes={getAllNotes}
 //           showToastMessage={showToastMessage}
 //         />
 //       </Modal>
-      
-//       <Toast 
+
+//       <Toast
 //         isShown={showToastMsg.isShown}
 //         message={showToastMsg.message}
 //         type={showToastMsg.type}
@@ -722,7 +717,6 @@
 // };
 
 // export default Home;
-
 
 // import { useState, useEffect } from 'react';
 // import Navbar from "../components/Navbar";
@@ -901,8 +895,8 @@
 //           />
 //         )}
 //       </div>
-//       <button 
-//         className='w-16 h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 absolute right-10 bottom-10' 
+//       <button
+//         className='w-16 h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 absolute right-10 bottom-10'
 //         onClick={() => {
 //           setOpenAddEditModel({
 //             isShown: true,
@@ -963,9 +957,6 @@
 // };
 
 // export default Home;
-
-
-
 
 // import { useState, useEffect } from 'react';
 // import Navbar from "../components/Navbar";
@@ -1212,9 +1203,6 @@
 // };
 
 // export default Home;
-
-
-
 
 // import { useState, useEffect } from 'react';
 // import Navbar from "../components/Navbar";
@@ -1464,8 +1452,6 @@
 
 // export default Home;
 
-
-
 // import { useState, useEffect } from 'react';
 // import Navbar from "../components/Navbar";
 // import NoteCard from '../components/NoteCard';
@@ -1714,8 +1700,6 @@
 
 // export default Home;
 
-
-
 // import { useState, useEffect } from 'react';
 // import Navbar from "../components/Navbar";
 // import NoteCard from '../components/NoteCard';
@@ -1775,7 +1759,7 @@
 //     try {
 //       const response = await axiosInstance.get("/get-user");
 //       console.log('User Info Response:', response);
-  
+
 //       if (response.data && response.data.user) {
 //         setUserInfo(response.data.user);
 //       }
@@ -1791,7 +1775,6 @@
 //       }
 //     }
 //   };
-  
 
 //   // Get All Notes
 //   const getAllNotes = async () => {
@@ -1971,8 +1954,6 @@
 
 // export default Home;
 
-
-
 // import { useState, useEffect } from 'react';
 // import Navbar from "../components/Navbar";
 // import NoteCard from '../components/NoteCard';
@@ -1985,7 +1966,7 @@
 // import EmptyCard from '../components/EmptyCard';
 // import AddNotesImg from '../../src/assets/add-notes.svg';
 // import NoDataImg from "../../src/assets/no-data.svg";
-// import Loader from '../animations/userInfoLoader'; 
+// import Loader from '../animations/userInfoLoader';
 // import { FaLinkedin, FaGithub, FaEnvelope } from 'react-icons/fa';
 
 // const Home = () => {
@@ -2218,285 +2199,1762 @@
 
 // export default Home;
 
+// import { useState, useEffect, useRef } from 'react';
+// import Navbar from "../components/Navbar";
+// import NoteCard from '../components/NoteCard';
+// import { MdAdd } from 'react-icons/md';
+// import AddEditNotes from './AddEditNotes';
+// import Modal from "react-modal";
+// import { useNavigate } from 'react-router-dom';
+// import { axiosInstance } from '../utils/axiosInstance';
+// import Toast from '../components/Toast';
+// import EmptyCard from '../components/EmptyCard';
+// import AddNotesImg from '../../src/assets/add-notes.svg';
+// import NoDataImg from "../../src/assets/no-data.svg";
+// import Loader from '../animations/userInfoLoader';
+// import { FaLinkedin, FaGithub, FaEnvelope } from 'react-icons/fa';
+// import backgroundImage from '../../src/assets/bg-image.webp'; // Assuming public folder is at '../../src/assets'
+// import bgImage from '../../src/assets/bg-image.webp';
+
+// const Home = () => {
+//   const [openAddEditModel, setOpenAddEditModel] = useState({
+//     isShown: false,
+//     type: "add",
+//     data: null,
+//   });
+
+//   const [showToastMsg, setShowToastMsg] = useState({
+//     isShown: false,
+//     type: "add",
+//     message: ""
+//   });
+
+//   const handleCloseToast = () => {
+//     setShowToastMsg({
+//       isShown: false,
+//       message: ""
+//     });
+//   };
+
+//   const showToastMessage = (message, type) => {
+//     setShowToastMsg({
+//       isShown: true,
+//       message,
+//       type
+//     });
+//   };
+
+//   const [userInfo, setUserInfo] = useState(null);
+//   const [allNotes, setAllNotes] = useState([]);
+//   const [isLoading, setIsLoading] = useState(true);
+//   const [isSearch, setIsSearch] = useState(false);
+
+//   const navigate = useNavigate();
+//   const containerRef = useRef(null);
+
+//   const handleEdit = (noteDetails) => {
+//     setOpenAddEditModel({ isShown: true, data: noteDetails, type: "edit" });
+//   };
+
+//   const getUserInfo = async () => {
+//     try {
+//       const response = await axiosInstance.get("/get-user");
+
+//       if (response.data && response.data.user) {
+//         setUserInfo(response.data.user);
+//       }
+//     } catch (error) {
+//       console.log('Error fetching user info:', error);
+//       if (error.response) {
+//         console.log('Response Data:', error.response.data);
+//         console.log('Response Status:', error.response.status);
+//       }
+//       if (error.response && error.response.status === 401) {
+//         localStorage.clear();
+//         navigate("/login");
+//       }
+//     }
+//   };
+
+//   const getAllNotes = async () => {
+//     try {
+//       const response = await axiosInstance.get("/get-all-notes");
+
+//       if (response.data && response.data.notes) {
+//         setAllNotes(response.data.notes);
+//       }
+//     } catch (error) {
+//       console.log("An unexpected error occurred. Please try again.");
+//     }
+//   };
+
+//   const deleteNote = async (data) => {
+//     const noteId = data._id;
+//     try {
+//       const response = await axiosInstance.delete("/delete-note/" + noteId);
+//       if (response.data && !response.data.error) {
+//         showToastMessage("Note Deleted Successfully", "delete");
+//         getAllNotes();
+//       }
+//     } catch (error) {
+//       console.log("An unexpected error occurred. Please try again.");
+//     }
+//   };
+
+//   const onSearchNote = async (query) => {
+//     try {
+//       const response = await axiosInstance.get("/search-notes", { params: { query } });
+//       if (response.data && response.data.notes) {
+//         setIsSearch(true);
+//         setAllNotes(response.data.notes);
+//       }
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   };
+
+//   const updateIsPinned = async (noteData) => {
+//     const noteId = noteData._id;
+//     try {
+//       const response = await axiosInstance.put("/update-note-pinned/" + noteId, { "isPinned": !noteData.isPinned });
+//       if (response.data && response.data.note) {
+//         noteData.isPinned ? showToastMessage("Unpinned Successfully") : showToastMessage("Pinned Successfully");
+//         getAllNotes();
+//       }
+//     } catch (error) {
+//       console.log(error);
+//     }
+//   };
+
+//   const handleClearSearch = () => {
+//     setIsSearch(false);
+//     getAllNotes();
+//   };
+
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       setIsLoading(true);
+//       await getAllNotes();
+//       await getUserInfo();
+//       setIsLoading(false);
+//     };
+//     fetchData();
+//   }, []);
+
+//   useEffect(() => {
+//     const observer = new IntersectionObserver(([entry]) => {
+//       if (entry.isIntersecting) {
+//         const img = new Image();
+//         img.src = bgImage; // Using the imported path
+//         // img.src = '/bg-image.webp'; // Path relative to the public folder
+//         img.onload = () => {
+//           // console.log('Image loaded:', img.src);
+//           if (containerRef.current) { // Null check
+//             containerRef.current.style.backgroundImage = `url(${img.src})`;
+//           }
+//         };
+//         img.onerror = (error) => {
+//           console.error('Error loading image:', error);
+//         };
+//         observer.disconnect();
+//       }
+//     }, { threshold: 0.1 });
+
+//     if (containerRef.current) {
+//       observer.observe(containerRef.current);
+//     }
+
+//     return () => {
+//       if (containerRef.current) {
+//         observer.unobserve(containerRef.current);
+//       }
+//     };
+//   }, []);
+
+//   if (isLoading) {
+//     return (
+//       <div className='flex justify-center items-center h-screen'>
+//         <Loader />
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div
+//     ref={containerRef}
+//       className={`flex flex-col min-h-svh ${allNotes.length > 0 ? 'bg-no-repeat bg-center bg-cover' : 'bg-slate-100'} h-svh w-screen`}
+//         style={allNotes.length > 0 ? { backgroundImage: `url(${backgroundImage})` } : {}}
+//       >
+//       <Navbar userInfo={userInfo} onSearchNote={onSearchNote} handleClearSearch={handleClearSearch} />
+//       <div className='flex-grow container mx-auto'>
+//         {allNotes.length > 0 ? (
+//           <div className='grid grid-cols-2 xs:grid-cols-3 gap-3 mt-10'>
+//             {allNotes.map((item) => (
+//               <NoteCard key={item._id}
+//                 title={item.title}
+//                 date={item.createdOn}
+//                 content={item.content}
+//                 tags={item.tags}
+//                 isPinned={item.isPinned}
+//                 onEdit={() => { handleEdit(item) }}
+//                 onDelete={() => { deleteNote(item) }}
+//                 onPinNote={() => { updateIsPinned(item) }}
+//               />
+//             ))}
+//           </div>
+//         ) : (
+//           <EmptyCard
+//             imgScr={isSearch ? NoDataImg : AddNotesImg}
+//             message={isSearch
+//               ? `Oops! No notes matching your search`
+//               : `Start creating your first note! Click the 'Add' button to jot down your thoughts, ideas and reminders. Let's get started!`
+//             }
+//           />
+//         )}
+//       </div>
+//       <button
+//         className='w-12 h-12 md:w-16 md:h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 fixed right-5 md:right-10 bottom-24 md:bottom-28'
+//         onClick={() => {
+//           setOpenAddEditModel({
+//             isShown: true,
+//             type: "add",
+//             data: null
+//           });
+//         }}
+//       >
+//         <MdAdd className='text-[24px] md:text-[32px] text-white' />
+//       </button>
+
+//       <Modal
+//         isOpen={openAddEditModel.isShown}
+//         onRequestClose={() => { }}
+//         style={{
+//           overlay: {
+//             backgroundColor: "rgba(0, 0, 0, 0.2)",
+//           },
+//         }}
+//         contentLabel=''
+//         className="w-10/12 md:w-5/12 min-w-64 max-h-3/4 rounded-md mx-auto mt-14 p-5 overflow-visible"
+//       >
+//         <AddEditNotes
+//           type={openAddEditModel.type}
+//           noteData={openAddEditModel.data}
+//           onClose={() => {
+//             setOpenAddEditModel({
+//               isShown: false,
+//               type: "add",
+//               data: null
+//             });
+//           }}
+//           getAllNotes={getAllNotes}
+//           showToastMessage={showToastMessage}
+//         />
+//       </Modal>
+
+//       <Toast
+//         isShown={showToastMsg.isShown}
+//         message={showToastMsg.message}
+//         type={showToastMsg.type}
+//         onClose={handleCloseToast}
+//       />
+
+//       <footer className={`text-center py-4 mt-auto bg-slate-200 rounded-xl shadow-custom-top-right ${allNotes.length > 0 ? 'bg-opacity-100' : 'bg-opacity-20'}`}>
+//         <div className='flex justify-center items-center mb-2 space-x-4'>
+//           <a href='https://www.linkedin.com/in/Vasanthamohan-R' target='_blank' rel='noopener noreferrer'>
+//             <FaLinkedin className='text-blue-700 text-2xl md:text-3xl hover:text-blue-800 transition duration-300' />
+//           </a>
+//           <a href='https://github.com/Vasanth-192121' target='_blank' rel='noopener noreferrer'>
+//             <FaGithub className='text-gray-700 text-2xl md:text-3xl hover:text-gray-800 transition duration-300' />
+//           </a>
+//           <a href='mailto:vasanth27092002@gmail.com' target='_blank' rel='noopener noreferrer'>
+//             <FaEnvelope className='text-blue-700 text-2xl md:text-3xl hover:text-blue-800 transition duration-300' />
+//           </a>
+//         </div>
+//         <p className='text-sm text-gray-500'>
+//           &copy; {new Date().getFullYear()} Keeper Notes. All rights reserved.
+//         </p>
+//       </footer>
+//     </div>
+//   );
+// };
+
+// export default Home;
 
 
-import { useState, useEffect, useRef } from 'react';
+
+// import { useState, useEffect, useRef } from "react";
+// import Navbar from "../components/Navbar";
+// import NoteCard from "../components/NoteCard";
+// import { MdAdd } from "react-icons/md";
+// import AddEditNotes from "./AddEditNotes";
+// import Modal from "react-modal";
+// import { useNavigate } from "react-router-dom";
+// import { axiosInstance } from "../utils/axiosInstance";
+// import Toast from "../components/Toast";
+// import EmptyCard from "../components/EmptyCard";
+// import AddNotesImg from "../../src/assets/add-notes.svg";
+// import NoDataImg from "../../src/assets/no-data.svg";
+// import Loader from "../animations/userInfoLoader";
+// import { FaLinkedin, FaGithub, FaEnvelope } from "react-icons/fa";
+// import backgroundImage from "../../src/assets/bg-image.webp";
+
+// Modal.setAppElement("#root");
+
+// const Home = () => {
+//   const [openAddEditModel, setOpenAddEditModel] = useState({
+//     isShown: false,
+//     type: "add",
+//     data: null,
+//   });
+//   const [showToastMsg, setShowToastMsg] = useState({
+//     isShown: false,
+//     type: "add",
+//     message: "",
+//   });
+//   const [userInfo, setUserInfo] = useState(null);
+//   const [allNotes, setAllNotes] = useState([]);
+//   const [isLoading, setIsLoading] = useState(true);
+//   const [isSearch, setIsSearch] = useState(false);
+
+//   const navigate = useNavigate();
+
+//   // --- Helper Functions ---
+//   const handleCloseToast = () => {
+//     setShowToastMsg({ isShown: false, message: "" });
+//   };
+
+//   const showToastMessage = (message, type) => {
+//     setShowToastMsg({ isShown: true, message, type });
+//   };
+
+//   const handleEdit = (noteDetails) => {
+//     setOpenAddEditModel({ isShown: true, data: noteDetails, type: "edit" });
+//   };
+
+//   const handleClearSearch = () => {
+//     setIsSearch(false);
+//     getAllNotes();
+//   };
+
+//   const updateIsPinned = async (noteData) => {
+//     const noteId = noteData._id;
+//     try {
+//       const response = await axiosInstance.put(
+//         `/update-note-pinned/${noteId}`,
+//         { isPinned: !noteData.isPinned }
+//       );
+//       if (response.data?.note) {
+//         showToastMessage(
+//           noteData.isPinned ? "Unpinned Successfully" : "Pinned Successfully"
+//         );
+//         getAllNotes();
+//       }
+//     } catch (error) {
+//       console.error(error);
+//     }
+//   };
+
+//   const deleteNote = async (data) => {
+//     const noteId = data._id;
+//     try {
+//       const response = await axiosInstance.delete(`/delete-note/${noteId}`);
+//       if (response.data && !response.data.error) {
+//         showToastMessage("Note Deleted Successfully", "delete");
+//         getAllNotes();
+//       }
+//     } catch (error) {
+//       console.error("An unexpected error occurred. Please try again.");
+//     }
+//   };
+
+//   // --- API Calls ---
+//   const getUserInfo = async () => {
+//     try {
+//       const response = await axiosInstance.get("/get-user");
+//       if (response.data?.user) {
+//         setUserInfo(response.data.user);
+//       }
+//     } catch (error) {
+//       if (error.response?.status === 401) {
+//         localStorage.clear();
+//         navigate("/login");
+//       }
+//     }
+//   };
+
+//   const getAllNotes = async () => {
+//     try {
+//       const response = await axiosInstance.get("/get-all-notes");
+//       if (response.data?.notes) {
+//         setAllNotes(response.data.notes);
+//       }
+//     } catch (error) {
+//       console.error("An unexpected error occurred. Please try again.");
+//     }
+//   };
+
+//   const onSearchNote = async (query) => {
+//     try {
+//       const response = await axiosInstance.get("/search-notes", {
+//         params: { query },
+//       });
+//       if (response.data?.notes) {
+//         setIsSearch(true);
+//         setAllNotes(response.data.notes);
+//       }
+//     } catch (error) {
+//       console.error(error);
+//     }
+//   };
+
+//   // --- Effects ---
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       setIsLoading(true);
+//       await Promise.all([getAllNotes(), getUserInfo()]);
+//       setIsLoading(false);
+//     };
+//     fetchData();
+//   }, []);
+
+//   // Effect to manage the full-page background
+//   useEffect(() => {
+//     const body = document.body;
+//     // Only set background if not loading
+//     if (!isLoading) {
+//       body.classList.add("bg-no-repeat", "bg-cover", "bg-center");
+//       body.style.backgroundAttachment = "fixed";
+//       body.style.backgroundImage = `url(${backgroundImage})`;
+//     } else {
+//       body.classList.remove("bg-no-repeat", "bg-cover", "bg-center");
+//       body.style.backgroundImage = "none";
+//     }
+
+//     return () => {
+//       body.style.backgroundImage = "none";
+//       body.style.backgroundAttachment = "scroll";
+//       body.classList.remove("bg-no-repeat", "bg-cover", "bg-center");
+//     };
+//   }, [isLoading]);
+
+//   if (isLoading) {
+//     return (
+//       <div className="flex justify-center items-center h-screen bg-white">
+//         <Loader />
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="flex flex-col min-h-screen pb-20">
+//       <Navbar
+//         userInfo={userInfo}
+//         onSearchNote={onSearchNote}
+//         handleClearSearch={handleClearSearch}
+//       />
+
+//       <div className="flex-grow container mx-auto p-4 md:p-6">
+//         {allNotes.length > 0 ? (
+//           <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
+//             {allNotes.map((item) => (
+//               <NoteCard
+//                 key={item._id}
+//                 title={item.title}
+//                 date={item.createdOn}
+//                 content={item.content}
+//                 tags={item.tags}
+//                 isPinned={item.isPinned}
+//                 onEdit={() => handleEdit(item)}
+//                 onDelete={() => deleteNote(item)}
+//                 onPinNote={() => updateIsPinned(item)}
+//               />
+//             ))}
+//           </div>
+//         ) : (
+//           <EmptyCard
+//             imgScr={isSearch ? NoDataImg : AddNotesImg}
+//             message={
+//               isSearch
+//                 ? `Oops! No notes matching your search.`
+//                 : `Start creating your first note! Click the 'Add' button to jot down your thoughts, ideas, and reminders. Let's get started!`
+//             }
+//           />
+//         )}
+//       </div>
+
+//       <button
+//         className="w-14 h-14 md:w-16 md:h-16 flex items-center justify-center rounded-full bg-primary hover:bg-blue-600 fixed right-6 bottom-24 md:right-10 md:bottom-28 shadow-lg transition-transform duration-200 ease-in-out hover:scale-110 z-50"
+//         onClick={() => {
+//           setOpenAddEditModel({ isShown: true, type: "add", data: null });
+//         }}
+//         aria-label="Add a new note"
+//       >
+//         <MdAdd className="text-3xl text-white" />
+//       </button>
+
+//       <Modal
+//         isOpen={openAddEditModel.isShown}
+//         onRequestClose={() => {}}
+//         style={{
+//           overlay: {
+//             backgroundColor: "rgba(0, 0, 0, 0.2)",
+//           },
+//         }}
+//         contentLabel=""
+//         className="w-10/12 md:w-5/12 min-w-64 max-h-3/4 rounded-md mx-auto mt-14 p-5 overflow-visible"
+//       >
+//         <AddEditNotes
+//           type={openAddEditModel.type}
+//           noteData={openAddEditModel.data}
+//           onClose={() => {
+//             setOpenAddEditModel({
+//               isShown: false,
+//               type: "add",
+//               data: null,
+//             });
+//           }}
+//           getAllNotes={getAllNotes}
+//           showToastMessage={showToastMessage}
+//         />
+//       </Modal>
+
+//       <Toast
+//         isShown={showToastMsg.isShown}
+//         message={showToastMsg.message}
+//         type={showToastMsg.type}
+//         onClose={handleCloseToast}
+//       />
+
+//       <footer className="fixed bottom-0 left-0 right-0 z-40 text-center py-4 bg-slate-200 rounded-t-xl shadow-custom-top-right bg-opacity-95">
+//         <div className="flex justify-center items-center mb-2 space-x-4">
+//           <a
+//             href="https://www.linkedin.com/in/Vasanthamohan-R"
+//             target="_blank"
+//             rel="noopener noreferrer"
+//             aria-label="LinkedIn profile"
+//           >
+//             <FaLinkedin className="text-blue-700 text-2xl md:text-3xl hover:text-blue-800 transition duration-300" />
+//           </a>
+//           <a
+//             href="https://github.com/Vasanth-192121"
+//             target="_blank"
+//             rel="noopener noreferrer"
+//             aria-label="GitHub profile"
+//           >
+//             <FaGithub className="text-gray-700 text-2xl md:text-3xl hover:text-gray-800 transition duration-300" />
+//           </a>
+//           <a
+//             href="mailto:vasanth27092002@gmail.com"
+//             target="_blank"
+//             rel="noopener noreferrer"
+//             aria-label="Email address"
+//           >
+//             <FaEnvelope className="text-blue-700 text-2xl md:text-3xl hover:text-blue-800 transition duration-300" />
+//           </a>
+//         </div>
+//         <p className="text-sm text-gray-500">
+//           &copy; {new Date().getFullYear()} Keeper Notes. All rights reserved.
+//         </p>
+//       </footer>
+//     </div>
+//   );
+// };
+
+// export default Home;
+
+
+
+
+
+// import { useState, useEffect } from "react";
+// import Navbar from "../components/Navbar";
+// import NoteCard from "../components/NoteCard";
+// import { MdAdd } from "react-icons/md";
+// import AddEditNotes from "./AddEditNotes";
+// import Modal from "react-modal";
+// import { useNavigate } from "react-router-dom";
+// import { axiosInstance } from "../utils/axiosInstance";
+// import Toast from "../components/Toast";
+// import EmptyCard from "../components/EmptyCard";
+// import AddNotesImg from "../../src/assets/add-notes.svg";
+// import NoDataImg from "../../src/assets/no-data.svg";
+// import Loader from "../animations/userInfoLoader";
+// import { FaLinkedin, FaGithub, FaEnvelope } from "react-icons/fa";
+// import backgroundImage from "../../src/assets/bg-image.webp";
+
+// Modal.setAppElement("#root");
+
+// const Home = () => {
+//     const [openAddEditModel, setOpenAddEditModel] = useState({
+//         isShown: false,
+//         type: "add",
+//         data: null,
+//     });
+//     const [showToastMsg, setShowToastMsg] = useState({
+//         isShown: false,
+//         type: "add",
+//         message: "",
+//     });
+//     const [userInfo, setUserInfo] = useState(null);
+//     const [allNotes, setAllNotes] = useState([]);
+//     const [isLoading, setIsLoading] = useState(true);
+//     const [isSearch, setIsSearch] = useState(false);
+
+//     const navigate = useNavigate();
+
+//     const handleCloseToast = () => {
+//         setShowToastMsg({ isShown: false, message: "" });
+//     };
+
+//     const showToastMessage = (message, type) => {
+//         setShowToastMsg({ isShown: true, message, type });
+//     };
+
+//     const handleEdit = (noteDetails) => {
+//         setOpenAddEditModel({ isShown: true, data: noteDetails, type: "edit" });
+//     };
+
+//     const handleClearSearch = () => {
+//         setIsSearch(false);
+//         getAllNotes();
+//     };
+
+//     const updateIsPinned = async (noteData) => {
+//         const noteId = noteData._id;
+//         try {
+//             const response = await axiosInstance.put(
+//                 `/update-note-pinned/${noteId}`,
+//                 { isPinned: !noteData.isPinned }
+//             );
+//             if (response.data?.note) {
+//                 showToastMessage(
+//                     noteData.isPinned ? "Unpinned Successfully" : "Pinned Successfully"
+//                 );
+//                 getAllNotes();
+//             }
+//         } catch (error) {
+//             console.error(error);
+//         }
+//     };
+
+//     const deleteNote = async (data) => {
+//         const noteId = data._id;
+//         try {
+//             const response = await axiosInstance.delete(`/delete-note/${noteId}`);
+//             if (response.data && !response.data.error) {
+//                 showToastMessage("Note Deleted Successfully", "delete");
+//                 getAllNotes();
+//             }
+//         } catch (error) {
+//             console.error("An unexpected error occurred. Please try again.");
+//         }
+//     };
+
+//     const getUserInfo = async () => {
+//         try {
+//             const response = await axiosInstance.get("/get-user");
+//             if (response.data?.user) {
+//                 setUserInfo(response.data.user);
+//             }
+//         } catch (error) {
+//             if (error.response?.status === 401) {
+//                 localStorage.clear();
+//                 navigate("/login");
+//             }
+//         }
+//     };
+
+//     const getAllNotes = async () => {
+//         try {
+//             const response = await axiosInstance.get("/get-all-notes");
+//             if (response.data?.notes) {
+//                 setAllNotes(response.data.notes);
+//             }
+//         } catch (error) {
+//             console.error("An unexpected error occurred. Please try again.");
+//         }
+//     };
+
+//     const onSearchNote = async (query) => {
+//         try {
+//             const response = await axiosInstance.get("/search-notes", {
+//                 params: { query },
+//             });
+//             if (response.data?.notes) {
+//                 setIsSearch(true);
+//                 setAllNotes(response.data.notes);
+//             }
+//         } catch (error) {
+//             console.error(error);
+//         }
+//     };
+
+//     useEffect(() => {
+//         const fetchData = async () => {
+//             setIsLoading(true);
+//             await Promise.all([getAllNotes(), getUserInfo()]);
+//             setIsLoading(false);
+//         };
+//         fetchData();
+//     }, []);
+
+//     useEffect(() => {
+//         const body = document.body;
+//         if (!isLoading && allNotes.length > 0) {
+//             body.classList.add("bg-no-repeat", "bg-cover", "bg-center");
+//             body.style.backgroundAttachment = "fixed";
+//             body.style.backgroundImage = `url(${backgroundImage})`;
+//         } else {
+//             body.classList.remove("bg-no-repeat", "bg-cover", "bg-center");
+//             body.style.backgroundImage = "none";
+//         }
+//         return () => {
+//             body.style.backgroundImage = "none";
+//             body.style.backgroundAttachment = "scroll";
+//             body.classList.remove("bg-no-repeat", "bg-cover", "bg-center");
+//         };
+//     }, [isLoading, allNotes]);
+
+//     if (isLoading) {
+//         return (
+//             <div className="flex justify-center items-center h-screen bg-white">
+//                 <Loader />
+//             </div>
+//         );
+//     }
+
+//     return (
+//         <div className="flex flex-col min-h-screen pb-20">
+//             <Navbar
+//                 userInfo={userInfo}
+//                 onSearchNote={onSearchNote}
+//                 handleClearSearch={handleClearSearch}
+//             />
+//             <div className="flex-grow container mx-auto p-4 md:p-6">
+//                 {allNotes.length > 0 ? (
+//                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-8">
+//                         {allNotes.map((item) => (
+//                             <NoteCard
+//                                 key={item._id}
+//                                 title={item.title}
+//                                 date={item.createdOn}
+//                                 content={item.content}
+//                                 tags={item.tags}
+//                                 isPinned={item.isPinned}
+//                                 onEdit={() => handleEdit(item)}
+//                                 onDelete={() => deleteNote(item)}
+//                                 onPinNote={() => updateIsPinned(item)}
+//                             />
+//                         ))}
+//                     </div>
+//                 ) : (
+//                     <EmptyCard
+//                         imgScr={isSearch ? NoDataImg : AddNotesImg}
+//                         message={
+//                             isSearch
+//                                 ? `Oops! No notes matching your search.`
+//                                 : `Start creating your first note! Click the 'Add' button to jot down your thoughts, ideas, and reminders. Let's get started!`
+//                         }
+//                     />
+//                 )}
+//             </div>
+//             <button
+//                 className="w-14 h-14 md:w-16 md:h-16 flex items-center justify-center rounded-full bg-primary hover:bg-blue-600 fixed right-6 bottom-24 md:right-10 md:bottom-28 shadow-lg transition-transform duration-200 ease-in-out hover:scale-110 z-50"
+//                 onClick={() => {
+//                     setOpenAddEditModel({ isShown: true, type: "add", data: null });
+//                 }}
+//                 aria-label="Add a new note"
+//             >
+//                 <MdAdd className="text-3xl text-white" />
+//             </button>
+//             <Modal
+//                 isOpen={openAddEditModel.isShown}
+//                 onRequestClose={() => {
+//                     setOpenAddEditModel({ isShown: false, type: "add", data: null });
+//                 }}
+//                 style={{
+//                     overlay: { backgroundColor: "rgba(0, 0, 0, 0.4)" },
+//                     content: {
+//                         top: "50%",
+//                         left: "50%",
+//                         right: "auto",
+//                         bottom: "auto",
+//                         transform: "translate(-50%, -50%)",
+//                         maxWidth: "90%",
+//                         width: "600px",
+//                         maxHeight: "85vh",
+//                         overflowY: "auto",
+//                         padding: "2rem",
+//                         borderRadius: "1rem",
+//                         border: "none",
+//                     },
+//                 }}
+//                 contentLabel="Add/Edit Note Modal"
+//             >
+//                 <AddEditNotes
+//                     type={openAddEditModel.type}
+//                     noteData={openAddEditModel.data}
+//                     onClose={() => {
+//                         setOpenAddEditModel({ isShown: false, type: "add", data: null });
+//                     }}
+//                     getAllNotes={getAllNotes}
+//                     showToastMessage={showToastMessage}
+//                 />
+//             </Modal>
+//             <Toast
+//                 isShown={showToastMsg.isShown}
+//                 message={showToastMsg.message}
+//                 type={showToastMsg.type}
+//                 onClose={handleCloseToast}
+//             />
+//             <footer className="fixed bottom-0 left-0 right-0 z-40 text-center py-4 bg-slate-200 rounded-t-xl shadow-custom-top-right bg-opacity-95">
+//                 <div className="flex justify-center items-center mb-2 space-x-4">
+//                     <a
+//                         href="https://www.linkedin.com/in/Vasanthamohan-R"
+//                         target="_blank"
+//                         rel="noopener noreferrer"
+//                         aria-label="LinkedIn profile"
+//                     >
+//                         <FaLinkedin className="text-blue-700 text-2xl md:text-3xl hover:text-blue-800 transition duration-300" />
+//                     </a>
+//                     <a
+//                         href="https://github.com/Vasanth-192121"
+//                         target="_blank"
+//                         rel="noopener noreferrer"
+//                         aria-label="GitHub profile"
+//                     >
+//                         <FaGithub className="text-gray-700 text-2xl md:text-3xl hover:text-gray-800 transition duration-300" />
+//                     </a>
+//                     <a
+//                         href="mailto:vasanth27092002@gmail.com"
+//                         target="_blank"
+//                         rel="noopener noreferrer"
+//                         aria-label="Email address"
+//                     >
+//                         <FaEnvelope className="text-blue-700 text-2xl md:text-3xl hover:text-blue-800 transition duration-300" />
+//                     </a>
+//                 </div>
+//                 <p className="text-sm text-gray-500">
+//                     &copy; {new Date().getFullYear()} Keeper Notes. All rights reserved.
+//                 </p>
+//             </footer>
+//         </div>
+//     );
+// };
+
+// export default Home;
+
+
+
+
+
+
+
+
+
+// import { useState, useEffect } from "react";
+// import Navbar from "../components/Navbar";
+// import NoteCard from "../components/NoteCard";
+// import { MdAdd } from "react-icons/md";
+// import AddEditNotes from "./AddEditNotes";
+// import Modal from "react-modal";
+// import { useNavigate } from "react-router-dom";
+// import { axiosInstance } from "../utils/axiosInstance";
+// import Toast from "../components/Toast";
+// import EmptyCard from "../components/EmptyCard";
+// import AddNotesImg from "../../src/assets/add-notes.svg";
+// import NoDataImg from "../../src/assets/no-data.svg";
+// import Loader from "../animations/userInfoLoader";
+// import { FaLinkedin, FaGithub, FaEnvelope } from "react-icons/fa";
+// import backgroundImage from "../../src/assets/bg-image.webp";
+
+// Modal.setAppElement("#root");
+
+// const Home = () => {
+//     const [openAddEditModel, setOpenAddEditModel] = useState({
+//         isShown: false,
+//         type: "add",
+//         data: null,
+//     });
+//     const [showToastMsg, setShowToastMsg] = useState({
+//         isShown: false,
+//         type: "add",
+//         message: "",
+//     });
+//     const [userInfo, setUserInfo] = useState(null);
+//     const [allNotes, setAllNotes] = useState([]);
+//     const [isLoading, setIsLoading] = useState(true);
+//     const [isSearch, setIsSearch] = useState(false);
+
+//     const navigate = useNavigate();
+
+//     const handleCloseToast = () => {
+//         setShowToastMsg({ isShown: false, message: "" });
+//     };
+
+//     const showToastMessage = (message, type) => {
+//         setShowToastMsg({ isShown: true, message, type });
+//     };
+
+//     const handleEdit = (noteDetails) => {
+//         setOpenAddEditModel({ isShown: true, data: noteDetails, type: "edit" });
+//     };
+
+//     const handleClearSearch = () => {
+//         setIsSearch(false);
+//         getAllNotes();
+//     };
+
+//     const updateIsPinned = async (noteData) => {
+//         const noteId = noteData._id;
+//         try {
+//             const response = await axiosInstance.put(
+//                 `/update-note-pinned/${noteId}`,
+//                 { isPinned: !noteData.isPinned }
+//             );
+//             if (response.data?.note) {
+//                 showToastMessage(
+//                     noteData.isPinned ? "Unpinned Successfully" : "Pinned Successfully"
+//                 );
+//                 getAllNotes();
+//             }
+//         } catch (error) {
+//             console.error(error);
+//         }
+//     };
+
+//     const deleteNote = async (data) => {
+//         const noteId = data._id;
+//         try {
+//             const response = await axiosInstance.delete(`/delete-note/${noteId}`);
+//             if (response.data && !response.data.error) {
+//                 showToastMessage("Note Deleted Successfully", "delete");
+//                 getAllNotes();
+//             }
+//         } catch (error) {
+//             console.error("An unexpected error occurred. Please try again.");
+//         }
+//     };
+
+//     const getUserInfo = async () => {
+//         try {
+//             const response = await axiosInstance.get("/get-user");
+//             if (response.data?.user) {
+//                 setUserInfo(response.data.user);
+//             }
+//         } catch (error) {
+//             if (error.response?.status === 401) {
+//                 localStorage.clear();
+//                 navigate("/login");
+//             }
+//         }
+//     };
+
+//     const getAllNotes = async () => {
+//         try {
+//             const response = await axiosInstance.get("/get-all-notes");
+//             if (response.data?.notes) {
+//                 setAllNotes(response.data.notes);
+//             }
+//         } catch (error) {
+//             console.error("An unexpected error occurred. Please try again.");
+//         }
+//     };
+
+//     const onSearchNote = async (query) => {
+//         try {
+//             const response = await axiosInstance.get("/search-notes", {
+//                 params: { query },
+//             });
+//             if (response.data?.notes) {
+//                 setIsSearch(true);
+//                 setAllNotes(response.data.notes);
+//             }
+//         } catch (error) {
+//             console.error(error);
+//         }
+//     };
+
+//     useEffect(() => {
+//         const fetchData = async () => {
+//             setIsLoading(true);
+//             await Promise.all([getAllNotes(), getUserInfo()]);
+//             setIsLoading(false);
+//         };
+//         fetchData();
+//     }, []);
+
+//     useEffect(() => {
+//         const body = document.body;
+//         if (!isLoading && allNotes.length > 0) {
+//             body.classList.add("bg-no-repeat", "bg-cover", "bg-center");
+//             body.style.backgroundAttachment = "fixed";
+//             body.style.backgroundImage = `url(${backgroundImage})`;
+//         } else {
+//             body.classList.remove("bg-no-repeat", "bg-cover", "bg-center");
+//             body.style.backgroundImage = "none";
+//         }
+//         return () => {
+//             body.style.backgroundImage = "none";
+//             body.style.backgroundAttachment = "scroll";
+//             body.classList.remove("bg-no-repeat", "bg-cover", "bg-center");
+//         };
+//     }, [isLoading, allNotes]);
+
+//     if (isLoading) {
+//         return (
+//             <div className="flex justify-center items-center h-screen bg-white">
+//                 <Loader />
+//             </div>
+//         );
+//     }
+
+//     return (
+//         <div className="flex flex-col min-h-screen">
+//             <div className="sticky top-0 z-50">
+//                 <Navbar
+//                     userInfo={userInfo}
+//                     onSearchNote={onSearchNote}
+//                     handleClearSearch={handleClearSearch}
+//                 />
+//             </div>
+            
+//             <div className="flex-grow container mx-auto p-4 md:p-6 pt-20">
+//                 {allNotes.length > 0 ? (
+//                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-32">
+//                         {allNotes.map((item) => (
+//                             <NoteCard
+//                                 key={item._id}
+//                                 title={item.title}
+//                                 date={item.createdOn}
+//                                 content={item.content}
+//                                 tags={item.tags}
+//                                 isPinned={item.isPinned}
+//                                 onEdit={() => handleEdit(item)}
+//                                 onDelete={() => deleteNote(item)}
+//                                 onPinNote={() => updateIsPinned(item)}
+//                             />
+//                         ))}
+//                     </div>
+//                 ) : (
+//                     <EmptyCard
+//                         imgScr={isSearch ? NoDataImg : AddNotesImg}
+//                         message={
+//                             isSearch
+//                                 ? `Oops! No notes matching your search.`
+//                                 : `Start creating your first note! Click the 'Add' button to jot down your thoughts, ideas, and reminders. Let's get started!`
+//                         }
+//                     />
+//                 )}
+//             </div>
+//             <button
+//                 className="w-14 h-14 md:w-16 md:h-16 flex items-center justify-center rounded-full bg-primary hover:bg-blue-600 fixed right-6 bottom-24 md:right-10 md:bottom-28 shadow-lg transition-transform duration-200 ease-in-out hover:scale-110 z-50"
+//                 onClick={() => {
+//                     setOpenAddEditModel({ isShown: true, type: "add", data: null });
+//                 }}
+//                 aria-label="Add a new note"
+//             >
+//                 <MdAdd className="text-3xl text-white" />
+//             </button>
+//             <Modal
+//                 isOpen={openAddEditModel.isShown}
+//                 onRequestClose={() => {
+//                     setOpenAddEditModel({ isShown: false, type: "add", data: null });
+//                 }}
+//                 style={{
+//                     overlay: { backgroundColor: "rgba(0, 0, 0, 0.4)" },
+//                     content: {
+//                         top: "50%",
+//                         left: "50%",
+//                         right: "auto",
+//                         bottom: "auto",
+//                         transform: "translate(-50%, -50%)",
+//                         maxWidth: "90%",
+//                         width: "600px",
+//                         maxHeight: "85vh",
+//                         overflowY: "auto",
+//                         padding: "2rem",
+//                         borderRadius: "1rem",
+//                         border: "none",
+//                     },
+//                 }}
+//                 contentLabel="Add/Edit Note Modal"
+//             >
+//                 <AddEditNotes
+//                     type={openAddEditModel.type}
+//                     noteData={openAddEditModel.data}
+//                     onClose={() => {
+//                         setOpenAddEditModel({ isShown: false, type: "add", data: null });
+//                     }}
+//                     getAllNotes={getAllNotes}
+//                     showToastMessage={showToastMessage}
+//                 />
+//             </Modal>
+            
+//             <Toast
+//                 isShown={showToastMsg.isShown}
+//                 message={showToastMsg.message}
+//                 type={showToastMsg.type}
+//                 onClose={handleCloseToast}
+//             />
+            
+//             <footer className="fixed bottom-0 left-0 right-0 z-40 text-center py-4 bg-slate-200 rounded-t-xl shadow-custom-top-right bg-opacity-95">
+//                 <div className="flex justify-center items-center mb-2 space-x-4">
+//                     <a
+//                         href="https://www.linkedin.com/in/Vasanthamohan-R"
+//                         target="_blank"
+//                         rel="noopener noreferrer"
+//                         aria-label="LinkedIn profile"
+//                     >
+//                         <FaLinkedin className="text-blue-700 text-2xl md:text-3xl hover:text-blue-800 transition duration-300" />
+//                     </a>
+//                     <a
+//                         href="https://github.com/Vasanth-192121"
+//                         target="_blank"
+//                         rel="noopener noreferrer"
+//                         aria-label="GitHub profile"
+//                     >
+//                         <FaGithub className="text-gray-700 text-2xl md:text-3xl hover:text-gray-800 transition duration-300" />
+//                     </a>
+//                     <a
+//                         href="mailto:vasanth27092002@gmail.com"
+//                         target="_blank"
+//                         rel="noopener noreferrer"
+//                         aria-label="Email address"
+//                     >
+//                         <FaEnvelope className="text-blue-700 text-2xl md:text-3xl hover:text-blue-800 transition duration-300" />
+//                     </a>
+//                 </div>
+//                 <p className="text-sm text-gray-500">
+//                     &copy; {new Date().getFullYear()} Keeper Notes. All rights reserved.
+//                 </p>
+//             </footer>
+//         </div>
+//     );
+// };
+
+// export default Home;
+
+
+
+
+
+
+
+
+// import { useState, useEffect } from "react";
+// import Navbar from "../components/Navbar";
+// import NoteCard from "../components/NoteCard";
+// import { MdAdd } from "react-icons/md";
+// import AddEditNotes from "./AddEditNotes";
+// import Modal from "react-modal";
+// import { useNavigate } from "react-router-dom";
+// import { axiosInstance } from "../utils/axiosInstance";
+// import Toast from "../components/Toast";
+// import EmptyCard from "../components/EmptyCard";
+// import AddNotesImg from "../../src/assets/add-notes.svg";
+// import NoDataImg from "../../src/assets/no-data.svg";
+// import Loader from "../animations/userInfoLoader";
+// import { FaLinkedin, FaGithub, FaEnvelope } from "react-icons/fa";
+// import backgroundImage from "../../src/assets/bg-image.webp";
+// import ViewNoteModal from "../components/ViewNoteModal";
+
+// Modal.setAppElement("#root");
+
+// const Home = () => {
+//     const [openAddEditModel, setOpenAddEditModel] = useState({
+//         isShown: false,
+//         type: "add",
+//         data: null,
+//     });
+//     const [viewNoteModal, setViewNoteModal] = useState({
+//         isShown: false,
+//         data: null,
+//     });
+//     const [showToastMsg, setShowToastMsg] = useState({
+//         isShown: false,
+//         type: "add",
+//         message: "",
+//     });
+//     const [userInfo, setUserInfo] = useState(null);
+//     const [allNotes, setAllNotes] = useState([]);
+//     const [isLoading, setIsLoading] = useState(true);
+//     const [isSearch, setIsSearch] = useState(false);
+
+//     const navigate = useNavigate();
+
+//     const handleCloseToast = () => {
+//         setShowToastMsg({ isShown: false, message: "" });
+//     };
+
+//     const showToastMessage = (message, type) => {
+//         setShowToastMsg({ isShown: true, message, type });
+//     };
+
+//     const handleEdit = (noteDetails) => {
+//         setOpenAddEditModel({ isShown: true, data: noteDetails, type: "edit" });
+//     };
+
+//     const handleReadMore = (noteDetails) => {
+//         setViewNoteModal({ isShown: true, data: noteDetails });
+//     };
+
+//     const handleClearSearch = () => {
+//         setIsSearch(false);
+//         getAllNotes();
+//     };
+
+//     const updateIsPinned = async (noteData) => {
+//         const noteId = noteData._id;
+//         try {
+//             const response = await axiosInstance.put(
+//                 `/update-note-pinned/${noteId}`,
+//                 { isPinned: !noteData.isPinned }
+//             );
+//             if (response.data?.note) {
+//                 showToastMessage(
+//                     noteData.isPinned ? "Unpinned Successfully" : "Pinned Successfully"
+//                 );
+//                 getAllNotes();
+//             }
+//         } catch (error) {
+//             console.error(error);
+//         }
+//     };
+
+//     const deleteNote = async (data) => {
+//         const noteId = data._id;
+//         try {
+//             const response = await axiosInstance.delete(`/delete-note/${noteId}`);
+//             if (response.data && !response.data.error) {
+//                 showToastMessage("Note Deleted Successfully", "delete");
+//                 getAllNotes();
+//             }
+//         } catch (error) {
+//             console.error("An unexpected error occurred. Please try again.");
+//         }
+//     };
+
+//     const getUserInfo = async () => {
+//         try {
+//             const response = await axiosInstance.get("/get-user");
+//             if (response.data?.user) {
+//                 setUserInfo(response.data.user);
+//             }
+//         } catch (error) {
+//             if (error.response?.status === 401) {
+//                 localStorage.clear();
+//                 navigate("/login");
+//             }
+//         }
+//     };
+
+//     const getAllNotes = async () => {
+//         try {
+//             const response = await axiosInstance.get("/get-all-notes");
+//             if (response.data?.notes) {
+//                 setAllNotes(response.data.notes);
+//             }
+//         } catch (error) {
+//             console.error("An unexpected error occurred. Please try again.");
+//         }
+//     };
+
+//     const onSearchNote = async (query) => {
+//         try {
+//             const response = await axiosInstance.get("/search-notes", {
+//                 params: { query },
+//             });
+//             if (response.data?.notes) {
+//                 setIsSearch(true);
+//                 setAllNotes(response.data.notes);
+//             }
+//         } catch (error) {
+//             console.error(error);
+//         }
+//     };
+
+//     useEffect(() => {
+//         const fetchData = async () => {
+//             setIsLoading(true);
+//             await Promise.all([getAllNotes(), getUserInfo()]);
+//             setIsLoading(false);
+//         };
+//         fetchData();
+//     }, []);
+
+//     useEffect(() => {
+//         const body = document.body;
+//         if (!isLoading && allNotes.length > 0) {
+//             body.classList.add("bg-no-repeat", "bg-cover", "bg-center");
+//             body.style.backgroundAttachment = "fixed";
+//             body.style.backgroundImage = `url(${backgroundImage})`;
+//         } else {
+//             body.classList.remove("bg-no-repeat", "bg-cover", "bg-center");
+//             body.style.backgroundImage = "none";
+//         }
+//         return () => {
+//             body.style.backgroundImage = "none";
+//             body.style.backgroundAttachment = "scroll";
+//             body.classList.remove("bg-no-repeat", "bg-cover", "bg-center");
+//         };
+//     }, [isLoading, allNotes]);
+
+//     if (isLoading) {
+//         return (
+//             <div className="flex justify-center items-center h-screen bg-white">
+//                 <Loader />
+//             </div>
+//         );
+//     }
+
+//     return (
+//         <div className="flex flex-col min-h-screen">
+//             <div className="sticky top-0 z-50">
+//                 <Navbar
+//                     userInfo={userInfo}
+//                     onSearchNote={onSearchNote}
+//                     handleClearSearch={handleClearSearch}
+//                 />
+//             </div>
+            
+//             <div className="flex-grow container mx-auto p-4 md:p-6 pt-20">
+//                 {allNotes.length > 0 ? (
+//                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-32">
+//                         {allNotes.map((item) => (
+//                             <NoteCard
+//                                 key={item._id}
+//                                 title={item.title}
+//                                 date={item.createdOn}
+//                                 content={item.content}
+//                                 tags={item.tags}
+//                                 isPinned={item.isPinned}
+//                                 onEdit={() => handleEdit(item)}
+//                                 onDelete={() => deleteNote(item)}
+//                                 onPinNote={() => updateIsPinned(item)}
+//                                 onReadMore={() => handleReadMore(item)}
+//                             />
+//                         ))}
+//                     </div>
+//                 ) : (
+//                     <EmptyCard
+//                         imgScr={isSearch ? NoDataImg : AddNotesImg}
+//                         message={
+//                             isSearch
+//                                 ? `Oops! No notes matching your search.`
+//                                 : `Start creating your first note! Click the 'Add' button to jot down your thoughts, ideas, and reminders. Let's get started!`
+//                         }
+//                     />
+//                 )}
+//             </div>
+//             <button
+//                 className="w-14 h-14 md:w-16 md:h-16 flex items-center justify-center rounded-full bg-primary hover:bg-blue-600 fixed right-6 bottom-24 md:right-10 md:bottom-28 shadow-lg transition-transform duration-200 ease-in-out hover:scale-110 z-50"
+//                 onClick={() => {
+//                     setOpenAddEditModel({ isShown: true, type: "add", data: null });
+//                 }}
+//                 aria-label="Add a new note"
+//             >
+//                 <MdAdd className="text-3xl text-white" />
+//             </button>
+//             <Modal
+//                 isOpen={openAddEditModel.isShown}
+//                 onRequestClose={() => {
+//                     setOpenAddEditModel({ isShown: false, type: "add", data: null });
+//                 }}
+//                 style={{
+//                     overlay: { backgroundColor: "rgba(0, 0, 0, 0.4)" },
+//                 }}
+//                 contentLabel="Add/Edit Note Modal"
+//                         className="w-10/12 md:w-5/12 min-w-64 max-h-3/4 rounded-md mx-auto mt-44 p-5 overflow-visible"
+
+//             >
+//                 <AddEditNotes
+//                     type={openAddEditModel.type}
+//                     noteData={openAddEditModel.data}
+//                     onClose={() => {
+//                         setOpenAddEditModel({ isShown: false, type: "add", data: null });
+//                     }}
+//                     getAllNotes={getAllNotes}
+//                     showToastMessage={showToastMessage}
+//                 />
+//             </Modal>
+            
+//             <Toast
+//                 isShown={showToastMsg.isShown}
+//                 message={showToastMsg.message}
+//                 type={showToastMsg.type}
+//                 onClose={handleCloseToast}
+//             />
+            
+//             {viewNoteModal.isShown && (
+//                 <Modal
+//                     isOpen={viewNoteModal.isShown}
+//                     onRequestClose={() => setViewNoteModal({ isShown: false, data: null })}
+//                     style={{
+//                         overlay: { backgroundColor: "rgba(0, 0, 0, 0.4)" },
+                        
+//                     }}
+//                     contentLabel="View Note Modal"
+//                             className="w-10/12 md:w-5/12 min-w-64 max-h-3/4 rounded-md mx-auto mt-14 p-5 overflow-visible"
+
+//                 >
+//                     <ViewNoteModal
+//                         noteData={viewNoteModal.data}
+//                         onClose={() => setViewNoteModal({ isShown: false, data: null })}
+//                     />
+//                 </Modal>
+//             )}
+
+//             <footer className="fixed bottom-0 left-0 right-0 z-40 text-center py-4 bg-slate-200 rounded-t-xl shadow-custom-top-right bg-opacity-95">
+//                 <div className="flex justify-center items-center mb-2 space-x-4">
+//                     <a
+//                         href="https://www.linkedin.com/in/Vasanthamohan-R"
+//                         target="_blank"
+//                         rel="noopener noreferrer"
+//                         aria-label="LinkedIn profile"
+//                     >
+//                         <FaLinkedin className="text-blue-700 text-2xl md:text-3xl hover:text-blue-800 transition duration-300" />
+//                     </a>
+//                     <a
+//                         href="https://github.com/Vasanth-192121"
+//                         target="_blank"
+//                         rel="noopener noreferrer"
+//                         aria-label="GitHub profile"
+//                     >
+//                         <FaGithub className="text-gray-700 text-2xl md:text-3xl hover:text-gray-800 transition duration-300" />
+//                     </a>
+//                     <a
+//                         href="mailto:vasanth27092002@gmail.com"
+//                         target="_blank"
+//                         rel="noopener noreferrer"
+//                         aria-label="Email address"
+//                     >
+//                         <FaEnvelope className="text-blue-700 text-2xl md:text-3xl hover:text-blue-800 transition duration-300" />
+//                     </a>
+//                 </div>
+//                 <p className="text-sm text-gray-500">
+//                     &copy; {new Date().getFullYear()} Keeper Notes. All rights reserved.
+//                 </p>
+//             </footer>
+//         </div>
+//     );
+// };
+
+// export default Home;
+
+
+import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
-import NoteCard from '../components/NoteCard';
-import { MdAdd } from 'react-icons/md';
-import AddEditNotes from './AddEditNotes';
+import NoteCard from "../components/NoteCard";
+import { MdAdd } from "react-icons/md";
+import AddEditNotes from "./AddEditNotes";
 import Modal from "react-modal";
-import { useNavigate } from 'react-router-dom';
-import { axiosInstance } from '../utils/axiosInstance';
-import Toast from '../components/Toast';
-import EmptyCard from '../components/EmptyCard';
-import AddNotesImg from '../../src/assets/add-notes.svg';
+import { useNavigate } from "react-router-dom";
+import { axiosInstance } from "../utils/axiosInstance";
+import Toast from "../components/Toast";
+import EmptyCard from "../components/EmptyCard";
+import AddNotesImg from "../../src/assets/add-notes.svg";
 import NoDataImg from "../../src/assets/no-data.svg";
-import Loader from '../animations/userInfoLoader'; 
-import { FaLinkedin, FaGithub, FaEnvelope } from 'react-icons/fa';
-import backgroundImage from '../../src/assets/bg-image.webp'; // Assuming public folder is at '../../src/assets'
-import bgImage from '../../src/assets/bg-image.webp';
+import Loader from "../animations/userInfoLoader";
+import { FaLinkedin, FaGithub, FaEnvelope } from "react-icons/fa";
+import backgroundImage from "../../src/assets/bg-image.webp";
+import ViewNoteModal from "../components/ViewNoteModal";
+
+Modal.setAppElement("#root");
 
 const Home = () => {
-  const [openAddEditModel, setOpenAddEditModel] = useState({
-    isShown: false,
-    type: "add",
-    data: null,
-  });
-
-  const [showToastMsg, setShowToastMsg] = useState({
-    isShown: false,
-    type: "add",
-    message: ""
-  });
-
-  const handleCloseToast = () => {
-    setShowToastMsg({
-      isShown: false,
-      message: ""
+    const [openAddEditModel, setOpenAddEditModel] = useState({
+        isShown: false,
+        type: "add",
+        data: null,
     });
-  };
-
-  const showToastMessage = (message, type) => {
-    setShowToastMsg({
-      isShown: true,
-      message,
-      type
+    const [viewNoteModal, setViewNoteModal] = useState({
+        isShown: false,
+        data: null,
     });
-  };
+    const [showToastMsg, setShowToastMsg] = useState({
+        isShown: false,
+        type: "add",
+        message: "",
+    });
+    const [userInfo, setUserInfo] = useState(null);
+    const [allNotes, setAllNotes] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isSearch, setIsSearch] = useState(false);
 
-  const [userInfo, setUserInfo] = useState(null);
-  const [allNotes, setAllNotes] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSearch, setIsSearch] = useState(false);
+    const navigate = useNavigate();
 
-  const navigate = useNavigate();
-  const containerRef = useRef(null);
-
-  const handleEdit = (noteDetails) => {
-    setOpenAddEditModel({ isShown: true, data: noteDetails, type: "edit" });
-  };
-
-  const getUserInfo = async () => {
-    try {
-      const response = await axiosInstance.get("/get-user");
-
-      if (response.data && response.data.user) {
-        setUserInfo(response.data.user);
-      }
-    } catch (error) {
-      console.log('Error fetching user info:', error);
-      if (error.response) {
-        console.log('Response Data:', error.response.data);
-        console.log('Response Status:', error.response.status);
-      }
-      if (error.response && error.response.status === 401) {
-        localStorage.clear();
-        navigate("/login");
-      }
-    }
-  };
-
-  const getAllNotes = async () => {
-    try {
-      const response = await axiosInstance.get("/get-all-notes");
-
-      if (response.data && response.data.notes) {
-        setAllNotes(response.data.notes);
-      }
-    } catch (error) {
-      console.log("An unexpected error occurred. Please try again.");
-    }
-  };
-
-  const deleteNote = async (data) => {
-    const noteId = data._id;
-    try {
-      const response = await axiosInstance.delete("/delete-note/" + noteId);
-      if (response.data && !response.data.error) {
-        showToastMessage("Note Deleted Successfully", "delete");
-        getAllNotes();
-      }
-    } catch (error) {
-      console.log("An unexpected error occurred. Please try again.");
-    }
-  };
-
-  const onSearchNote = async (query) => {
-    try {
-      const response = await axiosInstance.get("/search-notes", { params: { query } });
-      if (response.data && response.data.notes) {
-        setIsSearch(true);
-        setAllNotes(response.data.notes);
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const updateIsPinned = async (noteData) => {
-    const noteId = noteData._id;
-    try {
-      const response = await axiosInstance.put("/update-note-pinned/" + noteId, { "isPinned": !noteData.isPinned });
-      if (response.data && response.data.note) {
-        noteData.isPinned ? showToastMessage("Unpinned Successfully") : showToastMessage("Pinned Successfully");
-        getAllNotes();
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const handleClearSearch = () => {
-    setIsSearch(false);
-    getAllNotes();
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      setIsLoading(true);
-      await getAllNotes();
-      await getUserInfo();
-      setIsLoading(false);
+    const handleCloseToast = () => {
+        setShowToastMsg({ isShown: false, message: "" });
     };
-    fetchData();
-  }, []);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        const img = new Image();
-        img.src = bgImage; // Using the imported path
-        // img.src = '/bg-image.webp'; // Path relative to the public folder
-        img.onload = () => {
-          // console.log('Image loaded:', img.src);
-          if (containerRef.current) { // Null check
-            containerRef.current.style.backgroundImage = `url(${img.src})`;
-          }
-        };
-        img.onerror = (error) => {
-          console.error('Error loading image:', error);
-        };
-        observer.disconnect();
-      }
-    }, { threshold: 0.1 });
-  
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
-    }
-  
-    return () => {
-      if (containerRef.current) {
-        observer.unobserve(containerRef.current);
-      }
+    const showToastMessage = (message, type) => {
+        setShowToastMsg({ isShown: true, message, type });
     };
-  }, []);
 
-  if (isLoading) {
-    return (
-      <div className='flex justify-center items-center h-screen'>
-        <Loader />
-      </div>
-    );
-  }
+    const handleEdit = (noteDetails) => {
+        setOpenAddEditModel({ isShown: true, data: noteDetails, type: "edit" });
+    };
 
-  return (
-    <div
-    ref={containerRef}
-      className={`flex flex-col min-h-svh ${allNotes.length > 0 ? 'bg-no-repeat bg-center bg-cover' : 'bg-slate-100'} h-svh w-screen`}
-        style={allNotes.length > 0 ? { backgroundImage: `url(${backgroundImage})` } : {}}
-      >
-      <Navbar userInfo={userInfo} onSearchNote={onSearchNote} handleClearSearch={handleClearSearch} />
-      <div className='flex-grow container mx-auto'>
-        {allNotes.length > 0 ? (
-          <div className='grid grid-cols-2 xs:grid-cols-3 gap-3 mt-10'>
-            {allNotes.map((item) => (
-              <NoteCard key={item._id}
-                title={item.title}
-                date={item.createdOn}
-                content={item.content}
-                tags={item.tags}
-                isPinned={item.isPinned}
-                onEdit={() => { handleEdit(item) }}
-                onDelete={() => { deleteNote(item) }}
-                onPinNote={() => { updateIsPinned(item) }}
-              />
-            ))}
-          </div>
-        ) : (
-          <EmptyCard
-            imgScr={isSearch ? NoDataImg : AddNotesImg}
-            message={isSearch
-              ? `Oops! No notes matching your search`
-              : `Start creating your first note! Click the 'Add' button to jot down your thoughts, ideas and reminders. Let's get started!`
+    const handleReadMore = (noteDetails) => {
+        setViewNoteModal({ isShown: true, data: noteDetails });
+    };
+
+    const handleClearSearch = () => {
+        setIsSearch(false);
+        getAllNotes();
+    };
+
+    const updateIsPinned = async (noteData) => {
+        const noteId = noteData._id;
+        try {
+            const response = await axiosInstance.put(
+                `/update-note-pinned/${noteId}`,
+                { isPinned: !noteData.isPinned }
+            );
+            if (response.data?.note) {
+                showToastMessage(
+                    noteData.isPinned ? "Unpinned Successfully" : "Pinned Successfully"
+                );
+                getAllNotes();
             }
-          />
-        )}
-      </div>
-      <button
-        className='w-12 h-12 md:w-16 md:h-16 flex items-center justify-center rounded-2xl bg-primary hover:bg-blue-600 fixed right-5 md:right-10 bottom-24 md:bottom-28'
-        onClick={() => {
-          setOpenAddEditModel({
-            isShown: true,
-            type: "add",
-            data: null
-          });
-        }}
-      >
-        <MdAdd className='text-[24px] md:text-[32px] text-white' />
-      </button>
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
-      <Modal
-        isOpen={openAddEditModel.isShown}
-        onRequestClose={() => { }}
-        style={{
-          overlay: {
-            backgroundColor: "rgba(0, 0, 0, 0.2)",
-          },
-        }}
-        contentLabel=''
-        className="w-10/12 md:w-5/12 min-w-64 max-h-3/4 rounded-md mx-auto mt-14 p-5 overflow-visible"
-      >
-        <AddEditNotes
-          type={openAddEditModel.type}
-          noteData={openAddEditModel.data}
-          onClose={() => {
-            setOpenAddEditModel({
-              isShown: false,
-              type: "add",
-              data: null
+    const deleteNote = async (data) => {
+        const noteId = data._id;
+        try {
+            const response = await axiosInstance.delete(`/delete-note/${noteId}`);
+            if (response.data && !response.data.error) {
+                showToastMessage("Note Deleted Successfully", "delete");
+                getAllNotes();
+            }
+        } catch (error) {
+            console.error("An unexpected error occurred. Please try again.");
+        }
+    };
+
+    const getUserInfo = async () => {
+        try {
+            const response = await axiosInstance.get("/get-user");
+            if (response.data?.user) {
+                setUserInfo(response.data.user);
+            }
+        } catch (error) {
+            if (error.response?.status === 401) {
+                localStorage.clear();
+                navigate("/login");
+            }
+        }
+    };
+
+    const getAllNotes = async () => {
+        try {
+            const response = await axiosInstance.get("/get-all-notes");
+            if (response.data?.notes) {
+                setAllNotes(response.data.notes);
+            }
+        } catch (error) {
+            console.error("An unexpected error occurred. Please try again.");
+        }
+    };
+
+    const onSearchNote = async (query) => {
+        try {
+            const response = await axiosInstance.get("/search-notes", {
+                params: { query },
             });
-          }}
-          getAllNotes={getAllNotes}
-          showToastMessage={showToastMessage}
-        />
-      </Modal>
+            if (response.data?.notes) {
+                setIsSearch(true);
+                setAllNotes(response.data.notes);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
 
-      <Toast
-        isShown={showToastMsg.isShown}
-        message={showToastMsg.message}
-        type={showToastMsg.type}
-        onClose={handleCloseToast}
-      />
+    useEffect(() => {
+        const fetchData = async () => {
+            setIsLoading(true);
+            await Promise.all([getAllNotes(), getUserInfo()]);
+            setIsLoading(false);
+        };
+        fetchData();
+    }, []);
 
-      <footer className={`text-center py-4 mt-auto bg-slate-200 rounded-xl shadow-custom-top-right ${allNotes.length > 0 ? 'bg-opacity-100' : 'bg-opacity-20'}`}>
-        <div className='flex justify-center items-center mb-2 space-x-4'>
-          <a href='https://www.linkedin.com/in/Vasanthamohan-R' target='_blank' rel='noopener noreferrer'>
-            <FaLinkedin className='text-blue-700 text-2xl md:text-3xl hover:text-blue-800 transition duration-300' />
-          </a>
-          <a href='https://github.com/Vasanth-192121' target='_blank' rel='noopener noreferrer'>
-            <FaGithub className='text-gray-700 text-2xl md:text-3xl hover:text-gray-800 transition duration-300' />
-          </a>
-          <a href='mailto:vasanth27092002@gmail.com' target='_blank' rel='noopener noreferrer'>
-            <FaEnvelope className='text-blue-700 text-2xl md:text-3xl hover:text-blue-800 transition duration-300' />
-          </a>
+    useEffect(() => {
+        const body = document.body;
+        if (!isLoading && allNotes.length > 0) {
+            body.classList.add("bg-no-repeat", "bg-cover", "bg-center");
+            body.style.backgroundAttachment = "fixed";
+            body.style.backgroundImage = `url(${backgroundImage})`;
+        } else {
+            body.classList.remove("bg-no-repeat", "bg-cover", "bg-center");
+            body.style.backgroundImage = "none";
+        }
+        return () => {
+            body.style.backgroundImage = "none";
+            body.style.backgroundAttachment = "scroll";
+            body.classList.remove("bg-no-repeat", "bg-cover", "bg-center");
+        };
+    }, [isLoading, allNotes]);
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-screen bg-white">
+                <Loader />
+            </div>
+        );
+    }
+
+    const modalStyles = {
+        overlay: {
+            backgroundColor: "rgba(0, 0, 0, 0.4)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+        },
+        content: {
+            position: "relative",
+            top: "auto",
+            left: "auto",
+            right: "auto",
+            bottom: "auto",
+            maxWidth: "90%",
+            width: "600px",
+            maxHeight: "90vh",
+            overflowY: "auto",
+            padding: "2rem",
+            borderRadius: "1rem",
+            border: "none",
+            backgroundColor: "transparent",
+            boxShadow: "none"
+        },
+    };
+
+    return (
+        <div className="flex flex-col min-h-screen">
+            <div className="sticky top-0 z-50">
+                <Navbar
+                    userInfo={userInfo}
+                    onSearchNote={onSearchNote}
+                    handleClearSearch={handleClearSearch}
+                />
+            </div>
+            
+            <div className="flex-grow container mx-auto p-4 md:p-6 pt-20">
+                {allNotes.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-32">
+                        {allNotes.map((item) => (
+                            <NoteCard
+                                key={item._id}
+                                title={item.title}
+                                date={item.createdOn}
+                                content={item.content}
+                                tags={item.tags}
+                                isPinned={item.isPinned}
+                                onEdit={() => handleEdit(item)}
+                                onDelete={() => deleteNote(item)}
+                                onPinNote={() => updateIsPinned(item)}
+                                onReadMore={() => handleReadMore(item)}
+                            />
+                        ))}
+                    </div>
+                ) : (
+                    <EmptyCard
+                        imgScr={isSearch ? NoDataImg : AddNotesImg}
+                        message={
+                            isSearch
+                                ? `Oops! No notes matching your search.`
+                                : `Start creating your first note! Click the 'Add' button to jot down your thoughts, ideas, and reminders. Let's get started!`
+                        }
+                    />
+                )}
+            </div>
+            <button
+                className="w-14 h-14 md:w-16 md:h-16 flex items-center justify-center rounded-full bg-primary hover:bg-blue-600 fixed right-6 bottom-24 md:right-10 md:bottom-28 shadow-lg transition-transform duration-200 ease-in-out hover:scale-110 z-50"
+                onClick={() => {
+                    setOpenAddEditModel({ isShown: true, type: "add", data: null });
+                }}
+                aria-label="Add a new note"
+            >
+                <MdAdd className="text-3xl text-white" />
+            </button>
+            <Modal
+                isOpen={openAddEditModel.isShown}
+                onRequestClose={() => {
+                    setOpenAddEditModel({ isShown: false, type: "add", data: null });
+                }}
+                style={modalStyles}
+                contentLabel="Add/Edit Note Modal"
+            >
+                <AddEditNotes
+                    type={openAddEditModel.type}
+                    noteData={openAddEditModel.data}
+                    onClose={() => {
+                        setOpenAddEditModel({ isShown: false, type: "add", data: null });
+                    }}
+                    getAllNotes={getAllNotes}
+                    showToastMessage={showToastMessage}
+                />
+            </Modal>
+            
+            <Toast
+                isShown={showToastMsg.isShown}
+                message={showToastMsg.message}
+                type={showToastMsg.type}
+                onClose={handleCloseToast}
+            />
+            
+            {viewNoteModal.isShown && (
+                <Modal
+                    isOpen={viewNoteModal.isShown}
+                    onRequestClose={() => setViewNoteModal({ isShown: false, data: null })}
+                    style={modalStyles}
+                    contentLabel="View Note Modal"
+                >
+                    <ViewNoteModal
+                        noteData={viewNoteModal.data}
+                        onClose={() => setViewNoteModal({ isShown: false, data: null })}
+                    />
+                </Modal>
+            )}
+
+            <footer className="fixed bottom-0 left-0 right-0 z-40 text-center py-4 bg-slate-200 rounded-t-xl shadow-custom-top-right bg-opacity-95">
+                <div className="flex justify-center items-center mb-2 space-x-4">
+                    <a
+                        href="https://www.linkedin.com/in/Vasanthamohan-R"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="LinkedIn profile"
+                    >
+                        <FaLinkedin className="text-blue-700 text-2xl md:text-3xl hover:text-blue-800 transition duration-300" />
+                    </a>
+                    <a
+                        href="https://github.com/Vasanth-192121"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="GitHub profile"
+                    >
+                        <FaGithub className="text-gray-700 text-2xl md:text-3xl hover:text-gray-800 transition duration-300" />
+                    </a>
+                    <a
+                        href="mailto:vasanth27092002@gmail.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Email address"
+                    >
+                        <FaEnvelope className="text-blue-700 text-2xl md:text-3xl hover:text-blue-800 transition duration-300" />
+                    </a>
+                </div>
+                <p className="text-sm text-gray-500">
+                    &copy; {new Date().getFullYear()} Keeper Notes. All rights reserved.
+                </p>
+            </footer>
         </div>
-        <p className='text-sm text-gray-500'>
-          &copy; {new Date().getFullYear()} Keeper Notes. All rights reserved.
-        </p>
-      </footer>
-    </div>
-  );
+    );
 };
 
 export default Home;

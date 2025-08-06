@@ -573,17 +573,178 @@
 
 
 
-import React, { useState } from 'react';
+// import React, { useState } from 'react';
+// import TagInput from '../components/TagInput';
+// import { MdClose } from 'react-icons/md';
+// import { axiosInstance } from '../utils/axiosInstance';
+// import '../index.css'; // Make sure to import the CSS file where the animation is defined
+
+// const AddEditNotes = ({ noteData, type, getAllNotes, onClose, showToastMessage }) => {
+//     const [title, setTitle] = useState(noteData?.title || "");
+//     const [content, setContent] = useState(noteData?.content || "");
+//     const [tags, setTags] = useState(noteData?.tags || []);
+//     const [error, setError] = useState(null);
+
+//     // Add Note
+//     const addNewNote = async () => {
+//         try {
+//             const response = await axiosInstance.post("/add-note", {
+//                 title,
+//                 content,
+//                 tags
+//             });
+//             if (response.data && response.data.note) {
+//                 showToastMessage("Note Added Successfully");
+//                 getAllNotes();
+//                 onClose();
+//             }
+//         } catch (error) {
+//             if (error.response && error.response.data && error.response.data.message) {
+//                 setError(error.response.data.message);
+//             }
+//         }
+//     };
+
+//     // Edit Note
+//     const editNote = async () => {
+//         const noteId = noteData._id;
+//         try {
+//             const response = await axiosInstance.put("/edit-note/" + noteId, {
+//                 title,
+//                 content,
+//                 tags
+//             });
+//             if (response.data && response.data.note) {
+//                 showToastMessage("Note Updated Successfully");
+//                 getAllNotes();
+//                 onClose();
+//             }
+//         } catch (error) {
+//             if (error.response && error.response.data && error.response.data.message) {
+//                 setError(error.response.data.message);
+//             }
+//         }
+//     };
+
+//     const handleAddNote = () => {
+//         if (!title) {
+//             setError("Please enter the title.");
+//             return;
+//         }
+//         if (!content) {
+//             setError("Please enter the content.");
+//             return;
+//         }
+//         setError("");
+//         if (type === "edit") {
+//             editNote();
+//         } else {
+//             addNewNote();
+//         }
+//     };
+
+//     return (
+//         <div className="relative bg-white p-4 md:p-8 rounded-xl shadow-lg max-w-md md:max-w-lg mx-auto transition-all duration-500 transform pop-up">
+//             <button 
+//                 className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center absolute -top-3 -right-3 bg-gray-200 hover:bg-gray-300 transition duration-300"
+//                 onClick={onClose}
+//             >
+//                 <MdClose className="text-xl text-red-600" />
+//             </button>
+//             <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4 md:mb-6">{type === "edit" ? "Edit Note" : "Add Note"}</h2>
+//             <div className="flex flex-col gap-2 md:gap-4">
+//                 <label className="text-sm md:text-lg font-medium text-gray-600">Title</label>
+//                 <input 
+//                     type="text"
+//                     className="w-full p-2 md:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                     placeholder="Go to gym at 5pm"
+//                     value={title}
+//                     onChange={({ target }) => setTitle(target.value)}
+//                 />
+//             </div>
+//             <div className="flex flex-col gap-2 md:gap-4 mt-4">
+//                 <label className="text-sm md:text-lg font-medium text-gray-600">Content</label>
+//                 <textarea 
+//                     className="w-full p-2 md:p-3 border border-gray-300 rounded-lg h-32 md:h-40 focus:outline-none focus:ring-2 focus:ring-blue-500"
+//                     placeholder="Content"
+//                     value={content}
+//                     onChange={({ target }) => setContent(target.value)}
+//                 />
+//             </div>
+//             <div className="mt-3 md:mt-4">
+//                 <label className="text-sm md:text-lg font-medium text-gray-600">Tags</label>
+//                 <TagInput 
+//                     tags={tags}
+//                     setTags={setTags}
+//                 />
+//             </div>
+//             {error && <p className="text-red-500 text-sm md:text-base mt-3 md:mt-4">{error}</p>}
+//             <button 
+//                 className="w-full bg-blue-500 text-white p-2 md:p-3 rounded-lg mt-5 md:mt-6 hover:bg-blue-600 transition-all"
+//                 onClick={handleAddNote}
+//             >
+//                 {type === "edit" ? "Update" : "Add"}
+//             </button>
+//         </div>
+//     );
+// };
+
+// export default AddEditNotes;
+
+import React, { useState, useEffect, useCallback } from 'react';
 import TagInput from '../components/TagInput';
-import { MdClose } from 'react-icons/md';
+import { MdClose, MdTag } from 'react-icons/md';
 import { axiosInstance } from '../utils/axiosInstance';
-import '../index.css'; // Make sure to import the CSS file where the animation is defined
+import { useDebounce } from 'use-debounce';
+import '../index.css';
 
 const AddEditNotes = ({ noteData, type, getAllNotes, onClose, showToastMessage }) => {
     const [title, setTitle] = useState(noteData?.title || "");
     const [content, setContent] = useState(noteData?.content || "");
     const [tags, setTags] = useState(noteData?.tags || []);
+    const [suggestedTags, setSuggestedTags] = useState([]);
+    const [isSuggesting, setIsSuggesting] = useState(false);
     const [error, setError] = useState(null);
+
+    const [debouncedTitle] = useDebounce(title, 1000);
+    const [debouncedContent] = useDebounce(content, 1000);
+
+    const getSuggestedTags = useCallback(async (text) => {
+        if (!text || text.trim() === '') {
+            setSuggestedTags([]);
+            return;
+        }
+
+        setIsSuggesting(true);
+        try {
+            const response = await axiosInstance.post("/suggest-tags", { text });
+            if (response.data && response.data.tags) {
+                // Filter out tags that are already in the user's list
+                const uniqueTags = response.data.tags.filter(
+                    (tag) => !tags.some((userTag) => userTag.toLowerCase() === tag.toLowerCase())
+                );
+                setSuggestedTags(uniqueTags);
+            }
+        } catch (error) {
+            console.error('Error fetching suggested tags:', error);
+            setSuggestedTags([]);
+        } finally {
+            setIsSuggesting(false);
+        }
+    }, [tags]);
+
+    useEffect(() => {
+        const textToAnalyze = `${debouncedTitle} ${debouncedContent}`;
+        getSuggestedTags(textToAnalyze);
+    }, [debouncedTitle, debouncedContent, getSuggestedTags]);
+
+    const handleAddSuggestedTag = (tag) => {
+        if (!tags.some((userTag) => userTag.toLowerCase() === tag.toLowerCase())) {
+            setTags([...tags, tag]);
+            // Remove the added tag from the suggested list
+            setSuggestedTags(suggestedTags.filter((t) => t !== tag));
+        }
+    };
 
     // Add Note
     const addNewNote = async () => {
@@ -591,7 +752,7 @@ const AddEditNotes = ({ noteData, type, getAllNotes, onClose, showToastMessage }
             const response = await axiosInstance.post("/add-note", {
                 title,
                 content,
-                tags
+                tags,
             });
             if (response.data && response.data.note) {
                 showToastMessage("Note Added Successfully");
@@ -612,7 +773,7 @@ const AddEditNotes = ({ noteData, type, getAllNotes, onClose, showToastMessage }
             const response = await axiosInstance.put("/edit-note/" + noteId, {
                 title,
                 content,
-                tags
+                tags,
             });
             if (response.data && response.data.note) {
                 showToastMessage("Note Updated Successfully");
@@ -644,47 +805,72 @@ const AddEditNotes = ({ noteData, type, getAllNotes, onClose, showToastMessage }
     };
 
     return (
-        <div className="relative bg-white p-4 md:p-8 rounded-xl shadow-lg max-w-md md:max-w-lg mx-auto transition-all duration-500 transform pop-up">
+        <div className="relative bg-white p-6 md:p-8 rounded-2xl shadow-2xl max-w-lg mx-auto transition-all duration-500 transform scale-100 opacity-100">
             <button 
-                className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center absolute -top-3 -right-3 bg-gray-200 hover:bg-gray-300 transition duration-300"
+                className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center absolute -top-4 -right-4 bg-gray-100 hover:bg-gray-200 transition-colors duration-300 shadow-md focus:outline-none"
                 onClick={onClose}
             >
-                <MdClose className="text-xl text-red-600" />
+                <MdClose className="text-xl text-red-500" />
             </button>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4 md:mb-6">{type === "edit" ? "Edit Note" : "Add Note"}</h2>
-            <div className="flex flex-col gap-2 md:gap-4">
-                <label className="text-sm md:text-lg font-medium text-gray-600">Title</label>
-                <input 
-                    type="text"
-                    className="w-full p-2 md:p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Go to gym at 5pm"
-                    value={title}
-                    onChange={({ target }) => setTitle(target.value)}
-                />
+            <h2 className="text-2xl md:text-3xl font-extrabold text-gray-800 mb-6 border-b pb-4">
+                {type === "edit" ? "Edit Note" : "Add New Note"}
+            </h2>
+            <div className="flex flex-col gap-4">
+                <div>
+                    <label className="text-sm font-semibold text-gray-700">Title</label>
+                    <input 
+                        type="text"
+                        className="w-full p-3 border border-gray-300 rounded-lg mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                        placeholder="e.g., Go to the gym at 5pm"
+                        value={title}
+                        onChange={({ target }) => setTitle(target.value)}
+                    />
+                </div>
+                <div>
+                    <label className="text-sm font-semibold text-gray-700">Content</label>
+                    <textarea 
+                        className="w-full p-3 border border-gray-300 rounded-lg h-32 mt-1 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none transition-all"
+                        placeholder="Write your note content here..."
+                        value={content}
+                        onChange={({ target }) => setContent(target.value)}
+                    />
+                </div>
+                <div>
+                    <label className="text-sm font-semibold text-gray-700">Tags</label>
+                    <TagInput 
+                        tags={tags}
+                        setTags={setTags}
+                    />
+                    {isSuggesting && (
+                        <p className="text-sm text-gray-500 mt-2 flex items-center animate-pulse">
+                            <MdTag className="mr-1" /> Suggesting tags...
+                        </p>
+                    )}
+                    {suggestedTags.length > 0 && (
+                        <div className="mt-4">
+                            <p className="text-sm font-semibold text-gray-700 mb-2">Suggested Tags:</p>
+                            <div className="flex flex-wrap gap-2">
+                                {suggestedTags.map((tag, index) => (
+                                    <button
+                                        key={index}
+                                        onClick={() => handleAddSuggestedTag(tag)}
+                                        className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-1 rounded-full hover:bg-blue-200 transition-colors"
+                                    >
+                                        #{tag}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+                {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+                <button 
+                    className="w-full bg-blue-600 text-white p-3 rounded-lg mt-4 font-bold text-lg hover:bg-blue-700 transition-colors shadow-lg"
+                    onClick={handleAddNote}
+                >
+                    {type === "edit" ? "Update Note" : "Add Note"}
+                </button>
             </div>
-            <div className="flex flex-col gap-2 md:gap-4 mt-4">
-                <label className="text-sm md:text-lg font-medium text-gray-600">Content</label>
-                <textarea 
-                    className="w-full p-2 md:p-3 border border-gray-300 rounded-lg h-32 md:h-40 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Content"
-                    value={content}
-                    onChange={({ target }) => setContent(target.value)}
-                />
-            </div>
-            <div className="mt-3 md:mt-4">
-                <label className="text-sm md:text-lg font-medium text-gray-600">Tags</label>
-                <TagInput 
-                    tags={tags}
-                    setTags={setTags}
-                />
-            </div>
-            {error && <p className="text-red-500 text-sm md:text-base mt-3 md:mt-4">{error}</p>}
-            <button 
-                className="w-full bg-blue-500 text-white p-2 md:p-3 rounded-lg mt-5 md:mt-6 hover:bg-blue-600 transition-all"
-                onClick={handleAddNote}
-            >
-                {type === "edit" ? "Update" : "Add"}
-            </button>
         </div>
     );
 };
