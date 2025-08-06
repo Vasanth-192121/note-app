@@ -379,6 +379,84 @@
 
 
 
+// import React from 'react';
+// import { MdOutlinePushPin, MdCreate, MdDelete } from 'react-icons/md';
+// import moment from 'moment';
+
+// const NoteCard = ({
+//     title,
+//     date,
+//     content,
+//     tags,
+//     isPinned,
+//     onEdit,
+//     onDelete,
+//     onPinNote,
+//     onReadMore,
+// }) => {
+//     // Truncate content for a cleaner look on the card list, but allow reading more in a modal
+//     const truncatedContent = content.length > 150 ? content.slice(0, 150) + '...' : content;
+//     const showReadMore = content.length > 150;
+
+//     return (
+//         <div className="relative border rounded-lg p-5 bg-white shadow-sm hover:shadow-lg transition-all duration-300 ease-in-out flex flex-col justify-between h-full">
+//             <div className="flex-grow">
+//                 {/* Header Section */}
+//                 <div className="flex items-center justify-between mb-2">
+//                     <h6 className="text-base md:text-lg font-semibold text-slate-900 line-clamp-2">{title}</h6>
+//                     <MdOutlinePushPin
+//                         className={`icon-btn w-6 h-6 flex-shrink-0 ${isPinned ? 'text-blue-500' : 'text-slate-300'} hover:text-blue-600 transition-colors cursor-pointer`}
+//                         onClick={onPinNote}
+//                         title={isPinned ? "Unpin Note" : "Pin Note"}
+//                     />
+//                 </div>
+//                 <span className="text-xs text-slate-500">{moment(date).format('Do MMM YYYY')}</span>
+
+//                 {/* Content Section */}
+//                 <p className="text-sm text-slate-600 mt-4 mb-2 whitespace-pre-wrap">
+//                     {truncatedContent}
+//                 </p>
+
+//                 {/* "Read more" link for long content */}
+//                 {showReadMore && (
+//                     <button
+//                         className="text-xs text-blue-600 hover:underline font-medium mb-4"
+//                         onClick={onReadMore}
+//                     >
+//                         Read more
+//                     </button>
+//                 )}
+//             </div>
+
+//             {/* Footer Section with tags and actions */}
+//             <div className="mt-auto pt-4 border-t border-gray-200">
+//                 <div className="flex flex-wrap gap-2 text-xs text-slate-500 mb-4 min-h-[1.5rem]">
+//                     {tags.length > 0 && tags.map((item, index) => (
+//                         <span key={index} className="bg-gray-100 px-2 py-1 rounded-full">#{item}</span>
+//                     ))}
+//                 </div>
+//                 <div className="flex items-center justify-end gap-2">
+//                     <MdCreate
+//                         className="icon-btn text-lg text-slate-500 hover:text-green-600 transition-colors cursor-pointer"
+//                         onClick={onEdit}
+//                         title="Edit Note"
+//                     />
+//                     <MdDelete
+//                         className="icon-btn text-lg text-slate-500 hover:text-red-500 transition-colors cursor-pointer"
+//                         onClick={onDelete}
+//                         title="Delete Note"
+//                     />
+//                 </div>
+//             </div>
+//         </div>
+//     );
+// };
+
+// export default NoteCard;
+
+
+
+
 import React from 'react';
 import { MdOutlinePushPin, MdCreate, MdDelete } from 'react-icons/md';
 import moment from 'moment';
@@ -393,10 +471,10 @@ const NoteCard = ({
     onDelete,
     onPinNote,
     onReadMore,
+    isExpanded = false, // default to false if not passed
 }) => {
-    // Truncate content for a cleaner look on the card list, but allow reading more in a modal
-    const truncatedContent = content.length > 150 ? content.slice(0, 150) + '...' : content;
-    const showReadMore = content.length > 150;
+    const isContentLong = content.length > 150;
+    const displayedContent = isExpanded ? content : content.slice(0, 150) + (isContentLong ? '...' : '');
 
     return (
         <div className="relative border rounded-lg p-5 bg-white shadow-sm hover:shadow-lg transition-all duration-300 ease-in-out flex flex-col justify-between h-full">
@@ -414,16 +492,16 @@ const NoteCard = ({
 
                 {/* Content Section */}
                 <p className="text-sm text-slate-600 mt-4 mb-2 whitespace-pre-wrap">
-                    {truncatedContent}
+                    {displayedContent}
                 </p>
 
-                {/* "Read more" link for long content */}
-                {showReadMore && (
+                {/* Toggle Read More/Show Less */}
+                {isContentLong && (
                     <button
                         className="text-xs text-blue-600 hover:underline font-medium mb-4"
                         onClick={onReadMore}
                     >
-                        Read more
+                        {isExpanded ? 'Show Less' : 'Read More'}
                     </button>
                 )}
             </div>
