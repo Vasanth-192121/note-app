@@ -1244,6 +1244,10 @@
 //     }
 // });
 
+
+
+
+
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -1723,7 +1727,7 @@ app.get("/get-user", authenticateToken, async (req, res) => {
         return res.sendStatus(401);
     }
 
-    console.log('User from token:', user);
+    // console.log('User from token:', user);
 
     try {
         const isUser = await User.findOne({ _id: user._id });
@@ -1734,7 +1738,7 @@ app.get("/get-user", authenticateToken, async (req, res) => {
             });
         }
 
-        console.log('User found in DB:', isUser);
+        // console.log('User found in DB:', isUser);
 
         return res.json({
             user: {
