@@ -1290,7 +1290,7 @@ const SignUp = () => {
   };
 
   return (
-    <div ref={containerRef} className='bg-no-repeat bg-center bg-cover h-svh w-screen'>
+    <div ref={containerRef} className='bg-no-repeat bg-center bg-cover min-h-screen'>
       <Navbar />
       {/* This div handles the overall positioning and conditional background for mobile */}
       <div className='
@@ -1327,7 +1327,7 @@ const SignUp = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
 
-              {error && <p className='text-red-500 text-xs pb-1'>{error}</p>}
+              {error && <p className='text-red-500 font-medium text-xs pb-1'>{error}</p>}
 
               <button type='submit' className='btn-primary rounded-3xl'>
                 <span className={loadingMessage === "Creating Account..." ? 'blinking-text' : ''}>
@@ -1358,7 +1358,7 @@ const SignUp = () => {
                 onChange={(e) => setOtp(e.target.value)}
               />
 
-              {error && <p className='text-red-500 text-xs pb-1'>{error}</p>}
+              {error && <p className='text-red-500 font-medium text-center text-xs pb-2'>{error}</p>}
 
               <button type='submit' className='btn-primary rounded-3xl'>
                 <span className={loadingMessage === "Verifying OTP..." ? 'blinking-text' : ''}>
