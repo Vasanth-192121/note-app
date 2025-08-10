@@ -6776,6 +6776,862 @@
 
 
 
+// import express from "express";
+// import cors from "cors";
+// import dotenv from "dotenv";
+// import mongoose from "mongoose";
+// import jwt from "jsonwebtoken";
+// import nodemailer from "nodemailer";
+// import { google } from "googleapis";
+// import { authenticateToken } from "./utilites.js";
+// import User from "./models/user.model.js";
+// import Note from "./models/note.model.js";
+// import Token from "./models/token.model.js"; // Import Token model
+// import { OAuth2Client } from 'google-auth-library';
+// import cron from 'node-cron';
+// import rateLimiter from 'express-rate-limit';
+// import helmet from 'helmet';
+// import crypto from 'crypto'; // Import crypto for generating secure tokens
+// import bcrypt from 'bcryptjs'; // Import bcryptjs for password hashing and comparison
+
+// // Import your new NLP utility
+// import { suggestTags, loadModel } from './nlpUtils.js'; // Ensure path is correct relative to app.js
+
+// dotenv.config();
+
+// // Connect to MongoDB
+// async function connectDB() {
+//     try {
+//         await mongoose.connect(process.env.MONGODB_URI);
+//         console.log('MongoDB connected...');
+//     } catch (error) {
+//         console.error('Error connecting to MongoDB:', error);
+//     }
+// }
+
+// // Connect DB and Load the TF.js model on server startup
+// (async () => {
+//     await connectDB(); // Connect DB first
+//     await loadModel(); // Then load the TF.js model (from nlpUtils.js)
+// })();
+
+
+// const app = express();
+// const port = 3000;
+
+// app.use(express.json());
+// app.use(cors({ origin: "*" })); // Allow all origins for development. Restrict in production.
+
+// // --- Static File Serving with Caching ---
+// // This middleware serves static files from the 'public' directory.
+// // The 'maxAge' option sets the Cache-Control header, telling browsers
+// // to cache these files for one year (31536000 milliseconds).
+// // IMPORTANT: Ensure your Vite build output (the 'dist' folder) is copied
+// // into this 'public' folder on your server, or adjust the path below
+// // to point directly to your 'dist' folder (e.g., '../client/dist').
+// app.use(express.static('public', { maxAge: '1y' }));
+// // -----------------------------------------------------------
+
+// // Apply rate limiting
+// const limiter = rateLimiter({
+//     windowMs: 15 * 60 * 1000, // 15 minutes
+//     max: 100 // Limit each IP to 100 requests per windowMs
+// });
+
+// app.use(limiter);
+// app.use(helmet()); // Apply security headers
+
+// app.get("/", (req, res) => {
+//     res.json({ data: "API is running" });
+// });
+
+// // Generate OTP
+// const generateOtp = () => {
+//     return Math.floor(100000 + Math.random() * 900000).toString();
+// };
+
+// // For full access
+// const SCOPES = ['https://mail.google.com/', 'profile', 'email'];
+
+// const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+// // OAuth2 client setup for Nodemailer
+// const oauth2Client = new google.auth.OAuth2(
+//     process.env.CLIENT_ID,
+//     process.env.CLIENT_SECRET,
+//     process.env.REDIRECT_URI
+// );
+
+// // Retrieve the refresh token from the database
+// async function getStoredRefreshToken() {
+//     const tokenDoc = await Token.findOne();
+//     return tokenDoc ? tokenDoc.refreshToken : null;
+// }
+
+// // Initialize OAuth2 client with refresh token from database
+// async function initializeOAuthClient() {
+//     const storedRefreshToken = await getStoredRefreshToken();
+//     if (storedRefreshToken) {
+//         oauth2Client.setCredentials({
+//             refresh_token: storedRefreshToken
+//         });
+//     } else {
+//         console.log('No stored refresh token found. User needs to re-authenticate.');
+//     }
+// }
+
+// initializeOAuthClient();
+
+// // Function to refresh access token and update in DB
+// async function refreshToken(oauth2Client) {
+//     try {
+//         const { credentials } = await oauth2Client.refreshAccessToken();
+//         oauth2Client.setCredentials(credentials);
+
+//         console.log('New Access Token:', credentials.access_token);
+//         if (credentials.refresh_token) {
+//             // Update the refresh token in the database
+//             await Token.updateOne({}, { refreshToken: credentials.refresh_token }, { upsert: true });
+//             console.log('New Refresh Token stored securely:', credentials.refresh_token);
+//         }
+//         return credentials;
+//     } catch (error) {
+//         console.error('Error refreshing access token:', error);
+//         throw error;
+//     }
+// }
+
+// // Function to refresh access token if needed (used by sendEmail)
+// async function refreshAccessTokenIfNeeded() {
+//     try {
+//         const tokenInfo = await oauth2Client.getAccessToken();
+
+//         if (!tokenInfo || !tokenInfo.token) {
+//             throw new Error('No access token available');
+//         }
+
+//         const tokenExpiryTime = 60; // Token expiry time in seconds (e.g., refresh if less than 1 minute left)
+
+//         // If the token is about to expire in less than the specified time, refresh it
+//         if (tokenInfo.res && tokenInfo.res.data && tokenInfo.res.data.expires_in < tokenExpiryTime) {
+//             console.log('Access token is about to expire, refreshing...');
+//             const tokens = await refreshToken(oauth2Client);
+//             return tokens.access_token;
+//         }
+
+//         return tokenInfo.token; // Return the current valid access token
+//     } catch (error) {
+//         console.error('Error checking or refreshing access token:', error);
+//         // Handle token invalidation case (e.g., 'invalid_grant' means refresh token is bad)
+//         if (error.response && error.response.data && error.response.data.error === 'invalid_grant') {
+//             console.log('Refresh token invalid or expired. Prompting re-authentication.');
+//             // In a real app, you'd trigger a redirect to /auth or notify admin
+//         }
+//         throw error;
+//     }
+// }
+
+// // Schedule the cron job to refresh tokens every 30 minutes
+// cron.schedule('*/30 * * * *', async () => {
+//     try {
+//         console.log('Running scheduled token refresh...');
+//         await refreshToken(oauth2Client);
+//     } catch (error) {
+//         console.error('Error refreshing tokens via cron:', error);
+//     }
+// });
+
+// // Generate OAuth2 authorization URL (for initial setup/re-authentication)
+// app.get('/auth', (req, res) => {
+//     const authUrl = oauth2Client.generateAuthUrl({
+//         access_type: 'offline', // Ensures a refresh token is received
+//         scope: SCOPES,
+//         prompt: 'consent' // Forces the consent screen to reappear and provide a new refresh token
+//     });
+//     res.redirect(authUrl);
+// });
+
+// // Handle OAuth2 callback (after user grants consent)
+// app.get('/oauth2callback', async (req, res) => {
+//     const { code } = req.query;
+
+//     try {
+//         const { tokens } = await oauth2Client.getToken(code);
+//         oauth2Client.setCredentials(tokens);
+
+//         const refreshToken = tokens.refresh_token;
+
+//         if (refreshToken) {
+//             // Update the stored refresh token in the database
+//             await Token.updateOne({}, { refreshToken }, { upsert: true });
+//             console.log('Refresh Token stored securely:', refreshToken);
+//         } else {
+//             console.warn('No refresh token received. This may happen if the user has previously authorized the application without prompt=consent.');
+//         }
+
+//         // Redirect to main application with a success message
+//         res.redirect('/auth-success');
+
+//     } catch (error) {
+//         console.error('Error retrieving tokens:', error);
+//         res.status(500).send('Error authenticating');
+//     }
+// });
+
+// // Success route for OAuth callback
+// app.get('/auth-success', (req, res) => {
+//     res.send('Authentication successful! You can now use the application.');
+// });
+
+// // Refresh token endpoint (can be called manually for testing)
+// app.get('/refresh-token', async (req, res) => {
+//     try {
+//         const newTokens = await refreshToken(oauth2Client);
+//         if (newTokens.refresh_token) {
+//             await Token.updateOne({}, { refreshToken: newTokens.refresh_token }, { upsert: true });
+//             console.log('New Refresh Token stored securely:', newTokens.refresh_token);
+//         }
+//         res.send('Token refreshed successfully.');
+//     } catch (error) {
+//         res.status(500).send('Error refreshing token. Please reauthenticate.');
+//     }
+// });
+
+// // Function to send an email using Nodemailer and Google OAuth2
+// async function sendEmail(to, subject, htmlContent) {
+//     try {
+//         const accessToken = await refreshAccessTokenIfNeeded(); // Get a fresh access token
+
+//         const transporter = nodemailer.createTransport({
+//             service: 'gmail',
+//             auth: {
+//                 type: 'OAuth2',
+//                 user: process.env.EMAIL_USER,
+//                 clientId: process.env.CLIENT_ID,
+//                 clientSecret: process.env.CLIENT_SECRET,
+//                 refreshToken: await getStoredRefreshToken(), // Get refresh token from DB
+//                 accessToken: accessToken, // Use the dynamically refreshed access token
+//             },
+//             tls: { rejectUnauthorized: false }, // Be cautious with this in production
+//             logger: true,
+//             debug: true,
+//         });
+
+//         const mailOptions = {
+//             from: `Keeper Notes <${process.env.EMAIL_USER}>`, // Display name and email
+//             to: to,
+//             subject: subject,
+//             html: htmlContent, // Use HTML content
+//         };
+
+//         await transporter.sendMail(mailOptions);
+//         console.log('Email sent to:', to);
+//     } catch (error) {
+//         console.error('Error sending email:', error);
+//         throw error; // Re-throw to be caught by the calling route
+//     }
+// }
+
+// // Google Login (via ID Token verification)
+// app.post("/google-login", async (req, res) => {
+//     const { token } = req.body;
+
+//     try {
+//         const ticket = await googleClient.verifyIdToken({
+//             idToken: token,
+//             audience: process.env.GOOGLE_CLIENT_ID,
+//         });
+
+//         const payload = ticket.getPayload();
+//         const { sub, email, name } = payload;
+
+//         let user = await User.findOne({ email });
+
+//         if (!user) {
+//             // Create a new user if not exists
+//             user = new User({
+//                 googleId: sub,
+//                 email,
+//                 fullName: name,
+//                 verified: true,
+//                 // No password required for Google login
+//             });
+//             await user.save();
+//         }
+
+//         const accessToken = jwt.sign({ user }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
+
+//         res.status(200).json({
+//             success: true,
+//             accessToken,
+//         });
+//     } catch (error) {
+//         console.error("Google Login Error:", error);
+//         res.status(500).json({ message: "Google login failed. Please try again." });
+//     }
+// });
+
+// // Create Account (Password hashing moved here)
+// app.post("/create-account", async (req, res) => {
+//     const { fullName, email, password } = req.body;
+
+//     // Basic validation
+//     if (!fullName || !email || !password) {
+//         return res.status(400).json({ error: true, message: "All fields are required" });
+//     }
+
+//     try {
+//         const existingUser = await User.findOne({ email });
+//         if (existingUser) {
+//             return res.status(400).json({
+//                 error: true,
+//                 message: "User already exists with this email"
+//             });
+//         }
+
+//         const otp = generateOtp();
+//         const hashedPassword = await bcrypt.hash(password, 10); // Hash the password here
+
+//         // Save user with OTP and verified flag to the database
+//         const user = new User({
+//             fullName,
+//             email,
+//             password: hashedPassword, // Store the hashed password
+//             otp,
+//             verified: false
+//         });
+
+//         await user.save();
+
+//         const emailHTMLContent = `
+//             <div style="background-color: #f0f0f0; padding: 20px; font-family: Arial, sans-serif; color: #333;">
+//                 <div style="background-color: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+//                     <h2 style="color: #007BFF;">Hello ${fullName},</h2>
+//                     <p>We received a request to create an account with this email address.</p>
+//                     <p>Your OTP is: <strong style="color: #008080;">${otp}</strong></p>
+//                     <p>If you did not make this request, please ignore this email.</p>
+//                     <p>For assistance, contact our <a href="mailto:support@keepernotes.com" style="color: #007BFF;">support team</a>.</p>
+//                     <br>
+//                     <img src="https://raw.githubusercontent.com/Vasanth-192121/note-app/main/client/src/assets/keeper-notes-logo.jpeg" alt="Keeper Notes Logo" style="width:100px; display:block; margin:auto;">
+//                     <p style="text-align: center;">Best regards,<br><strong>The Keeper Notes Team</strong></p>
+//                 </div>
+//             </div>
+//         `;
+
+//         await sendEmail(email, 'OTP Verification - Keeper Notes Account', emailHTMLContent);
+
+//         res.status(200).json({
+//             success: true,
+//             message: "OTP sent to your email for verification"
+//         });
+//     } catch (error) {
+//         console.error("Error creating account or sending OTP:", error);
+//         res.status(500).json({
+//             error: true,
+//             message: "Error creating account or sending OTP"
+//         });
+//     }
+// });
+
+// // Verify OTP for Account Creation
+// app.post("/verify-otp", async (req, res) => {
+//     const { email, otp } = req.body;
+
+//     if (!email || !otp) {
+//         return res.status(400).json({ error: true, message: "Email and OTP are required" });
+//     }
+
+//     try {
+//         const user = await User.findOne({ email });
+//         if (!user) {
+//             return res.status(400).json({
+//                 error: true,
+//                 message: "User not found"
+//             });
+//         }
+
+//         if (user.otp !== otp) {
+//             return res.status(400).json({
+//                 error: true,
+//                 message: "Invalid OTP"
+//             });
+//         }
+
+//         // Clear OTP and set verified flag to true after verification
+//         user.otp = null;
+//         user.verified = true;
+
+//         await user.save();
+
+//         // Generate JWT token
+//         const token = jwt.sign(
+//             { user },
+//             process.env.ACCESS_TOKEN_SECRET,
+//             { expiresIn: "1h" }
+//         );
+
+//         res.status(200).json({
+//             success: true,
+//             accessToken: token
+//         });
+
+//     } catch (error) {
+//         console.error("Error verifying OTP:", error);
+//         res.status(500).json({
+//             error: true,
+//             message: `Error verifying OTP: ${error.message}`
+//         });
+//     }
+// });
+
+// // Login Account (Password comparison now uses bcrypt directly)
+// app.post("/login", async (req, res) => {
+//     const { email, password } = req.body;
+
+//     if (!email || !password) {
+//         return res.status(400).json({
+//             message: "Email and Password are required"
+//         });
+//     }
+
+//     try {
+//         const userInfo = await User.findOne({ email, verified: true });
+
+//         if (!userInfo) {
+//             return res.status(400).json({
+//                 message: "User not found or not verified"
+//             });
+//         }
+
+//         // Use bcrypt to compare the provided password with the stored hashed password
+//         const isPasswordValid = await bcrypt.compare(password, userInfo.password);
+
+//         if (isPasswordValid) {
+//             const user = { user: userInfo };
+
+//             const accessToken = jwt.sign(
+//                 user,
+//                 process.env.ACCESS_TOKEN_SECRET,
+//                 { expiresIn: "36000m" } // Consider a more secure duration in production
+//             );
+
+//             return res.json({
+//                 error: false,
+//                 message: "Login Successful",
+//                 email,
+//                 accessToken,
+//             });
+//         } else {
+//             return res.status(400).json({
+//                 error: true,
+//                 message: "Invalid Credentials",
+//             });
+//         }
+//     } catch (error) {
+//         console.error("Error during login:", error);
+//         return res.status(500).json({ error: true, message: "Internal Server Error" });
+//     }
+// });
+
+// // Forgot Password (Sends a reset link, not the password)
+// app.post("/forgot-password", async (req, res) => {
+//     const { email } = req.body; // Only need email now
+
+//     if (!email) {
+//         return res.status(400).json({ message: "Email is required" });
+//     }
+
+//     try {
+//         const user = await User.findOne({ email });
+
+//         // IMPORTANT: Always send a generic success message to prevent user enumeration
+//         if (!user) {
+//             console.log(`Forgot password requested for non-existent email: ${email}`); // Added log
+//             return res.status(200).json({
+//                 success: true,
+//                 message: 'If an account with that email exists, a password reset link has been sent.'
+//             });
+//         }
+
+//         // Generate a unique reset token
+//         const resetToken = crypto.randomBytes(32).toString('hex');
+//         const hashedResetToken = await bcrypt.hash(resetToken, 10); // Hash the token before storing
+
+//         // Store the hashed token and its expiry in the user document
+//         user.passwordResetToken = hashedResetToken;
+//         user.passwordResetExpires = Date.now() + 3600000; // Token valid for 1 hour (3600000 ms)
+//         await user.save();
+
+//         console.log(`Generated reset token for ${email}. Raw: ${resetToken}, Hashed: ${hashedResetToken}`); // Added log
+
+//         // Construct the reset link dynamically
+//         const clientBaseUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+//         const resetLink = `${clientBaseUrl}/reset-password?token=${resetToken}`;
+
+//         const emailHTMLContent = `
+//             <div style="background-color: #f0f0f0; padding: 20px; font-family: Arial, sans-serif; color: #333;">
+//                 <div style="background-color: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+//                     <h2 style="color: #007BFF;">Hello ${user.fullName},</h2>
+//                     <p>You have requested to reset your password for your <strong>Keeper Notes</strong> account.</p>
+//                     <p>Please click on the following link to reset your password:</p>
+//                     <p><a href="${resetLink}" target="_blank" style="color: #007BFF; text-decoration: none;">Reset Your Password</a></p>
+//                     <p>This link is valid for 1 hour. If you did not request a password reset, please ignore this email.</p>
+//                     <p>For assistance, contact our <a href="mailto:support@keepernotes.com" style="color: #007BFF;">support team</a>.</p>
+//                     <br>
+//                     <img src="https://raw.githubusercontent.com/Vasanth-192121/note-app/main/client/src/assets/keeper-notes-logo.jpeg" alt="Keeper Notes Logo" style="width:100px; display:block; margin:auto;">
+//                     <p style="text-align: center;">Best regards,<br><strong>The Keeper Notes Team</strong></p>
+//                 </div>
+//             </div>
+//         `;
+
+
+//         await sendEmail(email, 'Password Reset Request - Keeper Notes Account', emailHTMLContent);
+
+//         res.status(200).json({
+//             success: true,
+//             message: 'If an account with that email exists, a password reset link has been sent.'
+//         });
+
+//     } catch (error) {
+//         console.error('Error in forgot password process:', error);
+//         res.status(500).json({
+//             message: 'Internal Server Error during password recovery.'
+//         });
+//     }
+// });
+
+// // New Route: Reset Password (New password hashing moved here)
+// app.post("/reset-password", async (req, res) => {
+//     const { token, newPassword } = req.body;
+
+//     if (!token || !newPassword) {
+//         return res.status(400).json({ message: "Token and new password are required" });
+//     }
+
+//     try {
+//         // Find ALL users with a non-expired reset token.
+//         // We cannot query directly by the 'token' because it's hashed in the DB.
+//         const potentialUsers = await User.find({
+//             passwordResetExpires: { $gt: Date.now() }
+//         });
+
+//         let user = null;
+//         for (const potentialUser of potentialUsers) {
+//             // Compare the provided raw token with the hashed token for each potential user
+//             const isTokenValid = await bcrypt.compare(token, potentialUser.passwordResetToken);
+//             if (isTokenValid) {
+//                 user = potentialUser;
+//                 break; // Found the correct user
+//             }
+//         }
+
+//         if (!user) {
+//             console.log(`Reset password failed: No user found with a valid, non-expired token matching the provided token. Current time: ${new Date(Date.now())}`);
+//             return res.status(400).json({ message: "Invalid or expired password reset token." });
+//         }
+
+//         console.log(`Reset password attempt for user: ${user.email}`);
+//         console.log(`Token received from frontend: ${token}`);
+//         console.log(`Hashed token in DB (matching user): ${user.passwordResetToken}`);
+//         console.log(`Token expires at: ${new Date(user.passwordResetExpires)}`);
+
+//         // If we reached here, `user` is found and `isTokenValid` is true.
+//         // Hash the new password directly here
+//         const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+//         user.password = hashedNewPassword; // Store the hashed new password
+//         user.passwordResetToken = undefined; // Clear the token
+//         user.passwordResetExpires = undefined; // Clear the expiry
+
+//         await user.save();
+//         console.log(`Password successfully reset for user: ${user.email}`);
+
+//         res.status(200).json({ success: true, message: "Password has been reset successfully." });
+
+//     } catch (error) {
+//         console.error('Error resetting password:', error);
+//         res.status(500).json({ message: "Internal Server Error during password reset." });
+//     }
+// });
+
+
+// // Get User
+// app.get("/get-user", authenticateToken, async (req, res) => {
+//     const { user } = req.user; // User object from authentication middleware
+
+//     if (!user) {
+//         return res.sendStatus(401); // Unauthorized if user not found in token
+//     }
+
+//     try {
+//         const isUser = await User.findOne({ _id: user._id });
+//         if (!isUser) {
+//             return res.status(404).json({
+//                 error: true,
+//                 message: "User not found"
+//             });
+//         }
+
+//         return res.json({
+//             user: {
+//                 fullName: isUser.fullName,
+//                 email: isUser.email,
+//                 _id: isUser._id,
+//                 createdOn: isUser.createdOn,
+//             },
+//             message: "User details retrieved successfully"
+//         });
+//     } catch (error) {
+//         console.error('Error fetching user details:', error);
+//         return res.status(500).json({ error: true, message: 'Internal Server Error' });
+//     }
+// });
+
+// // --- Note Management Routes (with ML tagging) ---
+
+// // Add a new route to suggest tags based on text input
+// app.post("/suggest-tags", authenticateToken, async (req, res) => {
+//     const { text } = req.body;
+
+//     if (!text || text.trim() === '') {
+//         return res.status(400).json({ error: true, message: "Text content is required to suggest tags" });
+//     }
+
+//     try {
+//         const suggestedTags = await suggestTags(text);
+//         // Ensure suggested tags are also limited to 5
+//         return res.json({
+//             error: false,
+//             tags: suggestedTags.slice(0, 5), // Limit to 5 tags here too
+//             message: "Tags suggested successfully"
+//         });
+//     } catch (error) {
+//         console.error('Error suggesting tags:', error);
+//         return res.status(500).json({ error: true, message: "Internal Server Error" });
+//     }
+// });
+
+// // Add Notes (MODIFIED to include ML tagging and 5-tag limit)
+// app.post("/add-note", authenticateToken, async (req, res) => {
+//     const { title, content, tags } = req.body;
+//     const { user } = req.user;
+
+//     if (!title || !content) {
+//         return res.status(400).json({ error: true, message: "Title and Content are required" });
+//     }
+
+//     let initialTags = Array.isArray(tags) ? tags : []; // Ensure tags is an array
+
+//     try {
+//         // Use TF.js (via nlpUtils) to suggest tags from note content
+//         const suggestedTagsFromML = await suggestTags(`${title} ${content}`);
+//         console.log('ML Suggested Tags for new note:', suggestedTagsFromML);
+
+//         // Merge user-provided tags with ML-suggested tags, removing duplicates, and limit to 5
+//         const finalTags = Array.from(new Set([...initialTags, ...suggestedTagsFromML])).slice(0, 5);
+
+//         const note = new Note({
+//             title,
+//             content,
+//             tags: finalTags, // Use the merged and limited tags
+//             userId: user._id,
+//         });
+
+//         await note.save();
+//         console.log('New note added:', note);
+
+//         return res.json({
+//             error: false,
+//             note,
+//             message: "Note added successfully with smart tags"
+//         });
+
+//     } catch (error) {
+//         console.error('Error adding note or suggesting tags:', error);
+//         return res.status(500).json({ error: true, message: "Internal Server Error" });
+//     }
+// });
+
+// // Edit Note (MODIFIED to include ML tagging for updates and 5-tag limit)
+// app.put("/edit-note/:noteId", authenticateToken, async (req, res) => {
+//     const noteId = req.params.noteId;
+//     const { title, content, tags, isPinnned } = req.body;
+//     const { user } = req.user;
+
+//     // Check if any changes are provided
+//     if (!title && !content && !tags && isPinnned === undefined) {
+//         return res.status(400).json({ error: true, message: "No changes provided to update the note" });
+//     }
+
+//     try {
+//         const note = await Note.findOne({ _id: noteId, userId: user._id });
+
+//         if (!note) {
+//             return res.status(404).json({ error: true, message: "Note not found" });
+//         }
+
+//         // Update fields if provided
+//         if (title) note.title = title;
+//         if (content) note.content = content;
+//         if (isPinnned !== undefined) note.isPinned = isPinnned; // Corrected typo: isPinnned -> isPinned
+
+//         let currentTags = Array.isArray(note.tags) ? [...note.tags] : []; // Start with existing tags on the note
+
+//         // Re-suggest tags only if title or content has changed
+//         if (title || content) {
+//             const currentContent = content || note.content; // Use updated content or existing
+//             const currentTitle = title || note.title;     // Use updated title or existing
+//             const suggestedTagsFromML = await suggestTags(`${currentTitle} ${currentContent}`);
+//             console.log('ML Re-suggested Tags for edited note:', suggestedTagsFromML);
+
+//             // If user explicitly sent new tags in req.body, combine them with existing tags
+//             let userProvidedTags = Array.isArray(tags) ? tags : [];
+
+//             // Combine existing/user-provided tags with ML-suggested tags, ensure uniqueness, and limit to 5
+//             const combinedTags = Array.from(new Set([...currentTags, ...userProvidedTags, ...suggestedTagsFromML]));
+//             note.tags = combinedTags.slice(0, 5);
+
+//         } else if (tags !== undefined) { // Check if tags field was explicitly provided in the request body
+//             // If only tags are provided (and no content/title change), just update tags as provided
+//             // Ensure this also respects the 5-tag limit
+//             note.tags = Array.from(new Set(Array.isArray(tags) ? tags : [])).slice(0, 5);
+//         }
+
+//         await note.save();
+//         console.log('Note updated:', note);
+
+//         return res.json({
+//             error: false,
+//             note,
+//             message: "Note updated successfully with potential smart tag adjustments"
+//         });
+
+//     } catch (error) {
+//         console.error('Error editing note or suggesting tags:', error);
+//         return res.status(500).json({ error: true, message: "Internal Server Error" });
+//     }
+// });
+
+// // Get All Notes
+// app.get("/get-all-notes/", authenticateToken, async (req, res) => {
+//     const { user } = req.user;
+
+//     try {
+//         // Sort by isPinned (true first) and then by creation date (newest first)
+//         const notes = await Note.find({ userId: user._id }).sort({ isPinned: -1, createdOn: -1 });
+
+//         return res.json({
+//             error: false,
+//             notes,
+//             message: "All notes retrieved successfully"
+//         });
+
+//     } catch (error) {
+//         console.error('Error retrieving notes:', error);
+//         return res.status(500).json({ error: true, message: "Internal Server Error" });
+//     }
+// });
+
+// // Delete Note
+// app.delete("/delete-note/:noteId", authenticateToken, async (req, res) => {
+//     const noteId = req.params.noteId;
+//     const { user } = req.user;
+
+//     try {
+//         const note = await Note.findOne({ _id: noteId, userId: user._id });
+
+//         if (!note) {
+//             return res.status(404).json({ error: true, message: "Note not found" });
+//         }
+
+//         await Note.deleteOne({ _id: noteId, userId: user._id });
+
+//         return res.json({
+//             error: false,
+//             message: "Note deleted successfully"
+//         });
+
+//     } catch (error) {
+//         console.error('Error deleting note:', error);
+//         return res.status(500).json({ error: true, message: "Internal Server Error" });
+//     }
+// });
+
+// // Update isPinned Status
+// app.put("/update-note-pinned/:noteId", authenticateToken, async (req, res) => {
+//     const noteId = req.params.noteId;
+//     const { isPinned } = req.body; // Expecting a boolean here
+//     const { user } = req.user;
+
+//     if (typeof isPinned !== 'boolean') { // Validate input
+//         return res.status(400).json({ error: true, message: "isPinned must be a boolean value" });
+//     }
+
+//     try {
+//         const note = await Note.findOne({ _id: noteId, userId: user._id });
+
+//         if (!note) {
+//             return res.status(404).json({ error: true, message: "Note not found" });
+//         }
+
+//         note.isPinned = isPinned;
+//         await note.save();
+
+//         return res.json({
+//             error: false,
+//             note,
+//             message: `Note ${isPinned ? 'pinned' : 'unpinned'} successfully`
+//         });
+
+//     } catch (error) {
+//         console.error('Error updating pin status:', error);
+//         return res.status(500).json({ error: true, message: "Internal Server Error" });
+//     }
+// });
+
+// // Search Notes
+// app.get("/search-notes/", authenticateToken, async (req, res) => {
+//     const { user } = req.user;
+//     const { query } = req.query;
+
+//     if (!query || query.trim() === '') {
+//         return res.status(400).json({ error: true, message: "Search query is required and cannot be empty" });
+//     }
+
+//     try {
+//         // Case-insensitive search for title or content or tags
+//         const matchingNotes = await Note.find({
+//             userId: user._id,
+//             $or: [
+//                 { title: { $regex: new RegExp(query, "i") } },
+//                 { content: { $regex: new RegExp(query, "i") } },
+//                 { tags: { $regex: new RegExp(query, "i") } } // Also search within tags!
+//             ],
+//         }).sort({ isPinned: -1, createdOn: -1 }); // Keep consistent sorting
+
+//         return res.json({
+//             error: false,
+//             notes: matchingNotes,
+//             message: "Notes matching the search query retrieved successfully"
+//         });
+
+//     } catch (error) {
+//         console.error('Error searching notes:', error);
+//         return res.status(500).json({ error: true, message: "Internal Server Error" });
+//     }
+// });
+
+// app.listen(port, () => {
+//     console.log(`Server is running on port ${port}.`);
+// });
+
+// export default app;
+
+
+
+
+
+
+
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -6801,18 +7657,18 @@ dotenv.config();
 
 // Connect to MongoDB
 async function connectDB() {
-    try {
-        await mongoose.connect(process.env.MONGODB_URI);
-        console.log('MongoDB connected...');
-    } catch (error) {
-        console.error('Error connecting to MongoDB:', error);
-    }
+    try {
+        await mongoose.connect(process.env.MONGODB_URI);
+        console.log('MongoDB connected...');
+    } catch (error) {
+        console.error('Error connecting to MongoDB:', error);
+    }
 }
 
 // Connect DB and Load the TF.js model on server startup
 (async () => {
-    await connectDB(); // Connect DB first
-    await loadModel(); // Then load the TF.js model (from nlpUtils.js)
+    await connectDB(); // Connect DB first
+    await loadModel(); // Then load the TF.js model (from nlpUtils.js)
 })();
 
 
@@ -6834,20 +7690,20 @@ app.use(express.static('public', { maxAge: '1y' }));
 
 // Apply rate limiting
 const limiter = rateLimiter({
-    windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100 // Limit each IP to 100 requests per windowMs
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100 // Limit each IP to 100 requests per windowMs
 });
 
 app.use(limiter);
 app.use(helmet()); // Apply security headers
 
 app.get("/", (req, res) => {
-    res.json({ data: "API is running" });
+    res.json({ data: "API is running" });
 });
 
 // Generate OTP
 const generateOtp = () => {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+    return Math.floor(100000 + Math.random() * 900000).toString();
 };
 
 // For full access
@@ -6857,771 +7713,771 @@ const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // OAuth2 client setup for Nodemailer
 const oauth2Client = new google.auth.OAuth2(
-    process.env.CLIENT_ID,
-    process.env.CLIENT_SECRET,
-    process.env.REDIRECT_URI
+    process.env.CLIENT_ID,
+    process.env.CLIENT_SECRET,
+    process.env.REDIRECT_URI
 );
 
 // Retrieve the refresh token from the database
 async function getStoredRefreshToken() {
-    const tokenDoc = await Token.findOne();
-    return tokenDoc ? tokenDoc.refreshToken : null;
+    const tokenDoc = await Token.findOne();
+    return tokenDoc ? tokenDoc.refreshToken : null;
 }
 
 // Initialize OAuth2 client with refresh token from database
 async function initializeOAuthClient() {
-    const storedRefreshToken = await getStoredRefreshToken();
-    if (storedRefreshToken) {
-        oauth2Client.setCredentials({
-            refresh_token: storedRefreshToken
-        });
-    } else {
-        console.log('No stored refresh token found. User needs to re-authenticate.');
-    }
+    const storedRefreshToken = await getStoredRefreshToken();
+    if (storedRefreshToken) {
+        oauth2Client.setCredentials({
+            refresh_token: storedRefreshToken
+        });
+    } else {
+        console.log('No stored refresh token found. User needs to re-authenticate.');
+    }
 }
 
 initializeOAuthClient();
 
 // Function to refresh access token and update in DB
 async function refreshToken(oauth2Client) {
-    try {
-        const { credentials } = await oauth2Client.refreshAccessToken();
-        oauth2Client.setCredentials(credentials);
+    try {
+        const { credentials } = await oauth2Client.refreshAccessToken();
+        oauth2Client.setCredentials(credentials);
 
-        console.log('New Access Token:', credentials.access_token);
-        if (credentials.refresh_token) {
-            // Update the refresh token in the database
-            await Token.updateOne({}, { refreshToken: credentials.refresh_token }, { upsert: true });
-            console.log('New Refresh Token stored securely:', credentials.refresh_token);
-        }
-        return credentials;
-    } catch (error) {
-        console.error('Error refreshing access token:', error);
-        throw error;
-    }
+        console.log('New Access Token:', credentials.access_token);
+        if (credentials.refresh_token) {
+            // Update the refresh token in the database
+            await Token.updateOne({}, { refreshToken: credentials.refresh_token }, { upsert: true });
+            console.log('New Refresh Token stored securely:', credentials.refresh_token);
+        }
+        return credentials;
+    } catch (error) {
+        console.error('Error refreshing access token:', error);
+        throw error;
+    }
 }
 
 // Function to refresh access token if needed (used by sendEmail)
 async function refreshAccessTokenIfNeeded() {
-    try {
-        const tokenInfo = await oauth2Client.getAccessToken();
+    try {
+        const tokenInfo = await oauth2Client.getAccessToken();
 
-        if (!tokenInfo || !tokenInfo.token) {
-            throw new Error('No access token available');
-        }
+        if (!tokenInfo || !tokenInfo.token) {
+            throw new Error('No access token available');
+        }
 
-        const tokenExpiryTime = 60; // Token expiry time in seconds (e.g., refresh if less than 1 minute left)
+        const tokenExpiryTime = 60; // Token expiry time in seconds (e.g., refresh if less than 1 minute left)
 
-        // If the token is about to expire in less than the specified time, refresh it
-        if (tokenInfo.res && tokenInfo.res.data && tokenInfo.res.data.expires_in < tokenExpiryTime) {
-            console.log('Access token is about to expire, refreshing...');
-            const tokens = await refreshToken(oauth2Client);
-            return tokens.access_token;
-        }
+        // If the token is about to expire in less than the specified time, refresh it
+        if (tokenInfo.res && tokenInfo.res.data && tokenInfo.res.data.expires_in < tokenExpiryTime) {
+            console.log('Access token is about to expire, refreshing...');
+            const tokens = await refreshToken(oauth2Client);
+            return tokens.access_token;
+        }
 
-        return tokenInfo.token; // Return the current valid access token
-    } catch (error) {
-        console.error('Error checking or refreshing access token:', error);
-        // Handle token invalidation case (e.g., 'invalid_grant' means refresh token is bad)
-        if (error.response && error.response.data && error.response.data.error === 'invalid_grant') {
-            console.log('Refresh token invalid or expired. Prompting re-authentication.');
-            // In a real app, you'd trigger a redirect to /auth or notify admin
-        }
-        throw error;
-    }
+        return tokenInfo.token; // Return the current valid access token
+    } catch (error) {
+        console.error('Error checking or refreshing access token:', error);
+        // Handle token invalidation case (e.g., 'invalid_grant' means refresh token is bad)
+        if (error.response && error.response.data && error.response.data.error === 'invalid_grant') {
+            console.log('Refresh token invalid or expired. Prompting re-authentication.');
+            // In a real app, you'd trigger a redirect to /auth or notify admin
+        }
+        throw error;
+    }
 }
 
 // Schedule the cron job to refresh tokens every 30 minutes
 cron.schedule('*/30 * * * *', async () => {
-    try {
-        console.log('Running scheduled token refresh...');
-        await refreshToken(oauth2Client);
-    } catch (error) {
-        console.error('Error refreshing tokens via cron:', error);
-    }
+    try {
+        console.log('Running scheduled token refresh...');
+        await refreshToken(oauth2Client);
+    } catch (error) {
+        console.error('Error refreshing tokens via cron:', error);
+    }
 });
 
 // Generate OAuth2 authorization URL (for initial setup/re-authentication)
 app.get('/auth', (req, res) => {
-    const authUrl = oauth2Client.generateAuthUrl({
-        access_type: 'offline', // Ensures a refresh token is received
-        scope: SCOPES,
-        prompt: 'consent' // Forces the consent screen to reappear and provide a new refresh token
-    });
-    res.redirect(authUrl);
+    const authUrl = oauth2Client.generateAuthUrl({
+        access_type: 'offline', // Ensures a refresh token is received
+        scope: SCOPES,
+        prompt: 'consent' // Forces the consent screen to reappear and provide a new refresh token
+    });
+    res.redirect(authUrl);
 });
 
 // Handle OAuth2 callback (after user grants consent)
 app.get('/oauth2callback', async (req, res) => {
-    const { code } = req.query;
+    const { code } = req.query;
 
-    try {
-        const { tokens } = await oauth2Client.getToken(code);
-        oauth2Client.setCredentials(tokens);
+    try {
+        const { tokens } = await oauth2Client.getToken(code);
+        oauth2Client.setCredentials(tokens);
 
-        const refreshToken = tokens.refresh_token;
+        const refreshToken = tokens.refresh_token;
 
-        if (refreshToken) {
-            // Update the stored refresh token in the database
-            await Token.updateOne({}, { refreshToken }, { upsert: true });
-            console.log('Refresh Token stored securely:', refreshToken);
-        } else {
-            console.warn('No refresh token received. This may happen if the user has previously authorized the application without prompt=consent.');
-        }
+        if (refreshToken) {
+            // Update the stored refresh token in the database
+            await Token.updateOne({}, { refreshToken }, { upsert: true });
+            console.log('Refresh Token stored securely:', refreshToken);
+        } else {
+            console.warn('No refresh token received. This may happen if the user has previously authorized the application without prompt=consent.');
+        }
 
-        // Redirect to main application with a success message
-        res.redirect('/auth-success');
+        // Redirect to main application with a success message
+        res.redirect('/auth-success');
 
-    } catch (error) {
-        console.error('Error retrieving tokens:', error);
-        res.status(500).send('Error authenticating');
-    }
+    } catch (error) {
+        console.error('Error retrieving tokens:', error);
+        res.status(500).send('Error authenticating');
+    }
 });
 
 // Success route for OAuth callback
 app.get('/auth-success', (req, res) => {
-    res.send('Authentication successful! You can now use the application.');
+    res.send('Authentication successful! You can now use the application.');
 });
 
 // Refresh token endpoint (can be called manually for testing)
 app.get('/refresh-token', async (req, res) => {
-    try {
-        const newTokens = await refreshToken(oauth2Client);
-        if (newTokens.refresh_token) {
-            await Token.updateOne({}, { refreshToken: newTokens.refresh_token }, { upsert: true });
-            console.log('New Refresh Token stored securely:', newTokens.refresh_token);
-        }
-        res.send('Token refreshed successfully.');
-    } catch (error) {
-        res.status(500).send('Error refreshing token. Please reauthenticate.');
-    }
+    try {
+        const newTokens = await refreshToken(oauth2Client);
+        if (newTokens.refresh_token) {
+            await Token.updateOne({}, { refreshToken: newTokens.refresh_token }, { upsert: true });
+            console.log('New Refresh Token stored securely:', newTokens.refresh_token);
+        }
+        res.send('Token refreshed successfully.');
+    } catch (error) {
+        res.status(500).send('Error refreshing token. Please reauthenticate.');
+    }
 });
 
 // Function to send an email using Nodemailer and Google OAuth2
 async function sendEmail(to, subject, htmlContent) {
-    try {
-        const accessToken = await refreshAccessTokenIfNeeded(); // Get a fresh access token
+    try {
+        const accessToken = await refreshAccessTokenIfNeeded(); // Get a fresh access token
 
-        const transporter = nodemailer.createTransport({
-            service: 'gmail',
-            auth: {
-                type: 'OAuth2',
-                user: process.env.EMAIL_USER,
-                clientId: process.env.CLIENT_ID,
-                clientSecret: process.env.CLIENT_SECRET,
-                refreshToken: await getStoredRefreshToken(), // Get refresh token from DB
-                accessToken: accessToken, // Use the dynamically refreshed access token
-            },
-            tls: { rejectUnauthorized: false }, // Be cautious with this in production
-            logger: true,
-            debug: true,
-        });
+        const transporter = nodemailer.createTransport({
+            service: 'gmail',
+            auth: {
+                type: 'OAuth2',
+                user: process.env.EMAIL_USER,
+                clientId: process.env.CLIENT_ID,
+                clientSecret: process.env.CLIENT_SECRET,
+                refreshToken: await getStoredRefreshToken(), // Get refresh token from DB
+                accessToken: accessToken, // Use the dynamically refreshed access token
+            },
+            tls: { rejectUnauthorized: false }, // Be cautious with this in production
+            logger: true,
+            debug: true,
+        });
 
-        const mailOptions = {
-            from: `Keeper Notes <${process.env.EMAIL_USER}>`, // Display name and email
-            to: to,
-            subject: subject,
-            html: htmlContent, // Use HTML content
-        };
+        const mailOptions = {
+            from: `Keeper Notes <${process.env.EMAIL_USER}>`, // Display name and email
+            to: to,
+            subject: subject,
+            html: htmlContent, // Use HTML content
+        };
 
-        await transporter.sendMail(mailOptions);
-        console.log('Email sent to:', to);
-    } catch (error) {
-        console.error('Error sending email:', error);
-        throw error; // Re-throw to be caught by the calling route
-    }
+        await transporter.sendMail(mailOptions);
+        console.log('Email sent to:', to);
+    } catch (error) {
+        console.error('Error sending email:', error);
+        throw error; // Re-throw to be caught by the calling route
+    }
 }
 
 // Google Login (via ID Token verification)
 app.post("/google-login", async (req, res) => {
-    const { token } = req.body;
+    const { token } = req.body;
 
-    try {
-        const ticket = await googleClient.verifyIdToken({
-            idToken: token,
-            audience: process.env.GOOGLE_CLIENT_ID,
-        });
+    try {
+        const ticket = await googleClient.verifyIdToken({
+            idToken: token,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
 
-        const payload = ticket.getPayload();
-        const { sub, email, name } = payload;
+        const payload = ticket.getPayload();
+        const { sub, email, name } = payload;
 
-        let user = await User.findOne({ email });
+        let user = await User.findOne({ email });
 
-        if (!user) {
-            // Create a new user if not exists
-            user = new User({
-                googleId: sub,
-                email,
-                fullName: name,
-                verified: true,
-                // No password required for Google login
-            });
-            await user.save();
-        }
+        if (!user) {
+            // Create a new user if not exists
+            user = new User({
+                googleId: sub,
+                email,
+                fullName: name,
+                verified: true,
+                // No password required for Google login
+            });
+            await user.save();
+        }
 
-        const accessToken = jwt.sign({ user }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
+        const accessToken = jwt.sign({ user }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: "1h" });
 
-        res.status(200).json({
-            success: true,
-            accessToken,
-        });
-    } catch (error) {
-        console.error("Google Login Error:", error);
-        res.status(500).json({ message: "Google login failed. Please try again." });
-    }
+        res.status(200).json({
+            success: true,
+            accessToken,
+        });
+    } catch (error) {
+        console.error("Google Login Error:", error);
+        res.status(500).json({ message: "Google login failed. Please try again." });
+    }
 });
 
 // Create Account (Password hashing moved here)
 app.post("/create-account", async (req, res) => {
-    const { fullName, email, password } = req.body;
+    const { fullName, email, password } = req.body;
 
-    // Basic validation
-    if (!fullName || !email || !password) {
-        return res.status(400).json({ error: true, message: "All fields are required" });
-    }
+    // Basic validation
+    if (!fullName || !email || !password) {
+        return res.status(400).json({ error: true, message: "All fields are required" });
+    }
 
-    try {
-        const existingUser = await User.findOne({ email });
-        if (existingUser) {
-            return res.status(400).json({
-                error: true,
-                message: "User already exists with this email"
-            });
-        }
+    try {
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({
+                error: true,
+                message: "User already exists with this email"
+            });
+        }
 
-        const otp = generateOtp();
-        const hashedPassword = await bcrypt.hash(password, 10); // Hash the password here
+        const otp = generateOtp();
+        const hashedPassword = await bcrypt.hash(password, 10); // Hash the password here
 
-        // Save user with OTP and verified flag to the database
-        const user = new User({
-            fullName,
-            email,
-            password: hashedPassword, // Store the hashed password
-            otp,
-            verified: false
-        });
+        // Save user with OTP and verified flag to the database
+        const user = new User({
+            fullName,
+            email,
+            password: hashedPassword, // Store the hashed password
+            otp,
+            verified: false
+        });
 
-        await user.save();
+        await user.save();
 
-        const emailHTMLContent = `
-            <div style="background-color: #f0f0f0; padding: 20px; font-family: Arial, sans-serif; color: #333;">
-                <div style="background-color: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
-                    <h2 style="color: #007BFF;">Hello ${fullName},</h2>
-                    <p>We received a request to create an account with this email address.</p>
-                    <p>Your OTP is: <strong style="color: #008080;">${otp}</strong></p>
-                    <p>If you did not make this request, please ignore this email.</p>
-                    <p>For assistance, contact our <a href="mailto:support@keepernotes.com" style="color: #007BFF;">support team</a>.</p>
-                    <br>
-                    <img src="https://raw.githubusercontent.com/Vasanth-192121/note-app/main/client/src/assets/keeper-notes-logo.jpeg" alt="Keeper Notes Logo" style="width:100px; display:block; margin:auto;">
-                    <p style="text-align: center;">Best regards,<br><strong>The Keeper Notes Team</strong></p>
-                </div>
-            </div>
-        `;
+        const emailHTMLContent = `
+            <div style="background-color: #f0f0f0; padding: 20px; font-family: Arial, sans-serif; color: #333;">
+                <div style="background-color: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+                    <h2 style="color: #007BFF;">Hello ${fullName},</h2>
+                    <p>We received a request to create an account with this email address.</p>
+                    <p>Your OTP is: <strong style="color: #008080;">${otp}</strong></p>
+                    <p>If you did not make this request, please ignore this email.</p>
+                    <p>For assistance, contact our <a href="mailto:support@keepernotes.com" style="color: #007BFF;">support team</a>.</p>
+                    <br>
+                    <img src="https://raw.githubusercontent.com/Vasanth-192121/note-app/main/client/src/assets/keeper-notes-logo.jpeg" alt="Keeper Notes Logo" style="width:100px; display:block; margin:auto;">
+                    <p style="text-align: center;">Best regards,<br><strong>The Keeper Notes Team</strong></p>
+                </div>
+            </div>
+        `;
 
-        await sendEmail(email, 'OTP Verification - Keeper Notes Account', emailHTMLContent);
+        await sendEmail(email, 'OTP Verification - Keeper Notes Account', emailHTMLContent);
 
-        res.status(200).json({
-            success: true,
-            message: "OTP sent to your email for verification"
-        });
-    } catch (error) {
-        console.error("Error creating account or sending OTP:", error);
-        res.status(500).json({
-            error: true,
-            message: "Error creating account or sending OTP"
-        });
-    }
+        res.status(200).json({
+            success: true,
+            message: "OTP sent to your email for verification"
+        });
+    } catch (error) {
+        console.error("Error creating account or sending OTP:", error);
+        res.status(500).json({
+            error: true,
+            message: "Error creating account or sending OTP"
+        });
+    }
 });
 
 // Verify OTP for Account Creation
 app.post("/verify-otp", async (req, res) => {
-    const { email, otp } = req.body;
+    const { email, otp } = req.body;
 
-    if (!email || !otp) {
-        return res.status(400).json({ error: true, message: "Email and OTP are required" });
-    }
+    if (!email || !otp) {
+        return res.status(400).json({ error: true, message: "Email and OTP are required" });
+    }
 
-    try {
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(400).json({
-                error: true,
-                message: "User not found"
-            });
-        }
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({
+                error: true,
+                message: "User not found"
+            });
+        }
 
-        if (user.otp !== otp) {
-            return res.status(400).json({
-                error: true,
-                message: "Invalid OTP"
-            });
-        }
+        if (user.otp !== otp) {
+            return res.status(400).json({
+                error: true,
+                message: "Invalid OTP"
+            });
+        }
 
-        // Clear OTP and set verified flag to true after verification
-        user.otp = null;
-        user.verified = true;
+        // Clear OTP and set verified flag to true after verification
+        user.otp = null;
+        user.verified = true;
 
-        await user.save();
+        await user.save();
 
-        // Generate JWT token
-        const token = jwt.sign(
-            { user },
-            process.env.ACCESS_TOKEN_SECRET,
-            { expiresIn: "1h" }
-        );
+        // Generate JWT token
+        const token = jwt.sign(
+            { user },
+            process.env.ACCESS_TOKEN_SECRET,
+            { expiresIn: "1h" }
+        );
 
-        res.status(200).json({
-            success: true,
-            accessToken: token
-        });
+        res.status(200).json({
+            success: true,
+            accessToken: token
+        });
 
-    } catch (error) {
-        console.error("Error verifying OTP:", error);
-        res.status(500).json({
-            error: true,
-            message: `Error verifying OTP: ${error.message}`
-        });
-    }
+    } catch (error) {
+        console.error("Error verifying OTP:", error);
+        res.status(500).json({
+            error: true,
+            message: `Error verifying OTP: ${error.message}`
+        });
+    }
 });
 
 // Login Account (Password comparison now uses bcrypt directly)
 app.post("/login", async (req, res) => {
-    const { email, password } = req.body;
+    const { email, password } = req.body;
 
-    if (!email || !password) {
-        return res.status(400).json({
-            message: "Email and Password are required"
-        });
-    }
+    if (!email || !password) {
+        return res.status(400).json({
+            message: "Email and Password are required"
+        });
+    }
 
-    try {
-        const userInfo = await User.findOne({ email, verified: true });
+    try {
+        const userInfo = await User.findOne({ email, verified: true });
 
-        if (!userInfo) {
-            return res.status(400).json({
-                message: "User not found or not verified"
-            });
-        }
+        if (!userInfo) {
+            return res.status(400).json({
+                message: "User not found or not verified"
+            });
+        }
 
-        // Use bcrypt to compare the provided password with the stored hashed password
-        const isPasswordValid = await bcrypt.compare(password, userInfo.password);
+        // Use bcrypt to compare the provided password with the stored hashed password
+        const isPasswordValid = await bcrypt.compare(password, userInfo.password);
 
-        if (isPasswordValid) {
-            const user = { user: userInfo };
+        if (isPasswordValid) {
+            const user = { user: userInfo };
 
-            const accessToken = jwt.sign(
-                user,
-                process.env.ACCESS_TOKEN_SECRET,
-                { expiresIn: "36000m" } // Consider a more secure duration in production
-            );
+            const accessToken = jwt.sign(
+                user,
+                process.env.ACCESS_TOKEN_SECRET,
+                { expiresIn: "36000m" } // Consider a more secure duration in production
+            );
 
-            return res.json({
-                error: false,
-                message: "Login Successful",
-                email,
-                accessToken,
-            });
-        } else {
-            return res.status(400).json({
-                error: true,
-                message: "Invalid Credentials",
-            });
-        }
-    } catch (error) {
-        console.error("Error during login:", error);
-        return res.status(500).json({ error: true, message: "Internal Server Error" });
-    }
+            return res.json({
+                error: false,
+                message: "Login Successful",
+                email,
+                accessToken,
+            });
+        } else {
+            return res.status(400).json({
+                error: true,
+                message: "Invalid Credentials",
+            });
+        }
+    } catch (error) {
+        console.error("Error during login:", error);
+        return res.status(500).json({ error: true, message: "Internal Server Error" });
+    }
 });
 
 // Forgot Password (Sends a reset link, not the password)
 app.post("/forgot-password", async (req, res) => {
-    const { email } = req.body; // Only need email now
+    const { email } = req.body; // Only need email now
 
-    if (!email) {
-        return res.status(400).json({ message: "Email is required" });
-    }
+    if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+    }
 
-    try {
-        const user = await User.findOne({ email });
+    try {
+        const user = await User.findOne({ email });
 
-        // IMPORTANT: Always send a generic success message to prevent user enumeration
-        if (!user) {
-            console.log(`Forgot password requested for non-existent email: ${email}`); // Added log
-            return res.status(200).json({
-                success: true,
-                message: 'If an account with that email exists, a password reset link has been sent.'
-            });
-        }
+        // IMPORTANT: Always send a generic success message to prevent user enumeration
+        if (!user) {
+            console.log(`Forgot password requested for non-existent email: ${email}`); // Added log
+            return res.status(200).json({
+                success: true,
+                message: 'If an account with that email exists, a password reset link has been sent.'
+            });
+        }
 
-        // Generate a unique reset token
-        const resetToken = crypto.randomBytes(32).toString('hex');
-        const hashedResetToken = await bcrypt.hash(resetToken, 10); // Hash the token before storing
+        // Generate a unique reset token
+        const resetToken = crypto.randomBytes(32).toString('hex');
+        const hashedResetToken = await bcrypt.hash(resetToken, 10); // Hash the token before storing
 
-        // Store the hashed token and its expiry in the user document
-        user.passwordResetToken = hashedResetToken;
-        user.passwordResetExpires = Date.now() + 3600000; // Token valid for 1 hour (3600000 ms)
-        await user.save();
+        // Store the hashed token and its expiry in the user document
+        user.passwordResetToken = hashedResetToken;
+        user.passwordResetExpires = Date.now() + 3600000; // Token valid for 1 hour (3600000 ms)
+        await user.save();
 
-        console.log(`Generated reset token for ${email}. Raw: ${resetToken}, Hashed: ${hashedResetToken}`); // Added log
+        console.log(`Generated reset token for ${email}. Raw: ${resetToken}, Hashed: ${hashedResetToken}`); // Added log
 
-        // Construct the reset link dynamically
-        const clientBaseUrl = process.env.CLIENT_URL || 'http://localhost:5173';
-        const resetLink = `${clientBaseUrl}/reset-password?token=${resetToken}`;
+        // Construct the reset link dynamically
+        const clientBaseUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+        const resetLink = `${clientBaseUrl}/reset-password?token=${resetToken}`;
 
-        const emailHTMLContent = `
-            <div style="background-color: #f0f0f0; padding: 20px; font-family: Arial, sans-serif; color: #333;">
-                <div style="background-color: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
-                    <h2 style="color: #007BFF;">Hello ${user.fullName},</h2>
-                    <p>You have requested to reset your password for your <strong>Keeper Notes</strong> account.</p>
-                    <p>Please click on the following link to reset your password:</p>
-                    <p><a href="${resetLink}" target="_blank" style="color: #007BFF; text-decoration: none;">Reset Your Password</a></p>
-                    <p>This link is valid for 1 hour. If you did not request a password reset, please ignore this email.</p>
-                    <p>For assistance, contact our <a href="mailto:support@keepernotes.com" style="color: #007BFF;">support team</a>.</p>
-                    <br>
-                    <img src="https://raw.githubusercontent.com/Vasanth-192121/note-app/main/client/src/assets/keeper-notes-logo.jpeg" alt="Keeper Notes Logo" style="width:100px; display:block; margin:auto;">
-                    <p style="text-align: center;">Best regards,<br><strong>The Keeper Notes Team</strong></p>
-                </div>
-            </div>
-        `;
+        const emailHTMLContent = `
+            <div style="background-color: #f0f0f0; padding: 20px; font-family: Arial, sans-serif; color: #333;">
+                <div style="background-color: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+                    <h2 style="color: #007BFF;">Hello ${user.fullName},</h2>
+                    <p>You have requested to reset your password for your <strong>Keeper Notes</strong> account.</p>
+                    <p>Please click on the following link to reset your password:</p>
+                    <p><a href="${resetLink}" target="_blank" style="color: #007BFF; text-decoration: none;">Reset Your Password</a></p>
+                    <p>This link is valid for 1 hour. If you did not request a password reset, please ignore this email.</p>
+                    <p>For assistance, contact our <a href="mailto:support@keepernotes.com" style="color: #007BFF;">support team</a>.</p>
+                    <br>
+                    <img src="https://raw.githubusercontent.com/Vasanth-192121/note-app/main/client/src/assets/keeper-notes-logo.jpeg" alt="Keeper Notes Logo" style="width:100px; display:block; margin:auto;">
+                    <p style="text-align: center;">Best regards,<br><strong>The Keeper Notes Team</strong></p>
+                </div>
+            </div>
+        `;
 
 
-        await sendEmail(email, 'Password Reset Request - Keeper Notes Account', emailHTMLContent);
+        await sendEmail(email, 'Password Reset Request - Keeper Notes Account', emailHTMLContent);
 
-        res.status(200).json({
-            success: true,
-            message: 'If an account with that email exists, a password reset link has been sent.'
-        });
+        res.status(200).json({
+            success: true,
+            message: 'If an account with that email exists, a password reset link has been sent.'
+        });
 
-    } catch (error) {
-        console.error('Error in forgot password process:', error);
-        res.status(500).json({
-            message: 'Internal Server Error during password recovery.'
-        });
-    }
+    } catch (error) {
+        console.error('Error in forgot password process:', error);
+        res.status(500).json({
+            message: 'Internal Server Error during password recovery.'
+        });
+    }
 });
 
 // New Route: Reset Password (New password hashing moved here)
 app.post("/reset-password", async (req, res) => {
-    const { token, newPassword } = req.body;
+    const { token, newPassword } = req.body;
 
-    if (!token || !newPassword) {
-        return res.status(400).json({ message: "Token and new password are required" });
-    }
+    if (!token || !newPassword) {
+        return res.status(400).json({ message: "Token and new password are required" });
+    }
 
-    try {
-        // Find ALL users with a non-expired reset token.
-        // We cannot query directly by the 'token' because it's hashed in the DB.
-        const potentialUsers = await User.find({
-            passwordResetExpires: { $gt: Date.now() }
-        });
+    try {
+        // Find ALL users with a non-expired reset token.
+        // We cannot query directly by the 'token' because it's hashed in the DB.
+        const potentialUsers = await User.find({
+            passwordResetExpires: { $gt: Date.now() }
+        });
 
-        let user = null;
-        for (const potentialUser of potentialUsers) {
-            // Compare the provided raw token with the hashed token for each potential user
-            const isTokenValid = await bcrypt.compare(token, potentialUser.passwordResetToken);
-            if (isTokenValid) {
-                user = potentialUser;
-                break; // Found the correct user
-            }
-        }
+        let user = null;
+        for (const potentialUser of potentialUsers) {
+            // Compare the provided raw token with the hashed token for each potential user
+            const isTokenValid = await bcrypt.compare(token, potentialUser.passwordResetToken);
+            if (isTokenValid) {
+                user = potentialUser;
+                break; // Found the correct user
+            }
+        }
 
-        if (!user) {
-            console.log(`Reset password failed: No user found with a valid, non-expired token matching the provided token. Current time: ${new Date(Date.now())}`);
-            return res.status(400).json({ message: "Invalid or expired password reset token." });
-        }
+        if (!user) {
+            console.log(`Reset password failed: No user found with a valid, non-expired token matching the provided token. Current time: ${new Date(Date.now())}`);
+            return res.status(400).json({ message: "Invalid or expired password reset token." });
+        }
 
-        console.log(`Reset password attempt for user: ${user.email}`);
-        console.log(`Token received from frontend: ${token}`);
-        console.log(`Hashed token in DB (matching user): ${user.passwordResetToken}`);
-        console.log(`Token expires at: ${new Date(user.passwordResetExpires)}`);
+        console.log(`Reset password attempt for user: ${user.email}`);
+        console.log(`Token received from frontend: ${token}`);
+        console.log(`Hashed token in DB (matching user): ${user.passwordResetToken}`);
+        console.log(`Token expires at: ${new Date(user.passwordResetExpires)}`);
 
-        // If we reached here, `user` is found and `isTokenValid` is true.
-        // Hash the new password directly here
-        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-        user.password = hashedNewPassword; // Store the hashed new password
-        user.passwordResetToken = undefined; // Clear the token
-        user.passwordResetExpires = undefined; // Clear the expiry
+        // If we reached here, `user` is found and `isTokenValid` is true.
+        // Hash the new password directly here
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedNewPassword; // Store the hashed new password
+        user.passwordResetToken = undefined; // Clear the token
+        user.passwordResetExpires = undefined; // Clear the expiry
 
-        await user.save();
-        console.log(`Password successfully reset for user: ${user.email}`);
+        await user.save();
+        console.log(`Password successfully reset for user: ${user.email}`);
 
-        res.status(200).json({ success: true, message: "Password has been reset successfully." });
+        res.status(200).json({ success: true, message: "Password has been reset successfully." });
 
-    } catch (error) {
-        console.error('Error resetting password:', error);
-        res.status(500).json({ message: "Internal Server Error during password reset." });
-    }
+    } catch (error) {
+        console.error('Error resetting password:', error);
+        res.status(500).json({ message: "Internal Server Error during password reset." });
+    }
 });
 
 
 // Get User
 app.get("/get-user", authenticateToken, async (req, res) => {
-    const { user } = req.user; // User object from authentication middleware
+    const { user } = req.user; // User object from authentication middleware
 
-    if (!user) {
-        return res.sendStatus(401); // Unauthorized if user not found in token
-    }
+    if (!user) {
+        return res.sendStatus(401); // Unauthorized if user not found in token
+    }
 
-    try {
-        const isUser = await User.findOne({ _id: user._id });
-        if (!isUser) {
-            return res.status(404).json({
-                error: true,
-                message: "User not found"
-            });
-        }
+    try {
+        const isUser = await User.findOne({ _id: user._id });
+        if (!isUser) {
+            return res.status(404).json({
+                error: true,
+                message: "User not found"
+            });
+        }
 
-        return res.json({
-            user: {
-                fullName: isUser.fullName,
-                email: isUser.email,
-                _id: isUser._id,
-                createdOn: isUser.createdOn,
-            },
-            message: "User details retrieved successfully"
-        });
-    } catch (error) {
-        console.error('Error fetching user details:', error);
-        return res.status(500).json({ error: true, message: 'Internal Server Error' });
-    }
+        return res.json({
+            user: {
+                fullName: isUser.fullName,
+                email: isUser.email,
+                _id: isUser._id,
+                createdOn: isUser.createdOn,
+            },
+            message: "User details retrieved successfully"
+        });
+    } catch (error) {
+        console.error('Error fetching user details:', error);
+        return res.status(500).json({ error: true, message: 'Internal Server Error' });
+    }
 });
 
 // --- Note Management Routes (with ML tagging) ---
 
 // Add a new route to suggest tags based on text input
 app.post("/suggest-tags", authenticateToken, async (req, res) => {
-    const { text } = req.body;
+    const { text } = req.body;
 
-    if (!text || text.trim() === '') {
-        return res.status(400).json({ error: true, message: "Text content is required to suggest tags" });
-    }
+    if (!text || text.trim() === '') {
+        return res.status(400).json({ error: true, message: "Text content is required to suggest tags" });
+    }
 
-    try {
-        const suggestedTags = await suggestTags(text);
-        // Ensure suggested tags are also limited to 5
-        return res.json({
-            error: false,
-            tags: suggestedTags.slice(0, 5), // Limit to 5 tags here too
-            message: "Tags suggested successfully"
-        });
-    } catch (error) {
-        console.error('Error suggesting tags:', error);
-        return res.status(500).json({ error: true, message: "Internal Server Error" });
-    }
+    try {
+        const suggestedTags = await suggestTags(text);
+        // Ensure suggested tags are also limited to 5
+        return res.json({
+            error: false,
+            tags: suggestedTags.slice(0, 5), // Limit to 5 tags here too
+            message: "Tags suggested successfully"
+        });
+    } catch (error) {
+        console.error('Error suggesting tags:', error);
+        return res.status(500).json({ error: true, message: "Internal Server Error" });
+    }
 });
 
 // Add Notes (MODIFIED to include ML tagging and 5-tag limit)
 app.post("/add-note", authenticateToken, async (req, res) => {
-    const { title, content, tags } = req.body;
-    const { user } = req.user;
+    const { title, content, tags } = req.body;
+    const { user } = req.user;
 
-    if (!title || !content) {
-        return res.status(400).json({ error: true, message: "Title and Content are required" });
-    }
+    if (!title || !content) {
+        return res.status(400).json({ error: true, message: "Title and Content are required" });
+    }
 
-    let initialTags = Array.isArray(tags) ? tags : []; // Ensure tags is an array
+    let initialTags = Array.isArray(tags) ? tags : []; // Ensure tags is an array
 
-    try {
-        // Use TF.js (via nlpUtils) to suggest tags from note content
-        const suggestedTagsFromML = await suggestTags(`${title} ${content}`);
-        console.log('ML Suggested Tags for new note:', suggestedTagsFromML);
+    try {
+        // Use TF.js (via nlpUtils) to suggest tags from note content
+        const suggestedTagsFromML = await suggestTags(`${title} ${content}`);
+        console.log('ML Suggested Tags for new note:', suggestedTagsFromML);
 
-        // Merge user-provided tags with ML-suggested tags, removing duplicates, and limit to 5
-        const finalTags = Array.from(new Set([...initialTags, ...suggestedTagsFromML])).slice(0, 5);
+        // Merge user-provided tags with ML-suggested tags, removing duplicates, and limit to 5
+        const finalTags = Array.from(new Set([...initialTags, ...suggestedTagsFromML])).slice(0, 5);
 
-        const note = new Note({
-            title,
-            content,
-            tags: finalTags, // Use the merged and limited tags
-            userId: user._id,
-        });
+        const note = new Note({
+            title,
+            content,
+            tags: finalTags, // Use the merged and limited tags
+            userId: user._id,
+        });
 
-        await note.save();
-        console.log('New note added:', note);
+        await note.save();
+        console.log('New note added:', note);
 
-        return res.json({
-            error: false,
-            note,
-            message: "Note added successfully with smart tags"
-        });
+        return res.json({
+            error: false,
+            note,
+            message: "Note added successfully with smart tags"
+        });
 
-    } catch (error) {
-        console.error('Error adding note or suggesting tags:', error);
-        return res.status(500).json({ error: true, message: "Internal Server Error" });
-    }
+    } catch (error) {
+        console.error('Error adding note or suggesting tags:', error);
+        return res.status(500).json({ error: true, message: "Internal Server Error" });
+    }
 });
 
 // Edit Note (MODIFIED to include ML tagging for updates and 5-tag limit)
 app.put("/edit-note/:noteId", authenticateToken, async (req, res) => {
-    const noteId = req.params.noteId;
-    const { title, content, tags, isPinnned } = req.body;
-    const { user } = req.user;
+    const noteId = req.params.noteId;
+    const { title, content, tags, isPinned } = req.body; // Corrected typo
+    const { user } = req.user;
 
-    // Check if any changes are provided
-    if (!title && !content && !tags && isPinnned === undefined) {
-        return res.status(400).json({ error: true, message: "No changes provided to update the note" });
-    }
+    // Check if any changes are provided
+    if (!title && !content && !tags && isPinned === undefined) {
+        return res.status(400).json({ error: true, message: "No changes provided to update the note" });
+    }
 
-    try {
-        const note = await Note.findOne({ _id: noteId, userId: user._id });
+    try {
+        const note = await Note.findOne({ _id: noteId, userId: user._id });
 
-        if (!note) {
-            return res.status(404).json({ error: true, message: "Note not found" });
-        }
+        if (!note) {
+            return res.status(404).json({ error: true, message: "Note not found" });
+        }
 
-        // Update fields if provided
-        if (title) note.title = title;
-        if (content) note.content = content;
-        if (isPinnned !== undefined) note.isPinned = isPinnned; // Corrected typo: isPinnned -> isPinned
+        // Update fields if provided
+        if (title) note.title = title;
+        if (content) note.content = content;
+        if (isPinned !== undefined) note.isPinned = isPinned; // Corrected typo
 
-        let currentTags = Array.isArray(note.tags) ? [...note.tags] : []; // Start with existing tags on the note
+        let currentTags = Array.isArray(note.tags) ? [...note.tags] : []; // Start with existing tags on the note
 
-        // Re-suggest tags only if title or content has changed
-        if (title || content) {
-            const currentContent = content || note.content; // Use updated content or existing
-            const currentTitle = title || note.title;     // Use updated title or existing
-            const suggestedTagsFromML = await suggestTags(`${currentTitle} ${currentContent}`);
-            console.log('ML Re-suggested Tags for edited note:', suggestedTagsFromML);
+        // Re-suggest tags only if title or content has changed
+        if (title || content) {
+            const currentContent = content || note.content; // Use updated content or existing
+            const currentTitle = title || note.title;     // Use updated title or existing
+            const suggestedTagsFromML = await suggestTags(`${currentTitle} ${currentContent}`);
+            console.log('ML Re-suggested Tags for edited note:', suggestedTagsFromML);
 
-            // If user explicitly sent new tags in req.body, combine them with existing tags
-            let userProvidedTags = Array.isArray(tags) ? tags : [];
+            // If user explicitly sent new tags in req.body, combine them with existing tags
+            let userProvidedTags = Array.isArray(tags) ? tags : [];
 
-            // Combine existing/user-provided tags with ML-suggested tags, ensure uniqueness, and limit to 5
-            const combinedTags = Array.from(new Set([...currentTags, ...userProvidedTags, ...suggestedTagsFromML]));
-            note.tags = combinedTags.slice(0, 5);
+            // Combine existing/user-provided tags with ML-suggested tags, ensure uniqueness, and limit to 5
+            const combinedTags = Array.from(new Set([...currentTags, ...userProvidedTags, ...suggestedTagsFromML]));
+            note.tags = combinedTags.slice(0, 5);
 
-        } else if (tags !== undefined) { // Check if tags field was explicitly provided in the request body
-            // If only tags are provided (and no content/title change), just update tags as provided
-            // Ensure this also respects the 5-tag limit
-            note.tags = Array.from(new Set(Array.isArray(tags) ? tags : [])).slice(0, 5);
-        }
+        } else if (tags !== undefined) { // Check if tags field was explicitly provided in the request body
+            // If only tags are provided (and no content/title change), just update tags as provided
+            // Ensure this also respects the 5-tag limit
+            note.tags = Array.from(new Set(Array.isArray(tags) ? tags : [])).slice(0, 5);
+        }
 
-        await note.save();
-        console.log('Note updated:', note);
+        await note.save();
+        console.log('Note updated:', note);
 
-        return res.json({
-            error: false,
-            note,
-            message: "Note updated successfully with potential smart tag adjustments"
-        });
+        return res.json({
+            error: false,
+            note,
+            message: "Note updated successfully with potential smart tag adjustments"
+        });
 
-    } catch (error) {
-        console.error('Error editing note or suggesting tags:', error);
-        return res.status(500).json({ error: true, message: "Internal Server Error" });
-    }
+    } catch (error) {
+        console.error('Error editing note or suggesting tags:', error);
+        return res.status(500).json({ error: true, message: "Internal Server Error" });
+    }
 });
 
 // Get All Notes
 app.get("/get-all-notes/", authenticateToken, async (req, res) => {
-    const { user } = req.user;
+    const { user } = req.user;
 
-    try {
-        // Sort by isPinned (true first) and then by creation date (newest first)
-        const notes = await Note.find({ userId: user._id }).sort({ isPinned: -1, createdOn: -1 });
+    try {
+        // Sort by isPinned (true first) and then by creation date (newest first)
+        const notes = await Note.find({ userId: user._id }).sort({ isPinned: -1, createdOn: -1 });
 
-        return res.json({
-            error: false,
-            notes,
-            message: "All notes retrieved successfully"
-        });
+        return res.json({
+            error: false,
+            notes,
+            message: "All notes retrieved successfully"
+        });
 
-    } catch (error) {
-        console.error('Error retrieving notes:', error);
-        return res.status(500).json({ error: true, message: "Internal Server Error" });
-    }
+    } catch (error) {
+        console.error('Error retrieving notes:', error);
+        return res.status(500).json({ error: true, message: "Internal Server Error" });
+    }
 });
 
 // Delete Note
 app.delete("/delete-note/:noteId", authenticateToken, async (req, res) => {
-    const noteId = req.params.noteId;
-    const { user } = req.user;
+    const noteId = req.params.noteId;
+    const { user } = req.user;
 
-    try {
-        const note = await Note.findOne({ _id: noteId, userId: user._id });
+    try {
+        const note = await Note.findOne({ _id: noteId, userId: user._id });
 
-        if (!note) {
-            return res.status(404).json({ error: true, message: "Note not found" });
-        }
+        if (!note) {
+            return res.status(404).json({ error: true, message: "Note not found" });
+        }
 
-        await Note.deleteOne({ _id: noteId, userId: user._id });
+        await Note.deleteOne({ _id: noteId, userId: user._id });
 
-        return res.json({
-            error: false,
-            message: "Note deleted successfully"
-        });
+        return res.json({
+            error: false,
+            message: "Note deleted successfully"
+        });
 
-    } catch (error) {
-        console.error('Error deleting note:', error);
-        return res.status(500).json({ error: true, message: "Internal Server Error" });
-    }
+    } catch (error) {
+        console.error('Error deleting note:', error);
+        return res.status(500).json({ error: true, message: "Internal Server Error" });
+    }
 });
 
 // Update isPinned Status
 app.put("/update-note-pinned/:noteId", authenticateToken, async (req, res) => {
-    const noteId = req.params.noteId;
-    const { isPinned } = req.body; // Expecting a boolean here
-    const { user } = req.user;
+    const noteId = req.params.noteId;
+    const { isPinned } = req.body; // Expecting a boolean here
+    const { user } = req.user;
 
-    if (typeof isPinned !== 'boolean') { // Validate input
-        return res.status(400).json({ error: true, message: "isPinned must be a boolean value" });
-    }
+    if (typeof isPinned !== 'boolean') { // Validate input
+        return res.status(400).json({ error: true, message: "isPinned must be a boolean value" });
+    }
 
-    try {
-        const note = await Note.findOne({ _id: noteId, userId: user._id });
+    try {
+        const note = await Note.findOne({ _id: noteId, userId: user._id });
 
-        if (!note) {
-            return res.status(404).json({ error: true, message: "Note not found" });
-        }
+        if (!note) {
+            return res.status(404).json({ error: true, message: "Note not found" });
+        }
 
-        note.isPinned = isPinned;
-        await note.save();
+        note.isPinned = isPinned;
+        await note.save();
 
-        return res.json({
-            error: false,
-            note,
-            message: `Note ${isPinned ? 'pinned' : 'unpinned'} successfully`
-        });
+        return res.json({
+            error: false,
+            note,
+            message: `Note ${isPinned ? 'pinned' : 'unpinned'} successfully`
+        });
 
-    } catch (error) {
-        console.error('Error updating pin status:', error);
-        return res.status(500).json({ error: true, message: "Internal Server Error" });
-    }
+    } catch (error) {
+        console.error('Error updating pin status:', error);
+        return res.status(500).json({ error: true, message: "Internal Server Error" });
+    }
 });
 
 // Search Notes
 app.get("/search-notes/", authenticateToken, async (req, res) => {
-    const { user } = req.user;
-    const { query } = req.query;
+    const { user } = req.user;
+    const { query } = req.query;
 
-    if (!query || query.trim() === '') {
-        return res.status(400).json({ error: true, message: "Search query is required and cannot be empty" });
-    }
+    if (!query || query.trim() === '') {
+        return res.status(400).json({ error: true, message: "Search query is required and cannot be empty" });
+    }
 
-    try {
-        // Case-insensitive search for title or content or tags
-        const matchingNotes = await Note.find({
-            userId: user._id,
-            $or: [
-                { title: { $regex: new RegExp(query, "i") } },
-                { content: { $regex: new RegExp(query, "i") } },
-                { tags: { $regex: new RegExp(query, "i") } } // Also search within tags!
-            ],
-        }).sort({ isPinned: -1, createdOn: -1 }); // Keep consistent sorting
+    try {
+        // Case-insensitive search for title or content or tags
+        const matchingNotes = await Note.find({
+            userId: user._id,
+            $or: [
+                { title: { $regex: new RegExp(query, "i") } },
+                { content: { $regex: new RegExp(query, "i") } },
+                { tags: { $regex: new RegExp(query, "i") } } // Also search within tags!
+            ],
+        }).sort({ isPinned: -1, createdOn: -1 }); // Keep consistent sorting
 
-        return res.json({
-            error: false,
-            notes: matchingNotes,
-            message: "Notes matching the search query retrieved successfully"
-        });
+        return res.json({
+            error: false,
+            notes: matchingNotes,
+            message: "Notes matching the search query retrieved successfully"
+        });
 
-    } catch (error) {
-        console.error('Error searching notes:', error);
-        return res.status(500).json({ error: true, message: "Internal Server Error" });
-    }
+    } catch (error) {
+        console.error('Error searching notes:', error);
+        return res.status(500).json({ error: true, message: "Internal Server Error" });
+    }
 });
 
 app.listen(port, () => {
-    console.log(`Server is running on port ${port}.`);
+    console.log(`Server is running on port ${port}.`);
 });
 
 export default app;

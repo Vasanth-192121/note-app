@@ -142,11 +142,8 @@
 
 // export default TagInput
 
-
-
-
 import React, { useState } from 'react';
-import { MdAdd } from 'react-icons/md';
+import { MdAddCircleOutline } from 'react-icons/md'; // Changed icon import
 
 const TagInput = ({ tags, setTags }) => {
     const [inputValue, setInputValue] = useState("");
@@ -156,7 +153,8 @@ const TagInput = ({ tags, setTags }) => {
     };
 
     const addNewTag = () => {
-        if (inputValue.trim() !== "" && !tags.some(tag => tag.toLowerCase() === inputValue.trim().toLowerCase())) {
+        // Ensure tag count does not exceed 5
+        if (inputValue.trim() !== "" && !tags.some(tag => tag.toLowerCase() === inputValue.trim().toLowerCase()) && tags.length < 5) {
             setTags([...tags, inputValue.trim()]);
             setInputValue("");
         }
@@ -170,21 +168,21 @@ const TagInput = ({ tags, setTags }) => {
     };
 
     return (
-        <div className='flex items-center gap-4 mt-3'>
+        <div className='flex items-center gap-2 mt-2'> {/* Adjusted gap and margin */}
             <input 
                 type="text" 
-                className='text-sm bg-transparent border px-3 py-2 rounded outline-none w-full' 
+                className='flex-grow text-base bg-gray-100 p-2 rounded border border-gray-300 focus:outline-none focus:border-blue-500' // Updated styling
                 placeholder='Add tags'
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
                 value={inputValue}
             />
             <button 
-                className='w-8 h-8 flex items-center justify-center rounded border border-blue-700 hover:bg-blue-700 transition-colors flex-shrink-0'
+                className='w-10 h-10 flex items-center justify-center rounded-full bg-primary text-white hover:bg-blue-600 transition-colors duration-300 flex-shrink-0 shadow-md' // Updated styling for the button
                 onClick={addNewTag}
                 aria-label="Add tag"
             >
-                <MdAdd className='text-2xl text-blue-700 hover:text-white' />
+                <MdAddCircleOutline className='text-2xl' /> {/* New icon */}
             </button>
         </div>
     );

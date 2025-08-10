@@ -3115,253 +3115,498 @@
 
 
 
+// // client/src/pages/Login.jsx
+// import { useState, useEffect, useRef, lazy, Suspense } from 'react';
+// import { Link, useNavigate } from 'react-router-dom';
+// import Navbar from '../components/Navbar';
+// import PasswordInput from '../components/PasswordInput';
+// import { validateEmail } from '../utils/Helper';
+// import { axiosInstance } from '../utils/axiosInstance';
+// import bgImage from '../../src/assets/bg-image.webp'; // Keep this import
+
+// // Lazy-load the GoogleLoginComponent for code-splitting
+// const GoogleLoginComponent = lazy(() => import('../components/GoogleLoginComponent.jsx'));
+
+// const Login = () => {
+//   // State for forms and UI
+//   const [email, setEmail] = useState("visitor-login@gmail.com");
+//   const [password, setPassword] = useState("password@visitor-login");
+//   const [error, setError] = useState(null);
+//   const [loading, setLoading] = useState(false);
+//   const [showForgotPassword, setShowForgotPassword] = useState(false);
+//   const [forgotEmail, setForgotEmail] = useState('visitor-login@gmail.com');
+//   // Removed forgotName state as it's no longer needed for password reset
+//   const [passwordResetEmailSent, setPasswordResetEmailSent] = useState(false); // New state for email sent confirmation
+//   const [counter, setCounter] = useState(0); // This counter will now be for general rate limiting feedback if needed, or can be removed if not used elsewhere.
+
+//   const navigate = useNavigate();
+//   const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+//   const containerRef = useRef(null);
+
+//   // --- Effects for Timers and Lazy Loading ---
+
+//   // Effect for resend password timer (can be repurposed or removed if not needed for password reset)
+//   useEffect(() => {
+//     if (counter > 0) {
+//       const timer = setTimeout(() => setCounter(counter - 1), 1000);
+//       return () => clearTimeout(timer);
+//     }
+//   }, [counter]);
+
+//   // Effect to clear error message after a delay
+//   useEffect(() => {
+//     if (passwordResetEmailSent) {
+//       const timer = setTimeout(() => setError(null), 20000); // Clear success message after 20 seconds
+//       return () => clearTimeout(timer);
+//     }
+//   }, [passwordResetEmailSent]);
+
+//   // Effect to lazy-load the background image using Intersection Observer
+//   useEffect(() => {
+//     const observer = new IntersectionObserver(([entry]) => {
+//       if (entry.isIntersecting) {
+//         // Use the imported bgImage variable directly
+//         if (containerRef.current) {
+//           containerRef.current.style.backgroundImage = `url(${bgImage})`;
+//         }
+//         observer.disconnect();
+//       }
+//     }, { threshold: 0.1 });
+
+//     if (containerRef.current) {
+//       observer.observe(containerRef.current);
+//     }
+
+//     return () => {
+//       if (containerRef.current) {
+//         observer.unobserve(containerRef.current);
+//       }
+//     };
+//   }, []); // Dependencies remain the same
+
+//   // --- Event Handlers ---
+
+//   const handleLogin = async (e) => {
+//     e.preventDefault();
+//     setError(null);
+//     if (!validateEmail(email)) {
+//       setError("Please enter a valid email address.");
+//       return;
+//     }
+//     if (!password) {
+//       setError("Please enter the password.");
+//       return;
+//     }
+
+//     setLoading(true);
+//     try {
+//       const response = await axiosInstance.post("/login", { email, password });
+//       if (response.data?.accessToken) {
+//         localStorage.setItem("token", response.data.accessToken);
+//         navigate("/dashboard");
+//       }
+//     } catch (error) {
+//       console.error('Login Error:', error);
+//       setError(error.response?.data?.message || "An unexpected error occurred. Please try again.");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   // Updated handleForgotPassword to send reset link
+//   const handleForgotPassword = async (e) => {
+//     e.preventDefault();
+//     setError(null);
+//     setPasswordResetEmailSent(false); // Reset this state
+//     setLoading(true);
+
+//     if (!validateEmail(forgotEmail)) {
+//       setError("Please enter a valid email address.");
+//       setLoading(false);
+//       return;
+//     }
+
+//     try {
+//       // We only send the email for password reset
+//       const response = await axiosInstance.post("/forgot-password", { email: forgotEmail });
+//       if (response.data?.success) {
+//         // Generic success message to prevent user enumeration
+//         setError("If an account with that email exists, a password reset link has been sent to your inbox.");
+//         setPasswordResetEmailSent(true);
+//         setCounter(30); // You can keep a counter here if you want to prevent rapid resends
+//       } else {
+//         setError(response.data?.message || "An unexpected error occurred. Please try again.");
+//         setPasswordResetEmailSent(false);
+//       }
+//     } catch (error) {
+//       console.error("Forgot Password Error:", error);
+//       // Generic error message for security
+//       setError("An unexpected error occurred. Please try again.");
+//       setPasswordResetEmailSent(false);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const toggleForgotPassword = () => {
+//     setShowForgotPassword(prev => !prev);
+//     setError(null);
+//     setPasswordResetEmailSent(false); // Reset state when toggling
+//     setCounter(0);
+//   };
+
+//   // Google Login callbacks
+//   const handleGoogleLoginSuccess = async (response) => {
+//     try {
+//       const googleToken = response.credential;
+//       const res = await axiosInstance.post("/google-login", { token: googleToken });
+//       if (res.data?.accessToken) {
+//         localStorage.setItem("token", res.data.accessToken);
+//         navigate("/dashboard");
+//       }
+//     } catch (error) {
+//       console.error('Google Login Error:', error);
+//       setError('Google login failed. Please try again.');
+//     }
+//   };
+
+//   const handleGoogleLoginError = (error) => {
+//     console.error('Google Login Error:', error);
+//     setError('Google login failed. Please try again.');
+//   };
+
+//   // --- JSX Rendering ---
+//   return (
+//     <div className='bg-no-repeat bg-center bg-cover min-h-screen' ref={containerRef}>
+//       <Navbar />
+//       {/* This div handles the overall positioning and conditional background for mobile */}
+//       <div className='
+//           flex items-center justify-center min-h-[calc(100vh-64px)]
+//           bg-slate-100 bg-opacity-60
+//           sm:justify-end sm:py-[100px] sm:px-4 sm:pr-20 lg:pr-36 sm:bg-transparent sm:bg-opacity-100
+//         '>
+//         {/* This is the actual form container, which will adapt its styling */}
+//         <div className='
+//             w-full px-8 py-10 rounded-none flex flex-col justify-center
+//             sm:max-w-sm sm:border sm:px-8 sm:py-10 sm:rounded-3xl sm:bg-slate-100 sm:bg-opacity-60
+//           '>
+//           {!showForgotPassword ? (
+//             <form onSubmit={handleLogin}>
+//               <h1 className='text-2xl font-medium mb-7'>Login</h1>
+//               <input
+//                 id='email-input'
+//                 type="text"
+//                 placeholder='Email'
+//                 className='input-box'
+//                 value={email}
+//                 onChange={(e) => setEmail(e.target.value)}
+//               />
+//               <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} />
+//               {error && <p className='text-red-500 font-medium pl-2 text-xs pb-1'>{error}</p>}
+//               <button type='submit' className='btn-primary rounded-3xl' disabled={loading}>
+//                 <span className={loading ? 'blinking-text' : ''}>
+//                   {loading ? 'Logging in...' : 'Login'}
+//                 </span>
+//               </button>
+//               <p className='text-sm text-right mt-2'>
+//                 <button type='button' className='font-medium text-primary' onClick={toggleForgotPassword}>
+//                   Forgot password?
+//                 </button>
+//               </p>
+//               <div className='flex flex-col justify-center items-center mt-7'>
+//                 <p className='text-center text-sm mb-4 font-semibold'>or sign up with</p>
+//                 <Suspense fallback={<div>Loading Google Sign-in...</div>}>
+//                   <GoogleLoginComponent
+//                     googleClientId={googleClientId}
+//                     onSuccess={handleGoogleLoginSuccess}
+//                     onError={handleGoogleLoginError}
+//                   />
+//                 </Suspense>
+//               </div>
+//               <p className='text-md font-medium text-center mt-3'>
+//                 <Link to="/signUp" className='font-medium text-primary'>
+//                   Not registered yet?
+//                 </Link>
+//               </p>
+//             </form>
+//           ) : (
+//             <form onSubmit={handleForgotPassword}>
+//               <h4 className='text-2xl font-medium mb-7'>Forgot Password</h4>
+//               <input
+//                 id='forgot-email-input'
+//                 type="text"
+//                 placeholder='Email'
+//                 className='input-box rounded-3xl'
+//                 value={forgotEmail}
+//                 onChange={(e) => setForgotEmail(e.target.value)}
+//               />
+//               {/* Removed name input field */}
+//               {error && <p className={`text-xs pl-2 font-medium pb-1 ${passwordResetEmailSent ? 'text-green-700' : 'text-red-500'}`}>{error}</p>}
+//               <button
+//                 type='submit'
+//                 className={`btn-primary rounded-3xl ${counter > 0 ? 'cursor-not-allowed' : ''}`}
+//                 disabled={counter > 0 || loading}
+//               >
+//                 <span className={loading ? 'blinking-text' : ''}>
+//                   {loading ? 'Sending...' : (counter > 0 ? `Resend (${counter})` : 'Send Reset Link')}
+//                 </span>
+//               </button>
+//               <p className='text-sm text-center mt-4'>
+//                 <button type='button' className='font-medium text-primary' onClick={toggleForgotPassword}>
+//                   Go back to login
+//                 </button>
+//               </p>
+//             </form>
+//           )}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default Login;
+
+
+
+
+
 // client/src/pages/Login.jsx
 import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async'; // Import Helmet
 import Navbar from '../components/Navbar';
 import PasswordInput from '../components/PasswordInput';
 import { validateEmail } from '../utils/Helper';
 import { axiosInstance } from '../utils/axiosInstance';
-import bgImage from '../../src/assets/bg-image.webp'; // Keep this import
+import bgImage from '../../src/assets/bg-image.webp';
 
 // Lazy-load the GoogleLoginComponent for code-splitting
 const GoogleLoginComponent = lazy(() => import('../components/GoogleLoginComponent.jsx'));
 
 const Login = () => {
-  // State for forms and UI
-  const [email, setEmail] = useState("visitor-login@gmail.com");
-  const [password, setPassword] = useState("password@visitor-login");
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [showForgotPassword, setShowForgotPassword] = useState(false);
-  const [forgotEmail, setForgotEmail] = useState('visitor-login@gmail.com');
-  // Removed forgotName state as it's no longer needed for password reset
-  const [passwordResetEmailSent, setPasswordResetEmailSent] = useState(false); // New state for email sent confirmation
-  const [counter, setCounter] = useState(0); // This counter will now be for general rate limiting feedback if needed, or can be removed if not used elsewhere.
+    const [email, setEmail] = useState("visitor-login@gmail.com");
+    const [password, setPassword] = useState("password@visitor-login");
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [showForgotPassword, setShowForgotPassword] = useState(false);
+    const [forgotEmail, setForgotEmail] = useState('visitor-login@gmail.com');
+    const [passwordResetEmailSent, setPasswordResetEmailSent] = useState(false);
+    const [counter, setCounter] = useState(0);
 
-  const navigate = useNavigate();
-  const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-  const containerRef = useRef(null);
+    const navigate = useNavigate();
+    const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    const containerRef = useRef(null);
 
-  // --- Effects for Timers and Lazy Loading ---
-
-  // Effect for resend password timer (can be repurposed or removed if not needed for password reset)
-  useEffect(() => {
-    if (counter > 0) {
-      const timer = setTimeout(() => setCounter(counter - 1), 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [counter]);
-
-  // Effect to clear error message after a delay
-  useEffect(() => {
-    if (passwordResetEmailSent) {
-      const timer = setTimeout(() => setError(null), 20000); // Clear success message after 20 seconds
-      return () => clearTimeout(timer);
-    }
-  }, [passwordResetEmailSent]);
-
-  // Effect to lazy-load the background image using Intersection Observer
-  useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        // Use the imported bgImage variable directly
-        if (containerRef.current) {
-          containerRef.current.style.backgroundImage = `url(${bgImage})`;
+    // Effect for resend password timer (can be repurposed or removed if not needed for password reset)
+    useEffect(() => {
+        if (counter > 0) {
+            const timer = setTimeout(() => setCounter(counter - 1), 1000);
+            return () => clearTimeout(timer);
         }
-        observer.disconnect();
-      }
-    }, { threshold: 0.1 });
+    }, [counter]);
 
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
-    }
+    // Effect to clear error message after a delay
+    useEffect(() => {
+        if (passwordResetEmailSent) {
+            const timer = setTimeout(() => setError(null), 20000);
+            return () => clearTimeout(timer);
+        }
+    }, [passwordResetEmailSent]);
 
-    return () => {
-      if (containerRef.current) {
-        observer.unobserve(containerRef.current);
-      }
+    // Effect to lazy-load the background image using Intersection Observer
+    useEffect(() => {
+        const observer = new IntersectionObserver(([entry]) => {
+            if (entry.isIntersecting) {
+                if (containerRef.current) {
+                    containerRef.current.style.backgroundImage = `url(${bgImage})`;
+                }
+                observer.disconnect();
+            }
+        }, { threshold: 0.1 });
+
+        if (containerRef.current) {
+            observer.observe(containerRef.current);
+        }
+
+        return () => {
+            if (containerRef.current) {
+                observer.unobserve(containerRef.current);
+            }
+        };
+    }, []);
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        setError(null);
+        if (!validateEmail(email)) {
+            setError("Please enter a valid email address.");
+            return;
+        }
+        if (!password) {
+            setError("Please enter the password.");
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const response = await axiosInstance.post("/login", { email, password });
+            if (response.data?.accessToken) {
+                localStorage.setItem("token", response.data.accessToken);
+                navigate("/dashboard");
+            }
+        } catch (error) {
+            console.error('Login Error:', error);
+            setError(error.response?.data?.message || "An unexpected error occurred. Please try again.");
+        } finally {
+            setLoading(false);
+        }
     };
-  }, []); // Dependencies remain the same
 
-  // --- Event Handlers ---
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError(null);
-    if (!validateEmail(email)) {
-      setError("Please enter a valid email address.");
-      return;
-    }
-    if (!password) {
-      setError("Please enter the password.");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const response = await axiosInstance.post("/login", { email, password });
-      if (response.data?.accessToken) {
-        localStorage.setItem("token", response.data.accessToken);
-        navigate("/dashboard");
-      }
-    } catch (error) {
-      console.error('Login Error:', error);
-      setError(error.response?.data?.message || "An unexpected error occurred. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Updated handleForgotPassword to send reset link
-  const handleForgotPassword = async (e) => {
-    e.preventDefault();
-    setError(null);
-    setPasswordResetEmailSent(false); // Reset this state
-    setLoading(true);
-
-    if (!validateEmail(forgotEmail)) {
-      setError("Please enter a valid email address.");
-      setLoading(false);
-      return;
-    }
-
-    try {
-      // We only send the email for password reset
-      const response = await axiosInstance.post("/forgot-password", { email: forgotEmail });
-      if (response.data?.success) {
-        // Generic success message to prevent user enumeration
-        setError("If an account with that email exists, a password reset link has been sent to your inbox.");
-        setPasswordResetEmailSent(true);
-        setCounter(30); // You can keep a counter here if you want to prevent rapid resends
-      } else {
-        setError(response.data?.message || "An unexpected error occurred. Please try again.");
+    const handleForgotPassword = async (e) => {
+        e.preventDefault();
+        setError(null);
         setPasswordResetEmailSent(false);
-      }
-    } catch (error) {
-      console.error("Forgot Password Error:", error);
-      // Generic error message for security
-      setError("An unexpected error occurred. Please try again.");
-      setPasswordResetEmailSent(false);
-    } finally {
-      setLoading(false);
-    }
-  };
+        setLoading(true);
 
-  const toggleForgotPassword = () => {
-    setShowForgotPassword(prev => !prev);
-    setError(null);
-    setPasswordResetEmailSent(false); // Reset state when toggling
-    setCounter(0);
-  };
+        if (!validateEmail(forgotEmail)) {
+            setError("Please enter a valid email address.");
+            setLoading(false);
+            return;
+        }
 
-  // Google Login callbacks
-  const handleGoogleLoginSuccess = async (response) => {
-    try {
-      const googleToken = response.credential;
-      const res = await axiosInstance.post("/google-login", { token: googleToken });
-      if (res.data?.accessToken) {
-        localStorage.setItem("token", res.data.accessToken);
-        navigate("/dashboard");
-      }
-    } catch (error) {
-      console.error('Google Login Error:', error);
-      setError('Google login failed. Please try again.');
-    }
-  };
+        try {
+            const response = await axiosInstance.post("/forgot-password", { email: forgotEmail });
+            if (response.data?.success) {
+                setError("If an account with that email exists, a password reset link has been sent to your inbox.");
+                setPasswordResetEmailSent(true);
+                setCounter(30);
+            } else {
+                setError(response.data?.message || "An unexpected error occurred. Please try again.");
+                setPasswordResetEmailSent(false);
+            }
+        } catch (error) {
+            console.error("Forgot Password Error:", error);
+            setError("An unexpected error occurred. Please try again.");
+            setPasswordResetEmailSent(false);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-  const handleGoogleLoginError = (error) => {
-    console.error('Google Login Error:', error);
-    setError('Google login failed. Please try again.');
-  };
+    const toggleForgotPassword = () => {
+        setShowForgotPassword(prev => !prev);
+        setError(null);
+        setPasswordResetEmailSent(false);
+        setCounter(0);
+    };
 
-  // --- JSX Rendering ---
-  return (
-    <div className='bg-no-repeat bg-center bg-cover min-h-screen' ref={containerRef}>
-      <Navbar />
-      {/* This div handles the overall positioning and conditional background for mobile */}
-      <div className='
-          flex items-center justify-center min-h-[calc(100vh-64px)]
-          bg-slate-100 bg-opacity-60
-          sm:justify-end sm:py-[100px] sm:px-4 sm:pr-20 lg:pr-36 sm:bg-transparent sm:bg-opacity-100
-        '>
-        {/* This is the actual form container, which will adapt its styling */}
-        <div className='
-            w-full px-8 py-10 rounded-none flex flex-col justify-center
-            sm:max-w-sm sm:border sm:px-8 sm:py-10 sm:rounded-3xl sm:bg-slate-100 sm:bg-opacity-60
-          '>
-          {!showForgotPassword ? (
-            <form onSubmit={handleLogin}>
-              <h1 className='text-2xl font-medium mb-7'>Login</h1>
-              <input
-                id='email-input'
-                type="text"
-                placeholder='Email'
-                className='input-box'
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} />
-              {error && <p className='text-red-500 font-medium pl-2 text-xs pb-1'>{error}</p>}
-              <button type='submit' className='btn-primary rounded-3xl' disabled={loading}>
-                <span className={loading ? 'blinking-text' : ''}>
-                  {loading ? 'Logging in...' : 'Login'}
-                </span>
-              </button>
-              <p className='text-sm text-right mt-2'>
-                <button type='button' className='font-medium text-primary' onClick={toggleForgotPassword}>
-                  Forgot password?
-                </button>
-              </p>
-              <div className='flex flex-col justify-center items-center mt-7'>
-                <p className='text-center text-sm mb-4 font-semibold'>or sign up with</p>
-                <Suspense fallback={<div>Loading Google Sign-in...</div>}>
-                  <GoogleLoginComponent
-                    googleClientId={googleClientId}
-                    onSuccess={handleGoogleLoginSuccess}
-                    onError={handleGoogleLoginError}
-                  />
-                </Suspense>
-              </div>
-              <p className='text-md font-medium text-center mt-3'>
-                <Link to="/signUp" className='font-medium text-primary'>
-                  Not registered yet?
-                </Link>
-              </p>
-            </form>
-          ) : (
-            <form onSubmit={handleForgotPassword}>
-              <h4 className='text-2xl font-medium mb-7'>Forgot Password</h4>
-              <input
-                id='forgot-email-input'
-                type="text"
-                placeholder='Email'
-                className='input-box rounded-3xl'
-                value={forgotEmail}
-                onChange={(e) => setForgotEmail(e.target.value)}
-              />
-              {/* Removed name input field */}
-              {error && <p className={`text-xs pl-2 font-medium pb-1 ${passwordResetEmailSent ? 'text-green-700' : 'text-red-500'}`}>{error}</p>}
-              <button
-                type='submit'
-                className={`btn-primary rounded-3xl ${counter > 0 ? 'cursor-not-allowed' : ''}`}
-                disabled={counter > 0 || loading}
-              >
-                <span className={loading ? 'blinking-text' : ''}>
-                  {loading ? 'Sending...' : (counter > 0 ? `Resend (${counter})` : 'Send Reset Link')}
-                </span>
-              </button>
-              <p className='text-sm text-center mt-4'>
-                <button type='button' className='font-medium text-primary' onClick={toggleForgotPassword}>
-                  Go back to login
-                </button>
-              </p>
-            </form>
-          )}
+    const handleGoogleLoginSuccess = async (response) => {
+        try {
+            const googleToken = response.credential;
+            const res = await axiosInstance.post("/google-login", { token: googleToken });
+            if (res.data?.accessToken) {
+                localStorage.setItem("token", res.data.accessToken);
+                navigate("/dashboard");
+            }
+        } catch (error) {
+            console.error('Google Login Error:', error);
+            setError('Google login failed. Please try again.');
+        }
+    };
+
+    const handleGoogleLoginError = (error) => {
+        console.error('Google Login Error:', error);
+        setError('Google login failed. Please try again.');
+    };
+
+    return (
+        <div className='bg-no-repeat bg-center bg-cover min-h-screen' ref={containerRef}>
+            <Helmet>
+                <title>Login | Keeper Notes</title>
+                <meta name="description" content="Log in to your Keeper Notes account to access your notes, organize tasks, and use our AI-powered features." />
+                <link rel="canonical" href="https://keeper-notes-nu.vercel.app/login" />
+            </Helmet>
+            <Navbar />
+            <div className='
+                flex items-center justify-center min-h-[calc(100vh-64px)]
+                bg-slate-100 bg-opacity-60
+                sm:justify-end sm:py-[100px] sm:px-4 sm:pr-20 lg:pr-36 sm:bg-transparent sm:bg-opacity-100
+            '>
+                <div className='
+                    w-full px-8 py-10 rounded-none flex flex-col justify-center
+                    sm:max-w-sm sm:border sm:px-8 sm:py-10 sm:rounded-3xl sm:bg-slate-100 sm:bg-opacity-60
+                '>
+                    {!showForgotPassword ? (
+                        <form onSubmit={handleLogin}>
+                            <h1 className='text-2xl font-medium mb-7'>Login</h1>
+                            <input
+                                id='email-input'
+                                type="email"
+                                placeholder='Email'
+                                className='input-box'
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                            />
+                            <PasswordInput value={password} onChange={(e) => setPassword(e.target.value)} />
+                            {error && <p className='text-red-500 font-medium pl-2 text-xs pb-1'>{error}</p>}
+                            <button type='submit' className='btn-primary rounded-3xl' disabled={loading}>
+                                <span className={loading ? 'blinking-text' : ''}>
+                                    {loading ? 'Logging in...' : 'Login'}
+                                </span>
+                            </button>
+                            <p className='text-sm text-right mt-2'>
+                                <button type='button' className='font-medium text-primary' onClick={toggleForgotPassword}>
+                                    Forgot password?
+                                </button>
+                            </p>
+                            <div className='flex flex-col justify-center items-center mt-7'>
+                                <p className='text-center text-sm mb-4 font-semibold'>or sign up with</p>
+                                <Suspense fallback={<div>Loading Google Sign-in...</div>}>
+                                    <GoogleLoginComponent
+                                        googleClientId={googleClientId}
+                                        onSuccess={handleGoogleLoginSuccess}
+                                        onError={handleGoogleLoginError}
+                                    />
+                                </Suspense>
+                            </div>
+                            <p className='text-md font-medium text-center mt-3'>
+                                <Link to="/signup" className='font-medium text-primary'>
+                                    Not registered yet?
+                                </Link>
+                            </p>
+                        </form>
+                    ) : (
+                        <form onSubmit={handleForgotPassword}>
+                            <h4 className='text-2xl font-medium mb-7'>Forgot Password</h4>
+                            <input
+                                id='forgot-email-input'
+                                type="text"
+                                placeholder='Email'
+                                className='input-box rounded-3xl'
+                                value={forgotEmail}
+                                onChange={(e) => setForgotEmail(e.target.value)}
+                            />
+                            {error && <p className={`text-xs pl-2 font-medium pb-1 ${passwordResetEmailSent ? 'text-green-700' : 'text-red-500'}`}>{error}</p>}
+                            <button
+                                type='submit'
+                                className={`btn-primary rounded-3xl ${counter > 0 ? 'cursor-not-allowed' : ''}`}
+                                disabled={counter > 0 || loading}
+                            >
+                                <span className={loading ? 'blinking-text' : ''}>
+                                    {loading ? 'Sending...' : (counter > 0 ? `Resend (${counter})` : 'Send Reset Link')}
+                                </span>
+                            </button>
+                            <p className='text-sm text-center mt-4'>
+                                <button type='button' className='font-medium text-primary' onClick={toggleForgotPassword}>
+                                    Go back to login
+                                </button>
+                            </p>
+                        </form>
+                    )}
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 };
 
 export default Login;
