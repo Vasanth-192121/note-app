@@ -171,7 +171,7 @@ const TagInput = ({ tags, setTags }) => {
         <div className='flex items-center gap-2 mt-2'> {/* Adjusted gap and margin */}
             <input 
                 type="text" 
-                className='flex-grow text-base bg-gray-100 p-2 rounded border border-gray-300 focus:outline-none focus:border-blue-500' // Updated styling
+                className='flex-grow text-base bg-gray-100 p-2.5 rounded-lg border border-gray-300 focus:outline-none focus:border-blue-500' // Updated styling
                 placeholder='Add tags'
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}

@@ -132,7 +132,7 @@ const AddEditPage = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-grow overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-2 max-w-3xl mx-auto w-full">
+      <div className="flex-grow overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-2 max-w-3xl md:w-full mx-auto w-96">
         {/* Title */}
         <div className="flex flex-col gap-1">
           <label className="text-sm sm:text-base font-medium text-gray-600">
@@ -155,7 +155,7 @@ const AddEditPage = () => {
           <textarea
             className="text-sm sm:text-base bg-gray-100 px-3 py-2 rounded-md w-full min-h-[14rem] sm:min-h-[18rem] resize-none border border-gray-300 focus:outline-none focus:border-blue-500 transition"
             placeholder="Write your note content here..."
-            rows={window.innerWidth < 780 ? 20 : 10}
+            rows={window.innerWidth < 780 ? 15 : 10}
             value={content}
             onChange={({ target }) => setContent(target.value)}
           ></textarea>
