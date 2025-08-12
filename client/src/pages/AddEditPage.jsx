@@ -115,7 +115,7 @@ const AddEditPage = () => {
   const handleCloseToast = () => setToastMessage(null);
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-white">
+    <div className="flex flex-col h-screen w-full max-w-full overflow-x-hidden bg-white">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-gray-200 sticky top-0 bg-white z-10">
         <button
@@ -125,35 +125,35 @@ const AddEditPage = () => {
         >
           <MdArrowBack className="text-xl text-blue-600" />
         </button>
-        <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-800">
+        <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-800 truncate">
           {isEdit ? "Edit Note" : "Add New Note"}
         </h2>
         <div className="w-10 h-10"></div>
       </div>
 
       {/* Content */}
-      <div className="flex-grow overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-2 max-w-3xl lg:w-full mx-auto ">
+      <div className="flex-grow overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-2 max-w-3xl w-full mx-auto">
         {/* Title */}
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 min-w-0">
           <label className="text-sm sm:text-base font-medium text-gray-600">
             Title
           </label>
           <input
             type="text"
             placeholder="Go to the gym at 5pm"
-            className="text-sm sm:text-base bg-gray-100 px-3 py-2 rounded-md w-full border border-gray-300 focus:outline-none focus:border-blue-500 transition"
+            className="text-sm sm:text-base bg-gray-100 px-3 py-2 rounded-md w-full border border-gray-300 focus:outline-none focus:border-blue-500 transition min-w-0"
             value={title}
             onChange={({ target }) => setTitle(target.value)}
           />
         </div>
 
         {/* Content */}
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 min-w-0">
           <label className="text-sm sm:text-base font-medium text-gray-600">
             Content
           </label>
           <textarea
-            className="text-sm sm:text-base bg-gray-100 px-3 py-2 rounded-md w-full min-h-[14rem] sm:min-h-[18rem] resize-none border border-gray-300 focus:outline-none focus:border-blue-500 transition"
+            className="text-sm sm:text-base bg-gray-100 px-3 py-2 rounded-md w-full min-h-[14rem] sm:min-h-[18rem] resize-none border border-gray-300 focus:outline-none focus:border-blue-500 transition min-w-0"
             placeholder="Write your note content here..."
             rows={window.innerWidth < 780 ? 15 : 10}
             value={content}
@@ -162,13 +162,13 @@ const AddEditPage = () => {
         </div>
 
         {/* Tags */}
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-1 min-w-0">
           <label className="text-sm sm:text-base font-medium text-gray-600">
             Tags
           </label>
 
           {/* Existing Tags */}
-          <div className="flex flex-wrap gap-2 mb-2">
+          <div className="flex flex-wrap gap-2 mb-2 min-w-0">
             {tags.map((tag, index) => (
               <div
                 key={index}
@@ -187,14 +187,12 @@ const AddEditPage = () => {
           </div>
 
           {/* Suggested Tags */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 min-w-0">
             {isSuggesting ? (
-              <span className="text-xs text-gray-500">
-                # Suggesting tags...
-              </span>
+              <span className="text-xs text-gray-500"># Suggesting tags...</span>
             ) : (
               suggestedTags.length > 0 && (
-                <div className="flex flex-wrap gap-2 my-2">
+                <div className="flex flex-wrap gap-2 my-2 min-w-0">
                   <span className="text-xs font-semibold text-gray-700 w-full">
                     Suggested:
                   </span>
@@ -220,7 +218,7 @@ const AddEditPage = () => {
       </div>
 
       {/* Footer */}
-      <div className="p-4 border-t border-gray-200 sticky bottom-0 bg-white flex justify-center">
+      <div className="p-4 border-t border-gray-200 sticky bottom-0 bg-white flex justify-center w-full">
         <button
           className="w-full max-w-3xl px-6 py-3 bg-blue-600 text-white rounded-md text-sm sm:text-base font-medium hover:bg-blue-700 transition"
           onClick={handleSaveNote}
