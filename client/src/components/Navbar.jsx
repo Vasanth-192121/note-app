@@ -709,14 +709,14 @@ const Navbar = ({ userInfo, onSearchNote, handleClearSearch, variant = "default"
 
   // 🧠 Variant-based background styling
   const bgClass = variant === "home"
-    ? "bg-slate-400 bg-opacity-60 backdrop-blur-md rounded-b-xl"
-    : "bg-slate-300 sm:bg-slate-400 bg-opacity-60 sm:bg-opacity-20";
+    ? "bg-slate-400 bg-opacity-60 backdrop-blur-md rounded-b-xl py-2"
+    : "bg-slate-300 sm:bg-slate-400 bg-opacity-60 sm:bg-opacity-20 py-4";
 
   return (
-    <div className={`${bgClass} flex items-center justify-between px-4 py-2 shadow-custom-bottom-left md:px-6 md:py-4 sm:rounded-xl`}>
-      <h2 className='text-2xl font-medium text-black py-1'>
+    <div className={`${bgClass} flex items-center justify-between px-4 shadow-custom-bottom-left md:px-6 md:py-4 sm:rounded-xl`}>
+      <h1 className='text-2xl font-medium text-black py-1'>
         Keeper Notes
-      </h2>
+      </h1>
 
       {userInfo ? (
         <div className='flex items-center justify-center flex-grow'>

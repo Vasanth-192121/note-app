@@ -132,7 +132,7 @@ const AddEditPage = () => {
       </div>
 
       {/* Content */}
-      <div className="flex-grow overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-2 max-w-3xl md:w-full mx-auto w-96">
+      <div className="flex-grow overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-2 max-w-3xl md:w-full mx-auto ">
         {/* Title */}
         <div className="flex flex-col gap-1">
           <label className="text-sm sm:text-base font-medium text-gray-600">

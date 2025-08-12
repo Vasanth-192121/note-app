@@ -157,6 +157,7 @@ import { SpeedInsights } from "@vercel/speed-insights/react";
 import Loader from './animations/Loader';
 
 // --- Lazy-loaded page components ---
+const LandingPage = lazy(() => import('./pages/LandingPage'));
 const Login = lazy(() => import('./pages/Login'));
 const Home = lazy(() => import('./pages/Home'));
 const Signup = lazy(() => import('./pages/Signup'));
@@ -173,7 +174,7 @@ const App = () => {
                 <Suspense fallback={<Loader />}>
                     <Routes>
                         {/* Public Routes */}
-                        <Route path="/" element={<Login />} />
+                        <Route path="/" element={<LandingPage />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/signup" element={<Signup />} />
                         <Route path="/reset-password" element={<ResetPassword />} />

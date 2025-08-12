@@ -24,6 +24,7 @@
     "react-responsive": "^10.0.1",
     "react-router-dom": "^6.26.2",
     "styled-components": "^6.1.13",
+    "swiper": "^11.2.10",
     "tailwind-scrollbar-hide": "^4.0.0",
     "use-debounce": "^10.0.5"
   },
