@@ -155,6 +155,7 @@ const LandingPage = () => {
                   width="1200" // Assumed dimensions for a large desktop image
                   height="750" // You can adjust these to your actual image size
                   className="w-full h-auto object-cover"
+                  fetchPriority="high"
                 />
               </SwiperSlide>
               <SwiperSlide>
