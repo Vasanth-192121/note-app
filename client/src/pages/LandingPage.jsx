@@ -104,14 +104,14 @@ const LandingPage = () => {
           {/* Secondary, less-prominent CTA for existing users */}
           <Link
             to="/login"
-            className="text-blue-600 font-medium py-2 px-4 rounded-full transition-all duration-300 hover:bg-blue-50"
+            className="text-blue-600 font-medium py-2 px-2 rounded-full transition-all duration-300 hover:bg-blue-50"
           >
             Log In
           </Link>
           {/* Primary CTA for new users */}
           <Link
             to="/signup"
-            className="bg-blue-600 text-white font-medium py-2 px-6 rounded-full shadow-lg transition-all duration-300 hover:bg-blue-700"
+            className="bg-blue-600 text-white font-medium py-2 px-2 rounded-full shadow-lg transition-all duration-300 hover:bg-blue-700"
           >
             Get Started
           </Link>
@@ -155,7 +155,7 @@ const LandingPage = () => {
                   width="1200" // Assumed dimensions for a large desktop image
                   height="750" // You can adjust these to your actual image size
                   className="w-full h-auto object-cover"
-                  fetchPriority="high"
+                  fetchpriority="high" // <-- lowercase
                 />
               </SwiperSlide>
               <SwiperSlide>
