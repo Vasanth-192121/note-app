@@ -1,4 +1,3 @@
-import React from "react";
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -8,9 +7,9 @@ import { Autoplay } from "swiper/modules"; // Only import Autoplay since navigat
 import "swiper/css";
 
 // Image imports
-import desktopview from "../../public/desktopview.webp";
-import loginview from "../../public/loginview.webp";
-import addnoteview from "../../public/addnoteview.webp";
+import desktopview from "../assets/desktopview.webp";
+import loginview from "../assets/loginview.webp";
+import addnoteview from "../assets/addnoteview.webp";
 
 // Custom SVG Icons
 const AiIcon = () => (
